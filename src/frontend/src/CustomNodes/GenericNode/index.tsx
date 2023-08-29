@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { useContext, useEffect, useState } from "react";
-import { NodeToolbar, useUpdateNodeInternals } from "reactflow";
+import { NodeResizer,NodeToolbar, useUpdateNodeInternals } from "reactflow";
 import ShadTooltip from "../../components/ShadTooltipComponent";
 import Tooltip from "../../components/TooltipComponent";
 import IconComponent from "../../components/genericIconComponent";
@@ -63,6 +63,8 @@ export default function GenericNode({
 
   return (
     <>
+      <NodeResizer isVisible={selected} minWidth={100} minHeight={30}/>
+
       <NodeToolbar>
         <NodeToolbarComponent
           data={data}
@@ -76,6 +78,7 @@ export default function GenericNode({
           selected ? "border border-ring" : "border",
           "generic-node-div"
         )}
+        
       >
         {data.node.beta && (
           <div className="beta-badge-wrapper">
