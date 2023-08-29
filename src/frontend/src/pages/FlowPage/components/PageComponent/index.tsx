@@ -259,6 +259,8 @@ export default function Page({ flow }: { flow: FlowType }) {
 
         if (data.type !== "groupNode") {
           // Create a new node object
+          //console.info("create a new node object here1");//鼠标拖拉生成node
+
           newNode = {
             id: newId,
             type: "genericNode",
@@ -281,7 +283,7 @@ export default function Page({ flow }: { flow: FlowType }) {
               value: null,
             },
           };
-
+          // console.info("create a new node object here");
           // Add the new node to the list of nodes in state
         }
         setNodes((nds) => nds.concat(newNode));

@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "@svgr/cli": "^8.0.1"
+  },
+  "dependencies": {
+    "@reactflow/node-resizer": "^2.1.5"
   }
 }
