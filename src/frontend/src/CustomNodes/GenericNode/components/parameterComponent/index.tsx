@@ -173,9 +173,10 @@ export default function ParameterComponent({
   return (
     <div
       ref={ref}
-      className="mt-1 flex w-full flex-wrap items-center justify-between bg-muted px-5 py-2"
+      className="mt-1 flex w-full h-full flex-wrap items-center justify-between bg-muted px-5 py-2"
     >
       <>
+      {/* {type!=="str" || !data.node?.template[name].fulline && ( */}
         <div
           className={
             "w-full truncate text-sm" +
@@ -199,6 +200,9 @@ export default function ParameterComponent({
             )}
           </div>
         </div>
+      {/* )} */}
+        
+
         {left &&
         (type === "str" ||
           type === "bool" ||
@@ -238,7 +242,7 @@ export default function ParameterComponent({
         {left === true &&
         type === "str" &&
         !data.node?.template[name].options ? (
-          <div className="mt-2 w-full">
+          <div className="mt-2 w-full h-full">
             {data.node?.template[name].list ? (
               <InputListComponent
                 disabled={disabled}

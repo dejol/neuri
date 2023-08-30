@@ -3,6 +3,8 @@
     "@svgr/cli": "^8.0.1"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^39.0.1",
+    "@ckeditor/ckeditor5-react": "^6.1.0",
     "@reactflow/node-resizer": "^2.1.5"
   }
 }

@@ -139,13 +139,13 @@
   }
 
   .input-full-node {
-    @apply primary-input w-full pb-0.5 pt-0.5 text-left;height: 20rem;
+    @apply primary-input w-full pb-0.5 pt-0.5 text-left h-full;
   }
   .input-note {
-    background-color: #f7ee9a; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;
+    background-color: #f7ee9a; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 90%;
   }
   .input-note-dark {
-    background-color: #8e8857; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;
+    background-color: #8e8857; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 90%;
   }
   .input-search {
     @apply primary-input mx-2 pr-7;
@@ -255,6 +255,9 @@
   .generic-node-div {
     @apply relative flex w-96 flex-col justify-center rounded-lg bg-background;
   }
+  .generic-resize-node-div {
+    @apply relative flex flex-col justify-center rounded-lg bg-background h-full;
+  }
   .generic-node-div-title {
     @apply flex w-full items-center justify-between gap-8 rounded-t-lg border-b bg-muted p-4;
   }
@@ -301,6 +304,9 @@
   }
   .generic-node-desc {
     @apply h-full w-full py-5 text-foreground;
+  }
+  .generic-resize-node-desc {
+    @apply h-full w-full py-5 text-foreground grid;grid-template-rows: 92% 2px auto;
   }
   .generic-node-desc-text {
     @apply w-full px-5 pb-3 text-sm text-muted-foreground;

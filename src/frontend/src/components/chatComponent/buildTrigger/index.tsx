@@ -162,7 +162,7 @@ export default function BuildTrigger({
 
   return (
     <Transition
-      show={!open}
+      show={true}
       appear={true}
       enter="transition ease-out duration-300"
       enterFrom="translate-y-96"

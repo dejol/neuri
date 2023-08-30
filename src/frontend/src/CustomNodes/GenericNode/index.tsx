@@ -63,7 +63,6 @@ export default function GenericNode({
 
   return (
     <>
-      <NodeResizer isVisible={selected} minWidth={100} minHeight={30}/>
 
       <NodeToolbar>
         <NodeToolbarComponent
@@ -72,11 +71,13 @@ export default function GenericNode({
           deleteNode={deleteNode}
         ></NodeToolbarComponent>
       </NodeToolbar>
-
+      {data.type=="Note" &&(
+        <NodeResizer color="red" isVisible={selected} minWidth={100} minHeight={30}/>
+      )}
       <div
         className={classNames(
           selected ? "border border-ring" : "border",
-          "generic-node-div"
+          data.type!="Note"?" generic-node-div":" generic-resize-node-div"
         )}
         
       >
@@ -157,7 +158,12 @@ export default function GenericNode({
           </div>
         </div>
 
-        <div className="generic-node-desc">
+        <div className={classNames(
+          data.type=="Note"
+          ?"generic-resize-node-desc"
+          :"generic-node-desc"
+        )}
+        >
           {data.node.description!==""?(
           <div className="generic-node-desc-text">{data.node.description}</div>
           ):(
