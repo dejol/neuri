@@ -184,6 +184,7 @@ export const nodeIconsLucide = {
   CohereEmbeddings: CohereIcon,
   EverNoteLoader: EvernoteIcon,
   Note:NoteNailIcon,
+  NoteEnd:NoteNailIcon,
   FacebookChatLoader: FBIcon,
   GitbookLoader: GitBookIcon,
   GoogleSearchAPIWrapper: GoogleIcon,
