@@ -24,6 +24,13 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
   // const { tabsState, isBuilt, setIsBuilt } = useContext(TabsContext);
   const { tabsState } = useContext(TabsContext);
 
+  
+  let isNoteEnd:boolean=false;
+  if (!flow.data || !flow.data.nodes) return;
+    flow.data.nodes.forEach((node: NodeType) => {
+      isNoteEnd=node.data.type=="NoteEnd";
+  });  
+  // console.log("------:"+isNoteEnd);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -92,10 +99,10 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
           setIsBuilt={setIsBuilt}
           isBuilt={isBuilt}
         />
-        {/* {isBuilt &&
+        {isBuilt &&
           tabsState[flow.id] &&
           tabsState[flow.id].formKeysData &&
-          canOpen && (
+          canOpen && !isNoteEnd && (
             <FormModal
               key={flow.id}
               flow={flow}
@@ -108,7 +115,7 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
           open={open}
           setOpen={setOpen}
           isBuilt={isBuilt}
-        />  */}
+        /> 
 
       </div>
     </>

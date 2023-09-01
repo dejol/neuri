@@ -62,7 +62,7 @@ export default function Page({ flow }: { flow: FlowType }) {
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
   const {isBuilt, setIsBuilt } = useContext(TabsContext);
-
+  
   useEffect(() => {
     // this effect is used to attach the global event handlers
 
@@ -363,7 +363,7 @@ export default function Page({ flow }: { flow: FlowType }) {
   const onSelectionChange = useCallback((flow) => {
     setLastSelection(flow);
   }, []);
-
+  
   return (
     <div className="flex h-full overflow-hidden">
       <ExtraSidebar />
@@ -425,9 +425,10 @@ export default function Page({ flow }: { flow: FlowType }) {
         </div>
       </main>
       
-        {open && isBuilt && tabsState[flow.id] &&
+        {/*open && isBuilt && tabsState[flow.id] &&
           tabsState[flow.id].formKeysData 
-          && canOpen&&  (
+          && canOpen
+          &&  (
             <div className="left-side-bar-arrangement">
             <LeftFormModal
             open={open}
@@ -437,7 +438,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           />
           </div>
           )
-          }
+          */}
      </div>
   );
 }

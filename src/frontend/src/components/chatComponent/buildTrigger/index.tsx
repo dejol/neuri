@@ -171,7 +171,7 @@ export default function BuildTrigger({
       leaveFrom="translate-y-0"
       leaveTo="translate-y-96"
     >
-      <div className="fixed bottom-0 right-4">
+      <div className="fixed bottom-20 right-4">
         <div
           className={`${eventClick} round-button-form`}
           onClick={() => {

@@ -12,6 +12,7 @@ from langflow.utils.logger import logger
 from langflow.utils.util import build_template_from_class
 
 from langflow.interface.tools.custom import Function
+from pydantic import BaseModel
 
 class NotesCreator(LangChainTypeCreator):
     type_name: str = "notes"
@@ -69,4 +70,7 @@ notes_creator = NotesCreator()
 
 
 class Note(Function):
-     code: str="YUN"
+     code: str
+
+class NoteEnd(BaseModel):
+     code: str

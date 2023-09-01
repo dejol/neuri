@@ -5,26 +5,25 @@ import { sendAllProps } from "../../types/api";
 import { ChatMessageType } from "../../types/chat";
 import { FlowType } from "../../types/flow";
 import { classNames } from "../../utils/utils";
-import ChatInput from "./chatInput";
 import ChatMessage from "./chatMessage";
-// import {
-//   Popover,
-//   PopoverContent,
-// } from "../../components/ui/popover";
 import _ from "lodash";
-import IconComponent from "../../components/genericIconComponent";
 import { TabsContext } from "../../contexts/tabsContext";
 import { validateNodes } from "../../utils/reactflowUtils";
+import { NodeDataType } from "../../types/flow/index";
+import { cloneDeep } from "lodash";
 
-export default function LeftFormModal({
+export default function EmbeddedModal({
+  name="",
+  sourceData,
+  setSourceData,
   flow,
-  open,
-  setOpen,
 }: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  name:string;
+  sourceData:NodeDataType;
+  setSourceData: (value: NodeDataType) => void;
   flow: FlowType;
 }) {
+  // console.log("--------:::",sourceData);
   const { tabsState, setTabsState } = useContext(TabsContext);
   const [chatValue, setChatValue] = useState(() => {
     try {
@@ -205,10 +204,15 @@ export default function LeftFormModal({
     if (data.type === "start") {
       addChatHistory("", false, chatKey);
       isStream = true;
+
     }
     if (data.type === "end") {
       if (data.message) {
         updateLastMessage({ str: data.message, end: true });
+      let newData = cloneDeep(sourceData);
+      newData.node!.template[name].value = data.message;
+      setSourceData(newData);
+      console.log("after data:", data.message);  
       }
       if (data.intermediate_steps) {
         updateLastMessage({
@@ -239,7 +243,8 @@ export default function LeftFormModal({
         process.env.NODE_ENV === "development"
       );
       const newWs = new WebSocket(urlWs);
-            newWs.onopen = () => {
+      // console.log("lkjkjkjkjkjkjkjkjk-----lock:"+lockChat);
+      newWs.onopen = () => {
         console.log("WebSocket connection established!");
         if(!lockChat){
           sendMessage();  
@@ -250,14 +255,20 @@ export default function LeftFormModal({
       };
       newWs.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("Received data:", data);
+        //console.log("Received data:", data);
+        
+
+
         handleWsMessage(data);
+
+     
         //get chat history
       };
       newWs.onclose = (event) => {
         handleOnClose(event);
       };
-            newWs.onerror = (ev) => {
+      
+      newWs.onerror = (ev) => {
         console.log(ev, "error");
         if (flow.id === "") {
           connectWS();
@@ -287,7 +298,8 @@ export default function LeftFormModal({
       console.log("unmount");
       console.log(ws);
       if (ws.current) {
-                ws.current.close();
+        console.log("close connection");
+        ws.current.close();
       }
     };
     // do not add connectWS on dependencies array
@@ -381,33 +393,10 @@ export default function LeftFormModal({
     }
   }
   return (
-
        tabsState[flow.id].formKeysData && (
-
           <div className="left-form-modal-iv-box ">
             <div className="eraser-column-arrangement">
-              <div className="eraser-size">
-                <div className="eraser-position">
-                  <button disabled={lockChat} onClick={() => clearChat()}>
-                    <IconComponent
-                      name="Eraser"
-                      className={classNames(
-                        "h-5 w-5",
-                        lockChat
-                          ? "animate-pulse text-primary"
-                          : "text-primary hover:text-gray-600"
-                      )}
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <button disabled={lockChat} onClick={() => {clearChat();setOpen(false);}}>
-                    <IconComponent
-                      name="X"
-                      className="h-5 w-5 text-primary hover:text-gray-600"
-                      aria-hidden="true"
-                    />
-                  </button>
-                </div>
+              <div className="eraser-size-embedded">
                 <div ref={messagesRef} className="chat-message-div">
                   {chatHistory.length > 0 ? (
                     chatHistory.map((chat, index) => (
@@ -429,41 +418,9 @@ export default function LeftFormModal({
                         </span>
                       </span>
                       <br />
-                      <div className="langflow-chat-desc">
-                        <span className="langflow-chat-desc-span">
-                          点击下面的按钮，开始表演{" "}
-                          <span>
-                            <IconComponent
-                              name="MessageSquare"
-                              className="mx-1 inline h-5 w-5 animate-bounce "
-                            />
-                          </span>{" "}
-                        </span>
-                      </div>
                     </div>
                   )}
                   <div ref={ref}></div>
-                </div>
-                <div className="langflow-chat-input-div">
-                  <div className="langflow-chat-input">
-                    <ChatInput
-                      chatValue={chatValue}
-                      noInput={!chatKey}
-                      lockChat={lockChat}
-                      sendMessage={sendMessage}
-                      setChatValue={(value) => {
-                        setChatValue(value);
-                        setTabsState((old) => {
-                          let newTabsState = _.cloneDeep(old);
-                          newTabsState[id.current].formKeysData.input_keys[
-                            chatKey
-                          ] = value;
-                          return newTabsState;
-                        });
-                      }}
-                      inputRef={ref}
-                    />
-                  </div>
                 </div>
               </div>
             </div>

@@ -247,6 +247,8 @@ tools:
   #   documentation: ""
   Note:
     documentation: ""
+  NoteEnd:
+    documentation: ""    
 utilities:
   BingSearchAPIWrapper:
     documentation: ""

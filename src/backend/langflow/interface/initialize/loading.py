@@ -84,7 +84,7 @@ def instantiate_based_on_type(class_object, base_type, node_type, params):
     elif base_type == "prompts":
         return instantiate_prompt(node_type, class_object, params)
     elif base_type == "tools":
-        if node_type=="Note":
+        if (node_type=="Note" or node_type=="NoteEnd"):
             return params["note"]
         tool = instantiate_tool(node_type, class_object, params)
         if hasattr(tool, "name") and isinstance(tool, BaseTool):
