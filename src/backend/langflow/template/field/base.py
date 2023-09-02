@@ -25,6 +25,8 @@ class TemplateFieldCreator(BaseModel, ABC):
 
     fulline: bool = False
     """Defines if the field(Textarea) will showed in Node. Default is False."""
+    chat_view: bool = False
+    """Defines if the field(Html view) will showed in Node. Default is False."""
 
     value: Any = None
     """The value of the field. Default is None."""

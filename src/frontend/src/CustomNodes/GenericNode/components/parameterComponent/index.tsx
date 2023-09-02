@@ -33,6 +33,8 @@ import {
   nodeNames,
 } from "../../../../utils/styleUtils";
 import { classNames, groupByFamily } from "../../../../utils/utils";
+import HtmlViewComponent from "../../../../components/htmlViewComponent";
+import EmbeddedModal from "../../../../modals/embeddedModal";
 
 export default function ParameterComponent({
   left,
@@ -54,9 +56,11 @@ export default function ParameterComponent({
   const updateNodeInternals = useUpdateNodeInternals();
   const [position, setPosition] = useState(0);
   const { setTabsState, tabId, save, flows } = useContext(TabsContext);
+  const {isBuilt, setIsBuilt } = useContext(TabsContext);
+  const { tabsState } = useContext(TabsContext);
 
   const flow = flows.find((flow) => flow.id === tabId)?.data?.nodes ?? null;
-
+  const currentFlow = flows.find((flow) => flow.id === tabId);
   // Update component position
   useEffect(() => {
     if (ref.current && ref.current.offsetTop && ref.current.clientHeight) {
@@ -266,7 +270,27 @@ export default function ParameterComponent({
                   editNode={true}
                   value={data.node.template[name].value ?? ""}
                   onChange={handleOnNewValue}
-                />              
+                />  
+              ) : data.node?.template[name].chat_view ? (
+                  <div className="input-full-node-wrap input-note dark:input-note-dark">
+                    {
+                    (isBuilt && tabsState[currentFlow.id] &&
+                    tabsState[currentFlow.id].formKeysData &&
+                    tabsState[currentFlow.id].formKeysData.input_keys!==null)? (
+                    <EmbeddedModal
+                    sourceData={data}
+                    setSourceData={setData}
+                    key={currentFlow.id}
+                    flow={currentFlow}
+                    name={name}
+                  />):(
+                    <HtmlViewComponent
+                      contentValue={data.node.template[name].value}
+                      onChange={handleOnNewValue}
+                    />
+                  )}
+                </div>                             
+
             ) : (
               <InputComponent
                 disabled={disabled}

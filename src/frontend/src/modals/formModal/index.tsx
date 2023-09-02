@@ -558,7 +558,7 @@ export default function FormModal({
                       <span>
                         👋{" "}
                         <span className="langflow-chat-span">
-                          Langflow Chat
+                          Neuri Chat
                         </span>
                       </span>
                       <br />

@@ -30,6 +30,7 @@
     "@ckeditor/ckeditor5-react": "6.1.0",
     "@wangeditor/editor-for-react":"^1.0.6",
     "@wangeditor/editor":"^5.1.23",
+    "@wangeditor/plugin-md":"^1.0.0",
     "accordion": "^3.0.2",
     "ace-builds": "^1.16.0",
     "add": "^2.0.6",
