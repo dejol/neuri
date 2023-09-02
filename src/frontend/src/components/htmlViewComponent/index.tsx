@@ -5,12 +5,12 @@ import { useState,useEffect } from "react";
 
 // import { Textarea } from "../ui/textarea";
 // import {CKEditor} from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { Editor, Toolbar } from '@wangeditor/editor-for-react'
-import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
-import '@wangeditor/editor/dist/css/style.css' // 引入 css
-import { Boot } from '@wangeditor/editor'
-import markdownModule from '@wangeditor/plugin-md'
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import { Editor, Toolbar } from '@wangeditor/editor-for-react'
+// import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
+// import '@wangeditor/editor/dist/css/style.css' // 引入 css
+// import { Boot } from '@wangeditor/editor'
+// import markdownModule from '@wangeditor/plugin-md'
 
 
 import ReactMarkdown from "react-markdown";
@@ -18,7 +18,7 @@ import rehypeMathjax from "rehype-mathjax";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import CodeTabsComponent from "../../components/codeTabsComponent";
-import {CKEditor} from "@ckeditor/ckeditor5-react";
+// import {CKEditor} from "@ckeditor/ckeditor5-react";
 
 export default function HtmlViewComponent({
   contentValue,
@@ -69,14 +69,14 @@ export default function HtmlViewComponent({
 };
 */
 //below is wangEditor
-Boot.registerModule(markdownModule)
+// Boot.registerModule(markdownModule)
 
 // editor 实例
-const [editor, setEditor] = useState<IDomEditor | null>(null)   // TS 语法
+// const [editor, setEditor] = useState<IDomEditor | null>(null)   // TS 语法
 // const [editor, setEditor] = useState(null)                   // JS 语法
 
 // 编辑器内容
-const [html, setHtml] = useState(contentValue)
+// const [html, setHtml] = useState(contentValue)
 
 // 模拟 ajax 请求，异步设置 html
 // useEffect(() => {
@@ -86,23 +86,23 @@ const [html, setHtml] = useState(contentValue)
 // }, [])
 
 // 工具栏配置
-const toolbarConfig: Partial<IToolbarConfig> = { }  // TS 语法
+// const toolbarConfig: Partial<IToolbarConfig> = { }  // TS 语法
 // const toolbarConfig = { }                        // JS 语法
 
 // 编辑器配置
-const editorConfig: Partial<IEditorConfig> = {    // TS 语法
+// const editorConfig: Partial<IEditorConfig> = {    // TS 语法
 // const editorConfig = {                         // JS 语法
-    placeholder: '请输入内容...',
-}
+    // placeholder: '请输入内容...',
+// }
 
 // 及时销毁 editor ，重要！
-useEffect(() => {
-    return () => {
-        if (editor == null) return
-        editor.destroy()
-        setEditor(null)
-    }
-}, [editor])
+// useEffect(() => {
+//     return () => {
+//         if (editor == null) return
+//         editor.destroy()
+//         setEditor(null)
+//     }
+// }, [editor])
 
   return (
     <div className="left-form-modal-iv-box ">

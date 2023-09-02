@@ -3,11 +3,11 @@ import { TypeModal } from "../../constants/enums";
 import GenericModal from "../../modals/genericModal";
 import { TextAreaComponentType } from "../../types/components";
 import { Textarea } from "../ui/textarea";
-import {CKEditor} from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { Editor, Toolbar } from '@wangeditor/editor-for-react'
-import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
-import '@wangeditor/editor/dist/css/style.css' // 引入 css
+// import {CKEditor} from "@ckeditor/ckeditor5-react";
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import { Editor, Toolbar } from '@wangeditor/editor-for-react'
+// import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
+// import '@wangeditor/editor/dist/css/style.css' // 引入 css
 
 export default function FullTextAreaComponent({
   value,
@@ -62,12 +62,13 @@ export default function FullTextAreaComponent({
     // }
 };
 */
+
 // editor 实例
-const [editor, setEditor] = useState<IDomEditor | null>(null)   // TS 语法
+// const [editor, setEditor] = useState<IDomEditor | null>(null)   // TS 语法
 // const [editor, setEditor] = useState(null)                   // JS 语法
 
 // 编辑器内容
-const [html, setHtml] = useState(value)
+// const [html, setHtml] = useState(value)
 
 // 模拟 ajax 请求，异步设置 html
 // useEffect(() => {
@@ -77,23 +78,23 @@ const [html, setHtml] = useState(value)
 // }, [])
 
 // 工具栏配置
-const toolbarConfig: Partial<IToolbarConfig> = { }  // TS 语法
+// const toolbarConfig: Partial<IToolbarConfig> = { }  // TS 语法
 // const toolbarConfig = { }                        // JS 语法
 
 // 编辑器配置
-const editorConfig: Partial<IEditorConfig> = {    // TS 语法
+// const editorConfig: Partial<IEditorConfig> = {    // TS 语法
 // const editorConfig = {                         // JS 语法
-    placeholder: '请输入内容...',
-}
+    // placeholder: '请输入内容...',
+// }
 
 // 及时销毁 editor ，重要！
-useEffect(() => {
-    return () => {
-        if (editor == null) return
-        editor.destroy()
-        setEditor(null)
-    }
-}, [editor])
+// useEffect(() => {
+//     return () => {
+//         if (editor == null) return
+//         editor.destroy()
+//         setEditor(null)
+//     }
+// }, [editor])
   return (
     <div className="w-full h-full items-center">
       <Textarea
