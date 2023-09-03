@@ -23,27 +23,12 @@ class NotesCreator(LangChainTypeCreator):
 
     @property
     def type_to_loader_dict(self) -> Dict:
-        """
-        Returns a dictionary mapping utility names to their corresponding loader classes.
-        If the dictionary has not been created yet, it is created by importing all utility classes
-        from the langchain.chains module and filtering them according to the settings.utilities list.
-        """
         if self.type_dict is None:
-            settings_manager = get_settings_manager()
-            self.type_dict = {
-                utility_name: import_class(f"langchain.utilities.{utility_name}")
-                for utility_name in utilities.__all__
+            self.type_dict: dict[str, Any] = {
+                "Note": Note,
             }
-            self.type_dict["SQLDatabase"] = SQLDatabase
-            # Filter according to settings.utilities
-            self.type_dict = {
-                name: utility
-                for name, utility in self.type_dict.items()
-                if name in settings_manager.settings.UTILITIES
-                or settings_manager.settings.DEV
-            }
-
         return self.type_dict
+    
 
     def get_signature(self, name: str) -> Optional[Dict]:
         """Get the signature of a utility."""
@@ -56,10 +41,10 @@ class NotesCreator(LangChainTypeCreator):
             # logger.debug("return 2:"+name)
             return build_template_from_class(name, self.type_to_loader_dict)
         except ValueError as exc:
-            raise ValueError(f"Utility {name} not found") from exc
+            raise ValueError(f"Note {name} not found") from exc
 
         except AttributeError as exc:
-            logger.error(f"Utility {name} not loaded: {exc}")
+            logger.error(f"Note {name} not loaded: {exc}")
             return None
 
     def to_list(self) -> List[str]:
@@ -72,5 +57,5 @@ notes_creator = NotesCreator()
 class Note(Function):
      code: str
 
-class NoteEnd(BaseModel):
+class AINote(BaseModel):
      code: str

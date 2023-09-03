@@ -52,6 +52,8 @@ class VertexTypesDict(LazyLoadDictBase):
                 for t in custom_component_creator.to_list()
             },
             **{t: types.RetrieverVertex for t in retriever_creator.to_list()},
+            # **{t: types.NotesVertex for t in notes_creator.to_list()},
+
         }
 
 

@@ -11,7 +11,7 @@ CUSTOM_NODES = {
         "PythonFunction": frontend_node.tools.PythonFunctionNode(),
         # "TestFunction": frontend_node.tools.TestFunctionNode(),
         "Note":frontend_node.notes.NoteFrontendNode(),
-        "NoteEnd":frontend_node.notes.NoteEndFrontendNode(),
+        "AINote":frontend_node.notes.AINoteFrontendNode(),
         "Tool": frontend_node.tools.ToolNode(),
     },
     "agents": {
@@ -38,6 +38,10 @@ CUSTOM_NODES = {
     "custom_components": {
         "CustomComponent": frontend_node.custom_components.CustomComponentFrontendNode(),
         
+    },
+    "notes":{
+        "Note":frontend_node.notes.NoteFrontendNode(),
+        "AINote":frontend_node.notes.AINoteFrontendNode(),
     },
 }
 

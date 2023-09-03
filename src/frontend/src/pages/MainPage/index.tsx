@@ -31,7 +31,7 @@ export default function HomePage() {
             }}
           >
             <IconComponent name="Download" className="main-page-nav-button" />
-            Download Collection
+            Backup NoteBooks
           </Button>
           <Button
             variant="primary"
@@ -40,7 +40,7 @@ export default function HomePage() {
             }}
           >
             <IconComponent name="Upload" className="main-page-nav-button" />
-            Upload Collection
+            Restore NoteBooks
           </Button>
           <Button
             variant="primary"
@@ -51,12 +51,12 @@ export default function HomePage() {
             }}
           >
             <IconComponent name="Plus" className="main-page-nav-button" />
-            New Project
+            New NoteBook
           </Button>
         </div>
       </div>
       <span className="main-page-description-text">
-        Manage your personal projects. Download or upload your collection.
+        Manage your NoteBooks. 
       </span>
       <div className="main-page-flows-display">
         {flows.map((flow, idx) => (
@@ -75,7 +75,7 @@ export default function HomePage() {
                     name="ExternalLink"
                     className="main-page-nav-button"
                   />
-                  Edit Flow
+                  Edit
                 </Button>
               </Link>
             }

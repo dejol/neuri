@@ -4,6 +4,7 @@ import { DisclosureComponentType } from "../../../../types/components";
 
 export default function DisclosureComponent({
   button: { title, Icon, buttons = [] },
+  className="",
   children,
   openDisc,
 }: DisclosureComponentType) {
@@ -12,7 +13,7 @@ export default function DisclosureComponent({
       {({ open }) => (
         <>
           <div>
-            <Disclosure.Button className="components-disclosure-arrangement">
+            <Disclosure.Button className={className?className:"components-disclosure-arrangement"}>
               <div className="flex gap-4">
                 <Icon strokeWidth={1.5} size={22} className="text-primary" />
                 <span className="components-disclosure-title">{title}</span>

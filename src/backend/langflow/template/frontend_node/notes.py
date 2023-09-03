@@ -28,8 +28,8 @@ class NoteFrontendNode(FrontendNode):
         return super().to_dict()
     
 
-class NoteEndFrontendNode(FrontendNode):
-    name: str = "NoteEnd"
+class AINoteFrontendNode(FrontendNode):
+    name: str = "AINote"
     template: Template = Template(
         type_name="Note",
         fields=[

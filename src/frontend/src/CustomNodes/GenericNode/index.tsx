@@ -61,7 +61,7 @@ export default function GenericNode({
       setValidationStatus(null);
     }
   }, [sseData, data.id]);
-  // if(data.type=="NoteEnd" && data.id=="NoteEnd-UR3HS"){
+  // if(data.type=="AINote" && data.id=="AINote-UR3HS"){
   //   console.log("init data----:",data);
   // }
   return (
@@ -73,14 +73,14 @@ export default function GenericNode({
           deleteNode={deleteNode}
         ></NodeToolbarComponent>
       </NodeToolbar>
-      {(data.type=="Note" || data.type=="NoteEnd") &&(
+      {(data.type=="Note" || data.type=="AINote") &&(
         <NodeResizer color="red" handleStyle={{background:'red'}} lineStyle={{background:'red'}} isVisible={selected} minWidth={100} minHeight={100}/>
       )}
       <div
         className={classNames(
           selected ? "border border-ring" : "border",
           data.type =="Note"?" generic-resize-node-div"
-          :data.type =="NoteEnd"?" generic-resize-node-div"
+          :data.type =="AINote"?" generic-resize-node-div"
           :" generic-node-div"
         )}
         
@@ -165,7 +165,7 @@ export default function GenericNode({
         <div className={classNames(
           data.type == "Note"
           ?"generic-resize-node-desc"
-          :data.type == "NoteEnd"
+          :data.type == "AINote"
           ?"generic-resize-2-node-desc":"generic-node-desc"
         )}
         >

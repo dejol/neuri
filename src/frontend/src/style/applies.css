@@ -185,6 +185,9 @@
     @apply fill-chat-trigger-disabled stroke-chat-trigger-disabled stroke-1;
   }
   .components-disclosure-arrangement {
+    @apply -mt-px flex w-full select-none items-center justify-between border-y border-y-input px-5 py-2;
+  }
+  .components-disclosure-top-arrangement {
     @apply -mt-px flex w-full select-none items-center justify-between border-y border-y-input bg-muted px-3 py-2;
   }
   .components-disclosure-title {

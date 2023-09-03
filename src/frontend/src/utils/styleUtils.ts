@@ -170,6 +170,7 @@ export const nodeNames: { [char: string]: string } = {
   utilities: "Utilities",
   output_parsers: "Output Parsers",
   custom_components: "Custom",
+  notes:"Notes",
   unknown: "Other",
 };
 
@@ -184,7 +185,7 @@ export const nodeIconsLucide = {
   CohereEmbeddings: CohereIcon,
   EverNoteLoader: EvernoteIcon,
   Note:NoteNailIcon,
-  NoteEnd:NoteNailIcon,
+  AINote:NoteNailIcon,
   FacebookChatLoader: FBIcon,
   GitbookLoader: GitBookIcon,
   GoogleSearchAPIWrapper: GoogleIcon,

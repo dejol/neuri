@@ -15,7 +15,7 @@ from langflow.interface.tools.custom import (
     # TestFunction,
 )
 from langflow.interface.notes.base import(
-    Note,NoteEnd,
+    Note,AINote,
 )
 
 FILE_TOOLS = {"JsonSpec": JsonSpec}
@@ -24,7 +24,7 @@ CUSTOM_TOOLS = {
     "PythonFunctionTool": PythonFunctionTool,
     "PythonFunction": PythonFunction,
     "Note": Note,
-    "NoteEnd": NoteEnd,
+    "AINote": AINote,
 
     #  "TestFunction": TestFunction,
 }

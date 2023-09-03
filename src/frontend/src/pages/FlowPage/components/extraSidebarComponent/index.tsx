@@ -71,7 +71,7 @@ export default function ExtraSidebar() {
 
   return (
     <div className="side-bar-arrangement">
-      <div className="side-bar-buttons-arrangement">
+      {/* <div className="side-bar-buttons-arrangement">
         <div className="side-bar-button">
           <ShadTooltip content="Import" side="top">
             <button
@@ -135,7 +135,7 @@ export default function ExtraSidebar() {
           </ShadTooltip>
         </div>
       </div>
-      <Separator />
+      <Separator /> */}
       <div className="side-bar-search-div-placement">
         <Input
           type="text"
@@ -159,6 +159,85 @@ export default function ExtraSidebar() {
       </div>
 {/* 工具栏从这里开始 */}
       <div className="side-bar-components-div-arrangement">
+      <DisclosureComponent
+        openDisc={search.length == 0 ? false : true}
+        key="0"
+        className="components-disclosure-top-arrangement"
+        button={{
+          title: "Notes",
+          Icon:
+          nodeIconsLucide["Note"] ?? nodeIconsLucide.unknown,
+        }}
+      >
+                <div className="side-bar-components-gap">
+                  {Object.keys(dataFilter["tools"])
+                    .sort()
+                    .map((SBItemName: string, index) => (
+                      SBItemName=="Note" &&(
+                      <ShadTooltip
+                        content={data["tools"][SBItemName].display_name}
+                        side="right"
+                        key={index}
+                      >
+                        <div key={index} data-tooltip-id={SBItemName}>
+                          <div
+                            draggable={!data["tools"][SBItemName].error}
+                            className={
+                              "side-bar-components-border bg-background" +
+                              (data["tools"][SBItemName].error
+                                ? " cursor-not-allowed select-none"
+                                : "")
+                            }
+                            style={{
+                              borderLeftColor:
+                                nodeColors["tools"] ?? nodeColors.unknown,
+                              marginLeft:20
+                            }}
+                            onDragStart={(event) =>
+                              onDragStart(event, {
+                                type: SBItemName,
+                                node: data["tools"][SBItemName],
+                              })
+                            }
+                            onDragEnd={() => {
+                              document.body.removeChild(
+                                document.getElementsByClassName(
+                                  "cursor-grabbing"
+                                )[0]
+                              );
+                            }}
+                          >
+                            <div className="side-bar-components-div-form">
+                            <IconComponent
+                                name={nodeIconsLucide[SBItemName] ? SBItemName : "tools" }
+                                className="side-bar-components-icon"
+                                iconColor={`${nodeColors[SBItemName]}`}
+                              />
+                              <span className="side-bar-components-text">
+                                {data["tools"][SBItemName].display_name}
+                              </span>
+                              {/* <IconComponent
+                                name="Menu"
+                                className="side-bar-components-icon "
+                              /> */}
+                            </div>
+                          </div>
+                        </div>
+                      </ShadTooltip>
+                      )
+                    ))}
+                </div>
+      </DisclosureComponent>
+      <DisclosureComponent
+        openDisc={search.length == 0 ? false : true}
+        key="1"
+        className="components-disclosure-top-arrangement"
+        button={{
+          title: "AI Tools",
+          Icon:
+          nodeIconsLucide["llms"] ?? nodeIconsLucide.unknown,
+        }}
+      >
         {Object.keys(dataFilter)
           .sort()
           .map((SBSectionName: keyof APIObjectType, index) =>
@@ -166,6 +245,7 @@ export default function ExtraSidebar() {
               <DisclosureComponent
                 openDisc={search.length == 0 ? false : true}
                 key={index}
+                
                 button={{
                   title: nodeNames[SBSectionName] ?? nodeNames.unknown,
                   Icon:
@@ -193,6 +273,7 @@ export default function ExtraSidebar() {
                             style={{
                               borderLeftColor:
                                 nodeColors[SBSectionName] ?? nodeColors.unknown,
+                                marginLeft:38
                             }}
                             onDragStart={(event) =>
                               onDragStart(event, {
@@ -232,6 +313,7 @@ export default function ExtraSidebar() {
               <div key={index}></div>
             )
           )}
+      </DisclosureComponent>
       </div>
     </div>
   );

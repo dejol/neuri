@@ -247,7 +247,7 @@ tools:
   #   documentation: ""
   Note:
     documentation: ""
-  NoteEnd:
+  AINote:
     documentation: ""    
 utilities:
   BingSearchAPIWrapper:
@@ -303,3 +303,9 @@ output_parsers:
 custom_components:
   CustomComponent:
     documentation: ""
+notes:
+  Note:
+    documentation: ""
+  AINote:
+    documentation: ""
+  

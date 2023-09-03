@@ -25,12 +25,12 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
   const { tabsState } = useContext(TabsContext);
 
   
-  let isNoteEnd:boolean=false;
+  let isAINote:boolean=false;
   if (!flow.data || !flow.data.nodes) return;
     flow.data.nodes.forEach((node: NodeType) => {
-      isNoteEnd=node.data.type=="NoteEnd";
+      isAINote=node.data.type=="AINote";
   });  
-  // console.log("------:"+isNoteEnd);
+  // console.log("------:"+isAINote);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -102,7 +102,7 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
         {isBuilt &&
           tabsState[flow.id] &&
           tabsState[flow.id].formKeysData &&
-          canOpen && !isNoteEnd && (
+          canOpen && !isAINote && (
             <FormModal
               key={flow.id}
               flow={flow}

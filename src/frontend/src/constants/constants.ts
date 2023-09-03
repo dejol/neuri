@@ -496,7 +496,7 @@ export const NOUNS: string[] = [
  * @constant
  *
  */
-export const USER_PROJECTS_HEADER = "My Collection";
+export const USER_PROJECTS_HEADER = "My NoteBooks";
 
 /**
  * URLs excluded from error retries.

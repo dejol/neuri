@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     UTILITIES: dict = {}
     OUTPUT_PARSERS: dict = {}
     CUSTOM_COMPONENTS: dict = {}
+    NOTES:dict={}
 
     DEV: bool = False
     DATABASE_URL: Optional[str] = None
@@ -113,6 +114,7 @@ class Settings(BaseSettings):
         self.OUTPUT_PARSERS = new_settings.OUTPUT_PARSERS or {}
         self.CUSTOM_COMPONENTS = new_settings.CUSTOM_COMPONENTS or {}
         self.COMPONENTS_PATH = new_settings.COMPONENTS_PATH or []
+        self.NOTES=new_settings.NOTES or {}
         self.DEV = dev
 
     def update_settings(self, **kwargs):
