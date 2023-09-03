@@ -166,7 +166,7 @@ export default function ExtraSidebar() {
         button={{
           title: "Notes",
           Icon:
-          nodeIconsLucide["Note"] ?? nodeIconsLucide.unknown,
+          nodeIconsLucide["NoteBooks"] ?? nodeIconsLucide.unknown,
         }}
       >
                 <div className="side-bar-components-gap">
