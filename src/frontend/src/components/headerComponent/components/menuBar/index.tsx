@@ -65,7 +65,7 @@ export const MenuBar = ({ flows, tabId }) => {
             />
           </button>
         </ShadTooltip>      
-        <ShadTooltip content="Save" side="top">
+        <ShadTooltip content="Save" side="bottom">
           <button
             className={
               "extra-side-bar-buttons " + (isPending ? "" : "button-disable")
@@ -84,7 +84,7 @@ export const MenuBar = ({ flows, tabId }) => {
             />
           </button>
         </ShadTooltip>      
-        <ShadTooltip content="Import" side="top">
+        <ShadTooltip content="Import" side="bottom">
           <button
             className="extra-side-bar-buttons"
             onClick={() => {
@@ -95,7 +95,7 @@ export const MenuBar = ({ flows, tabId }) => {
           </button>
         </ShadTooltip>
         <ExportModal>
-          <ShadTooltip content="Export" side="top">
+          <ShadTooltip content="Export" side="bottom">
             <div className={classNames("extra-side-bar-buttons")}>
               <IconComponent
                 name="FileDown"
