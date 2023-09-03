@@ -92,7 +92,7 @@ import SvgWikipedia from "../icons/Wikipedia/Wikipedia";
 import SvgWolfram from "../icons/Wolfram/Wolfram";
 import { HackerNewsIcon } from "../icons/hackerNews";
 import { SupabaseIcon } from "../icons/supabase";
-import { NoteBooksIcon } from "../icons/NoteBooks";
+import { NoteBooksIcon } from "../icons/NoteBook";
 
 export const gradients = [
   "bg-gradient-to-br from-gray-800 via-rose-700 to-violet-900",
