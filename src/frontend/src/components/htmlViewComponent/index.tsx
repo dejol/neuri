@@ -184,12 +184,12 @@ const handleMouseUp = () => {
 
                                 
                  <div style={{ border: '0px solid #ccc',  zIndex: 100}}>
-                {/* <Toolbar
+                <Toolbar
                     editor={editor}
                     defaultConfig={toolbarConfig}
                     mode="simple"
                     style={{ borderBottom: '1px solid #ccc' }}
-                /> */}
+                />
                 <Editor
                     defaultConfig={editorConfig}
                     value={html}
