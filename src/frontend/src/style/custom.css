@@ -1,0 +1,7 @@
+  .w-e-text-container {
+    background-color:unset;
+    color: var(--w-e-textarea-color);
+    height: 100%;
+    position: relative;
+}
+

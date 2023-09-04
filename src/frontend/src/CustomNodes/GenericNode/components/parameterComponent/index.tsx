@@ -180,7 +180,7 @@ export default function ParameterComponent({
       className="mt-1 flex w-full h-full flex-wrap items-center justify-between bg-muted px-5 py-2"
     >
       <>
-      {/* {type!=="str" || !data.node?.template[name].fulline && ( */}
+      {!(type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view)) && (
         <div
           className={
             "w-full truncate text-sm" +
@@ -204,7 +204,7 @@ export default function ParameterComponent({
             )}
           </div>
         </div>
-      {/* )} */}
+       )} 
         
 
         {left &&
@@ -270,6 +270,7 @@ export default function ParameterComponent({
                   editNode={true}
                   value={data.node.template[name].value ?? ""}
                   onChange={handleOnNewValue}
+                  data={data}
                 />  
               ) : data.node?.template[name].chat_view ? (
                   <div className="input-full-node-wrap input-note dark:input-note-dark">
@@ -287,6 +288,7 @@ export default function ParameterComponent({
                     <HtmlViewComponent
                       contentValue={data.node.template[name].value}
                       onChange={handleOnNewValue}
+                      data={data}
                     />
                   )}
                 </div>                             

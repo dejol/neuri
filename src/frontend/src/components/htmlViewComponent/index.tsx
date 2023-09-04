@@ -1,4 +1,5 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect,useRef,useContext } from "react";
+import {NodeDataType} from "../../types/flow/index"
 // import { TypeModal } from "../../constants/enums";
 // import GenericModal from "../../modals/genericModal";
 // import { TextAreaComponentType } from "../../types/components";
@@ -6,26 +7,29 @@ import { useState,useEffect } from "react";
 // import { Textarea } from "../ui/textarea";
 // import {CKEditor} from "@ckeditor/ckeditor5-react";
 // import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-// import { Editor, Toolbar } from '@wangeditor/editor-for-react'
-// import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
-// import '@wangeditor/editor/dist/css/style.css' // 引入 css
-// import { Boot } from '@wangeditor/editor'
-// import markdownModule from '@wangeditor/plugin-md'
+import { Editor, Toolbar } from '@wangeditor/editor-for-react'
+import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
+import '../../style/custom.css'
+import { Boot } from '@wangeditor/editor'
+import { typesContext } from "../../contexts/typesContext";
+import markdownModule from '@wangeditor/plugin-md'
 
 
-import ReactMarkdown from "react-markdown";
-import rehypeMathjax from "rehype-mathjax";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import CodeTabsComponent from "../../components/codeTabsComponent";
+// import ReactMarkdown from "react-markdown";
+// import rehypeMathjax from "rehype-mathjax";
+// import remarkGfm from "remark-gfm";
+// import remarkMath from "remark-math";
+// import CodeTabsComponent from "../../components/codeTabsComponent";
 // import {CKEditor} from "@ckeditor/ckeditor5-react";
 
 export default function HtmlViewComponent({
   contentValue,
   onChange,
-
+  data,
 }: {contentValue:any;  
   onChange: (value: string[] | string) => void;
+  data:NodeDataType;
 }) {
   /*
    // The configuration of the <CKEditor> instance.
@@ -69,14 +73,13 @@ export default function HtmlViewComponent({
 };
 */
 //below is wangEditor
-// Boot.registerModule(markdownModule)
+Boot.registerModule(markdownModule)
 
 // editor 实例
-// const [editor, setEditor] = useState<IDomEditor | null>(null)   // TS 语法
-// const [editor, setEditor] = useState(null)                   // JS 语法
+const [editor, setEditor] = useState<IDomEditor | null>(null)
 
 // 编辑器内容
-// const [html, setHtml] = useState(contentValue)
+const [html, setHtml] = useState(contentValue)
 
 // 模拟 ajax 请求，异步设置 html
 // useEffect(() => {
@@ -86,35 +89,76 @@ export default function HtmlViewComponent({
 // }, [])
 
 // 工具栏配置
-// const toolbarConfig: Partial<IToolbarConfig> = { }  // TS 语法
-// const toolbarConfig = { }                        // JS 语法
-
+const toolbarConfig: Partial<IToolbarConfig> = { }  
 // 编辑器配置
-// const editorConfig: Partial<IEditorConfig> = {    // TS 语法
-// const editorConfig = {                         // JS 语法
-    // placeholder: '请输入内容...',
-// }
+const editorConfig: Partial<IEditorConfig> = {   
+    placeholder: '请输入内容...',
+}
 
 // 及时销毁 editor ，重要！
-// useEffect(() => {
-//     return () => {
-//         if (editor == null) return
-//         editor.destroy()
-//         setEditor(null)
-//     }
-// }, [editor])
+useEffect(() => {
+    return () => {
+        if (editor == null) return
+        editor.destroy()
+        setEditor(null)
+    }
+}, [editor])
+
+// const node = useStoreState((state) => state.nodes[id]);
+const [isDragging, setIsDragging] = useState(false);
+const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+const ref = useRef<HTMLDivElement>(null);
+const { reactFlowInstance } = useContext(typesContext);
+const handleMouseDown = (event) => {
+  // console.log("call handleMouseDown");
+  event.stopPropagation();
+  setIsDragging(true);
+  setMouseOffset({
+    x: event.clientX - event.currentTarget.getBoundingClientRect().left,
+    y: event.clientY - event.currentTarget.getBoundingClientRect().top,
+  });
+};
+
+const handleMouseMove = (event) => {
+  // console.log("call handleMouseMove",reactFlowInstance.getNode(data.id).position.x);
+
+  if (isDragging) {
+    const dx = event.clientX - mouseOffset.x - reactFlowInstance.getNode(data.id).position.x - dragOffset.x;
+    const dy = event.clientY - mouseOffset.y - reactFlowInstance.getNode(data.id).position.y - dragOffset.y;
+    // console.log("dx:[",dx,"]dy:[",dy,"]")
+    // Replace the following condition with your own logic to control the draggable area
+    if (dx > 10 && dx < 90 && dy > 10 && dy < 90) {
+      reactFlowInstance.getNode(data.id).position = { x: reactFlowInstance.getNode(data.id).position.x + dx, y: reactFlowInstance.getNode(data.id).position.y + dy };
+      setDragOffset({ x: dragOffset.x + dx, y: dragOffset.y + dy });
+    }
+  }
+};
+
+const handleMouseUp = () => {
+  // console.log("call handleMouseUp");
+  setIsDragging(false);
+  setDragOffset({ x: 0, y: 0 });
+};
+
 
   return (
     <div className="left-form-modal-iv-box ">
     <div className="eraser-column-arrangement">
         <div className="eraser-size-embedded">
             <div className="chat-message-div">
-                <div className="form-modal-chat-position  ">
+                <div >
                     <div className="form-modal-chat-text-position">
                         <div className="form-modal-chat-text">
                             <div className="w-full">
                                 <div className="w-full dark:text-white">
-                                    <div className="w-full">   
+                                    <div 
+                                    className="w-full"
+                                    style={{cursor: 'text',}}
+                                    onMouseDownCapture={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUpCapture={handleMouseUp}
+                                    >   
 {/*                                                         
                                     <CKEditor
                     editor={ ClassicEditor }
@@ -139,23 +183,25 @@ export default function HtmlViewComponent({
                 />  */}
 
                                 
-                 {/* <div style={{ border: '1px solid #ccc', zIndex: 100}}>
-                <Toolbar
+                 <div style={{ border: '0px solid #ccc',  zIndex: 100}}>
+                {/* <Toolbar
                     editor={editor}
                     defaultConfig={toolbarConfig}
                     mode="simple"
                     style={{ borderBottom: '1px solid #ccc' }}
-                />
+                /> */}
                 <Editor
                     defaultConfig={editorConfig}
                     value={html}
                     onCreated={setEditor}
                     onChange={editor => {setHtml(editor.getHtml());onChange(editor.getHtml());}}
                     mode="default"
-                    style={{ height: '100%', overflowY: 'scroll' }}
+                    style={{ height: '95%',
+                    //  overflowY: 'scroll' 
+                    }}
                 />
-            </div> */}
-                              <ReactMarkdown
+            </div>
+                              {/* <ReactMarkdown
                           remarkPlugins={[remarkGfm, remarkMath]}
                           rehypePlugins={[rehypeMathjax]}
                           className="markdown prose min-w-full text-primary word-break-break-word
@@ -215,7 +261,7 @@ export default function HtmlViewComponent({
                           }}
                         >
                           {contentValue}
-                        </ReactMarkdown>
+                        </ReactMarkdown> */}
                                 </div>
                             </div>
                         </div>

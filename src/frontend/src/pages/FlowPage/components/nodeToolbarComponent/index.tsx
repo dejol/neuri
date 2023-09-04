@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { useContext, useState } from "react";
 import { useReactFlow } from "reactflow";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
@@ -5,6 +6,7 @@ import IconComponent from "../../../../components/genericIconComponent";
 import { TabsContext } from "../../../../contexts/tabsContext";
 import EditNodeModal from "../../../../modals/EditNodeModal";
 import { classNames } from "../../../../utils/utils";
+import { NodeType } from "../../../../types/flow";
 
 export default function NodeToolbarComponent({ data, setData, deleteNode }) {
   const [nodeLength, setNodeLength] = useState(
@@ -25,6 +27,40 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
 
   const { paste } = useContext(TabsContext);
   const reactFlowInstance = useReactFlow();
+  function changeAINoteToNote(node:NodeType){
+    console.info("type is :",node)
+        // Create a new node object
+    const newNode: NodeType = {
+      id: '000',
+      type: "genericNode",
+      position: {
+        x: node.position.x ,
+        y:  node.position.y ,
+      },
+      data: {
+        ..._.cloneDeep(node.data),
+        node:{
+          ..._.cloneDeep(node.data.node),
+          base_classes:['Document'],
+          display_name:"Note",
+          template:{
+            note:{
+              ..._.cloneDeep(node.data.node.template.note),
+              chat_view:false,
+              fulline:true,
+            },
+            "_type":"Note"
+          },
+        },
+        type:"Note",
+        id: '000',
+      },
+    };
+    node.data.node.template._type;
+
+        console.info("after new :",newNode)
+    return newNode;
+  }
   return (
     <>
       <div className="w-26 h-10">
@@ -39,7 +75,8 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
               <IconComponent name="Trash2" className="h-4 w-4" />
             </button>
           </ShadTooltip>
-
+          
+          {reactFlowInstance.getNode(data.id).data.type=="AINote"&&(
           <ShadTooltip content="Duplicate" side="top">
             <button
               className={classNames(
@@ -50,6 +87,32 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
                 paste(
                   {
                     nodes: [reactFlowInstance.getNode(data.id)],
+                    edges: [],
+                  },
+                  {
+                    x: 50,
+                    y: 10,
+                    paneX: reactFlowInstance.getNode(data.id).position.x,
+                    paneY: reactFlowInstance.getNode(data.id).position.y,
+                  }
+                );
+              }}
+            >
+  
+              <IconComponent name="Copy" className="h-4 w-4" />
+            </button>
+          </ShadTooltip>
+          )}
+          <ShadTooltip content="Copy as Note" side="top">
+            <button
+              className={classNames(
+                "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
+              )}
+              onClick={(event) => {
+                event.preventDefault();
+                paste(
+                  {
+                    nodes: [changeAINoteToNote(reactFlowInstance.getNode(data.id))],
                     edges: [],
                   },
                   {

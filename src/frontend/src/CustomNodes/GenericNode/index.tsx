@@ -61,9 +61,7 @@ export default function GenericNode({
       setValidationStatus(null);
     }
   }, [sseData, data.id]);
-  // if(data.type=="AINote" && data.id=="AINote-UR3HS"){
-  //   console.log("init data----:",data);
-  // }
+
   return (
     <>
       <NodeToolbar>

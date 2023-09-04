@@ -24,13 +24,17 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
   // const { tabsState, isBuilt, setIsBuilt } = useContext(TabsContext);
   const { tabsState } = useContext(TabsContext);
 
-  
+  // check is there has AINote 
   let isAINote:boolean=false;
   if (!flow.data || !flow.data.nodes) return;
     flow.data.nodes.forEach((node: NodeType) => {
-      isAINote=node.data.type=="AINote";
+      if(node.data.type=="AINote"){
+        isAINote=true;
+        return;
+      }
+      // console.log("------1:"+node.data.type);
   });  
-  // console.log("------:"+isAINote);
+  //  console.log("------:"+isAINote);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (

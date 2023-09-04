@@ -88,6 +88,9 @@ class Graph:
     def _validate_node(self, node: Vertex) -> bool:
         """Validates a node."""
         # All nodes that do not have edges are invalid
+        # logger.debug("================Check the node whether is connectd=================")
+        if(node.data['type']=='Note'):  
+          return True
         return len(node.edges) > 0
 
     def get_node(self, node_id: str) -> Union[None, Vertex]:
