@@ -28,7 +28,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
   const { paste } = useContext(TabsContext);
   const reactFlowInstance = useReactFlow();
   function changeAINoteToNote(node:NodeType){
-    console.info("type is :",node)
+    // console.info("type is :",node)
         // Create a new node object
     const newNode: NodeType = {
       id: '000',
@@ -57,8 +57,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
       },
     };
     node.data.node.template._type;
-
-        console.info("after new :",newNode)
+        // console.info("after new :",newNode)
     return newNode;
   }
   return (
@@ -76,7 +75,6 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
             </button>
           </ShadTooltip>
           
-          {reactFlowInstance.getNode(data.id).data.type=="AINote"&&(
           <ShadTooltip content="Duplicate" side="top">
             <button
               className={classNames(
@@ -102,7 +100,9 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
               <IconComponent name="Copy" className="h-4 w-4" />
             </button>
           </ShadTooltip>
-          )}
+          {reactFlowInstance.getNode(data.id).data.type=="AINote"&&(
+
+         
           <ShadTooltip content="Copy as Note" side="top">
             <button
               className={classNames(
@@ -127,7 +127,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
               <IconComponent name="Copy" className="h-4 w-4" />
             </button>
           </ShadTooltip>
-
+ )}
           <ShadTooltip
             content={
               data.node.documentation === "" ? "Coming Soon" : "Documentation"
