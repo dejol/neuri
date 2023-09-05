@@ -112,6 +112,7 @@ export const MenuBar = ({ flows, tabId }) => {
             }
             onClick={() => {
               setOpenSettings(true);
+
             }}
           >
             <IconComponent
@@ -157,8 +158,12 @@ export const MenuBar = ({ flows, tabId }) => {
             />
           </button>
         </ShadTooltip>
-
+        <FlowSettingsModal
+          open={openSettings}
+          setOpen={setOpenSettings}
+        ></FlowSettingsModal>
     </div>
+    
   );
 };
 
