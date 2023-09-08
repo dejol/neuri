@@ -191,6 +191,7 @@ export function validateNode(
           (template[t].value === undefined ||
             template[t].value === null ||
             template[t].value === "") &&
+            (node.data?.node?.runnable===undefined||node.data?.node?.runnable)&&
           !reactFlowInstance
             .getEdges()
             .some(

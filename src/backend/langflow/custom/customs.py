@@ -39,10 +39,10 @@ CUSTOM_NODES = {
         "CustomComponent": frontend_node.custom_components.CustomComponentFrontendNode(),
         
     },
-    "notes":{
-        "Note":frontend_node.notes.NoteFrontendNode(),
-        "AINote":frontend_node.notes.AINoteFrontendNode(),
-    },
+    # "notes":{
+    #     "Note":frontend_node.notes.NoteFrontendNode(),
+    #     "AINote":frontend_node.notes.AINoteFrontendNode(),
+    # },
 }
 
 

@@ -303,9 +303,9 @@ output_parsers:
 custom_components:
   CustomComponent:
     documentation: ""
-notes:
-  Note:
-    documentation: ""
-  AINote:
-    documentation: ""
+# notes:
+#   Note:
+#     documentation: ""
+#   AINote:
+#     documentation: ""
   

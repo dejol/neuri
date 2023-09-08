@@ -75,7 +75,7 @@ def convert_kwargs(params):
 
 
 def instantiate_based_on_type(class_object, base_type, node_type, params):
-    logger.debug("Base_Type is "+base_type)
+    # logger.debug("Base_Type is "+base_type)
     # logger.debug("Node_Type is "+node_type)
     # logger.debug("Class Object is "+class_object)
 

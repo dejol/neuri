@@ -81,9 +81,17 @@ export default function ParameterComponent({
   const { data: myData } = useContext(typesContext);
 
   const handleOnNewValue = (newValue: string | string[] | boolean): void => {
+
+    let oldRunnable=data.node.runnable;
+    // console.log("runnable data:",oldRunnable);
+
     let newData = cloneDeep(data);
+    newData.node!.runnable = oldRunnable;
     newData.node!.template[name].value = newValue;
     setData(newData);
+    // console.log("new data:",newData)
+    // console.log("name data:",name)
+
     // Set state to pending
     //@ts-ignore
     setTabsState((prev: TabsState) => {
@@ -264,10 +272,9 @@ export default function ParameterComponent({
                 value={data.node.template[name].value ?? ""}
                 onChange={handleOnNewValue}
               />
+              
               ) : data.node?.template[name].fulline ? (
                 <FullTextAreaComponent
-                  disabled={disabled}
-                  editNode={true}
                   value={data.node.template[name].value ?? ""}
                   onChange={handleOnNewValue}
                   data={data}

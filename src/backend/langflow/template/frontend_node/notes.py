@@ -1,10 +1,11 @@
 from langflow.template.field.base import TemplateField
 from langflow.template.frontend_node.base import FrontendNode
 from langflow.template.template.base import Template
-
+from langchain.llms.base import BaseLLM
 
 class NoteFrontendNode(FrontendNode):
     name: str = "Note"
+    runnable:bool = False
     template: Template = Template(
         type_name="Note",
         fields=[
@@ -30,6 +31,7 @@ class NoteFrontendNode(FrontendNode):
 
 class AINoteFrontendNode(FrontendNode):
     name: str = "AINote"
+    runnable: bool = True
     template: Template = Template(
         type_name="Note",
         fields=[
@@ -47,8 +49,8 @@ class AINoteFrontendNode(FrontendNode):
                 advanced=False,
             ),
             TemplateField(
-                name="AI",
-                field_type="BaseLanguageModel",
+                name="source",
+                field_type="Document",
                 required=True,
                 is_list=False,
                 show=True,
@@ -58,7 +60,7 @@ class AINoteFrontendNode(FrontendNode):
         ],
     )
     description: str = ""
-    base_classes: list[str] = ["LLMChain"]
+    base_classes: list[str] = ["BaseLLM"]
     
     def to_dict(self):
         return super().to_dict()    

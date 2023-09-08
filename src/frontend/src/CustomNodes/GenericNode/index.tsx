@@ -13,6 +13,8 @@ import { cleanEdges } from "../../utils/reactflowUtils";
 import { nodeColors, nodeIconsLucide } from "../../utils/styleUtils";
 import { classNames, toTitleCase } from "../../utils/utils";
 import ParameterComponent from "./components/parameterComponent";
+import ToggleShadComponent from "../../components/toggleShadComponent";
+import { time } from "console";
 
 export default function GenericNode({
   data: olddata,
@@ -62,6 +64,25 @@ export default function GenericNode({
     }
   }, [sseData, data.id]);
 
+  const handleOnNewValue = (newValue: boolean): void => {
+    
+    // console.log("newValue:",newValue)
+    // console.log("oldValue:",data.node.runnable)
+    // data.node.runnable=newValue;
+    // olddata.node.runnable=newValue;
+    let newData = cloneDeep(olddata);
+    newData.node.runnable=newValue;
+    if(newValue != data.node.runnable){
+      setData(newData);
+    }
+    
+    // console.log("newValue of data:",newData.node.runnable)
+
+   
+    // console.log("NewValue of data:",data)
+
+  };
+
   return (
     <>
       <NodeToolbar>
@@ -104,6 +125,23 @@ export default function GenericNode({
             </div>
           </div>
           <div className="round-button-div">
+            <Tooltip
+               title={
+                (data.node.runnable!=undefined&&!data.node.runnable)?(
+                    <span>Not Runnable</span>
+                ):(
+                    <span>Runnable</span>
+                )}
+            >
+              <div>
+                <ToggleShadComponent
+                  disabled={false}
+                  enabled={(data.node.runnable===undefined||data.node.runnable) ? true:false}
+                  setEnabled={handleOnNewValue}
+                  size="small"
+                />
+              </div>
+            </Tooltip>
             <div>
               <Tooltip
                 title={

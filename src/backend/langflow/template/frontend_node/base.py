@@ -54,6 +54,7 @@ class FrontendNode(BaseModel):
     field_formatters: FieldFormatters = Field(default_factory=FieldFormatters)
     beta: bool = False
     error: Optional[str] = None
+    runnable: bool = True # flag for node whether run able
 
     # field formatters is an instance attribute but it is not used in the class
     # so we need to create a method to get it
@@ -87,6 +88,7 @@ class FrontendNode(BaseModel):
                 "documentation": self.documentation,
                 "beta": self.beta,
                 "error": self.error,
+                "runnable":self.runnable,
             },
         }
 

@@ -120,9 +120,16 @@ export default function BuildTrigger({
       }
     };
     // Step 3: Wait for the stream to finish
+    let lengthOfRunnable=0;
+    flow.data.nodes.forEach(node => {
+      if(node.data.node.runnable==undefined||node.data.node.runnable){
+        lengthOfRunnable+=1;
+      }
+    });
     while (!finished) {
       await new Promise((resolve) => setTimeout(resolve, 100));
-      finished = validationResults.length === flow.data.nodes.length;
+      // console.log("%d:%d/%d",validationResults.length,lengthOfRunnable,flow.data.nodes.length);
+      finished = validationResults.length === lengthOfRunnable;
     }
     setOpen(finished);
     // Step 4: Return true if all nodes are valid, false otherwise

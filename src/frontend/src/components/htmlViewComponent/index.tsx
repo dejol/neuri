@@ -73,13 +73,14 @@ export default function HtmlViewComponent({
 };
 */
 //below is wangEditor
+const [toolbarOn,setToolbarOn] = useState(false);
 Boot.registerModule(markdownModule)
 
 // editor 实例
 const [editor, setEditor] = useState<IDomEditor | null>(null)
 
 // 编辑器内容
-const [html, setHtml] = useState(contentValue)
+// const [html, setHtml] = useState(contentValue)
 
 // 模拟 ajax 请求，异步设置 html
 // useEffect(() => {
@@ -93,6 +94,16 @@ const toolbarConfig: Partial<IToolbarConfig> = { }
 // 编辑器配置
 const editorConfig: Partial<IEditorConfig> = {   
     placeholder: '请输入内容...',
+    autoFocus:false,
+    onChange :(editor:IDomEditor)=>{
+        onChange(editor.getHtml());
+    },
+    onBlur:(editor:IDomEditor)=>{
+      setToolbarOn(false);
+    },
+    onFocus:(editor:IDomEditor)=>{
+      setToolbarOn(true);
+    }    
 }
 
 // 及时销毁 editor ，重要！
@@ -113,11 +124,11 @@ const { reactFlowInstance } = useContext(typesContext);
 const handleMouseDown = (event) => {
   // console.log("call handleMouseDown");
   event.stopPropagation();
-  setIsDragging(true);
-  setMouseOffset({
-    x: event.clientX - event.currentTarget.getBoundingClientRect().left,
-    y: event.clientY - event.currentTarget.getBoundingClientRect().top,
-  });
+  // setIsDragging(true);
+  // setMouseOffset({
+  //   x: event.clientX - event.currentTarget.getBoundingClientRect().left,
+  //   y: event.clientY - event.currentTarget.getBoundingClientRect().top,
+  // });
 };
 
 const handleMouseMove = (event) => {
@@ -152,12 +163,11 @@ const handleMouseUp = () => {
                         <div className="form-modal-chat-text">
                             <div className="w-full">
                                 <div className="w-full dark:text-white">
-                                    <div 
-                                    className="w-full"
+                                    <div className="w-full" 
                                     style={{cursor: 'text',}}
                                     onMouseDownCapture={handleMouseDown}
-                                    onMouseMove={handleMouseMove}
-                                    onMouseUpCapture={handleMouseUp}
+                                    // onMouseMove={handleMouseMove}
+                                    // onMouseUpCapture={handleMouseUp}
                                     >   
 {/*                                                         
                                     <CKEditor
@@ -184,17 +194,23 @@ const handleMouseUp = () => {
 
                                 
                  <div style={{ border: '0px solid #ccc',  zIndex: 100}}>
-                <Toolbar
+                  {toolbarOn&&(
+                    <Toolbar
                     editor={editor}
                     defaultConfig={toolbarConfig}
                     mode="simple"
                     style={{ borderBottom: '1px solid #ccc' }}
-                />
+                    />
+                  )}
+
                 <Editor
                     defaultConfig={editorConfig}
-                    value={html}
+                    value={contentValue}
                     onCreated={setEditor}
-                    onChange={editor => {setHtml(editor.getHtml());onChange(editor.getHtml());}}
+                    onChange={editor => {
+                      // setHtml(editor.getHtml());
+                      // onChange(editor.getHtml());
+                    }}
                     mode="default"
                     style={{ height: '95%',
                     //  overflowY: 'scroll' 

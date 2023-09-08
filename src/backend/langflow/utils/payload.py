@@ -28,16 +28,28 @@ def extract_input_variables(nodes):
     return nodes
 
 
+# 名称是 get_root_node，接受一个名为 graph 的参数。该函数的目的是返回模板的根节点。
+# 代码的第一行是定义函数的语法，然后是一个文档字符串，它解释了函数的作用。在第三行中，我们创建了一个集合 incoming_edges，其中包含图中所有边的源节点。如果 incoming_edges 集合为空，并且图中只有一个节点，则返回该节点。否则，我们遍历所有节点并查找不在 incoming_edges 集合中的节点。如果找到，则返回该节点；否则返回 None。
+# 总之，这段代码的作用是找到模板的根节点。如果模板只有一个节点，则返回该节点。否则，它会找到所有不在入边集合中的节点，并返回其中的一个。
 def get_root_node(graph):
     """
     Returns the root node of the template.
     """
     incoming_edges = {edge.source for edge in graph.edges}
-
     if not incoming_edges and len(graph.nodes) == 1:
         return graph.nodes[0]
 
-    return next((node for node in graph.nodes if node not in incoming_edges), None)
+    # return next((node for node in graph.nodes if node not in incoming_edges), None)
+    for node in graph.nodes:
+        if (node.data["type"]=="AINote"):
+            print("skip AINote")
+            continue
+        if node not in incoming_edges:
+            # print("----------------")
+            # print(node)
+            # print("----------------")
+            return node
+    return None
 
 
 def build_json(root, graph) -> Dict:

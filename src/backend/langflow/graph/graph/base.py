@@ -88,9 +88,13 @@ class Graph:
     def _validate_node(self, node: Vertex) -> bool:
         """Validates a node."""
         # All nodes that do not have edges are invalid
-        # logger.debug("================Check the node whether is connectd=================")
-        if(node.data['type']=='Note'):  
-          return True
+        
+        # logger.debug("================Check the node whether is connectd=================:")
+        # logger.debug(node.data['node'])
+        if 'runnable' not in node.data['node'] or not node.data['node']['runnable'] :
+            return True
+        # if(node.data['type']=='Note'):  
+        #   return True
         return len(node.edges) > 0
 
     def get_node(self, node_id: str) -> Union[None, Vertex]:
@@ -150,7 +154,7 @@ class Graph:
     def generator_build(self) -> Generator:
         """Builds each vertex in the graph and yields it."""
         sorted_vertices = self.topological_sort()
-        logger.debug("Sorted vertices: %s", sorted_vertices)
+        # logger.debug("Sorted vertices: %s", sorted_vertices)
         yield from sorted_vertices
 
     def get_node_neighbors(self, node: Vertex) -> Dict[Vertex, int]:

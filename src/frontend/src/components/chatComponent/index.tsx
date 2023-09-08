@@ -28,7 +28,7 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
   let isAINote:boolean=false;
   if (!flow.data || !flow.data.nodes) return;
     flow.data.nodes.forEach((node: NodeType) => {
-      if(node.data.type=="AINote"){
+      if(node.data.type=="AINote"&&(node.data.node.runnable==undefined||node.data.node.runnable)){
         isAINote=true;
         return;
       }

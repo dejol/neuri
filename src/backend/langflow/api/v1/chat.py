@@ -34,6 +34,53 @@ async def chat(client_id: str, websocket: WebSocket):
 @router.post("/build/init/{flow_id}", response_model=InitResponse, status_code=201)
 async def init_build(graph_data: dict, flow_id: str):
     """Initialize the build by storing graph data and returning a unique session ID."""
+    # logger.debug("=====before:%s",graph_data)
+    # nodes=graph_data['data']['nodes']
+    # for ind, val in enumerate(nodes):
+    #     node=val['data']['node']
+    #     if ('runnable' in node) and not (node['runnable']):
+    #         del nodes[ind]
+    # logger.debug("after:%s",graph_data)
+###remove not runnable node
+    logger.debug("total number_of_nodes:%s",len(graph_data['data']['nodes']))
+    i=0
+    newNodes=[]
+    notRunnable=[] #only node id
+    while i< len(graph_data['data']['nodes']):
+        if('runnable' in graph_data['data']['nodes'][i]['data']['node']):
+            logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],graph_data['data']['nodes'][i]['data']['node']['runnable'])
+            if(graph_data['data']['nodes'][i]['data']['node']['runnable']):
+                # del graph_data['data']['nodes'][i]
+                newNodes.append(graph_data['data']['nodes'][i])
+            else:
+                notRunnable.append(graph_data['data']['nodes'][i]['data']['id'])    
+
+        else:
+            logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],"UN")
+            newNodes.append(graph_data['data']['nodes'][i])
+        i+=1
+    
+    graph_data['data']['nodes']=newNodes      
+    logger.debug("runnable number_of_nodes:%s",len(graph_data['data']['nodes']))
+#########
+
+    logger.debug("total number_of_edges:%s",len(graph_data['data']['edges']))
+    logger.debug("notRunnable:%s",notRunnable)
+    j=0
+    newEdges=[]
+    while j< len(graph_data['data']['edges']):
+        source=graph_data['data']['edges'][j]['source']
+        target=graph_data['data']['edges'][j]['target']
+        if(not((source in notRunnable ) and (target in notRunnable ))):
+            logger.debug("%s:%s:%s",j,source,target)
+            newEdges.append(graph_data['data']['edges'][j])
+        j+=1
+    
+    graph_data['data']['edges']=newEdges
+    logger.debug("runnable number_of_edges:%s",len(graph_data['data']['edges']))
+
+    # logger.debug("runnable number_of_edges:%s",graph_data['data']['edges'])
+#######
 
     try:
         if flow_id is None:
@@ -104,7 +151,8 @@ async def stream_build(flow_id: str):
                 error_message = "No data provided"
                 yield str(StreamData(event="error", data={"error": error_message}))
                 return
-
+            
+            # logger.debug("total number_of_nodes:%s",len(graph_data['data']['nodes']))
             logger.debug("Building langchain object")
             try:
                 # Some error could happen when building the graph
@@ -150,6 +198,11 @@ async def stream_build(flow_id: str):
                 yield str(StreamData(event="message", data=response))
 
             langchain_object = graph.build()
+            # print("============这里查看编译后，后台最后返回来的的对象是什么====================")
+
+            # print(langchain_object)
+            # print("==============langchain_object=============")
+
             # Now we  need to check the input_keys to send them to the client
             if hasattr(langchain_object, "input_keys"):
                 input_keys_response = build_input_keys_response(

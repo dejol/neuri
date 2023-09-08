@@ -15,6 +15,7 @@ export type APIClassType = {
   input_types?: Array<string>;
   output_types?: Array<string>;
   beta?: boolean;
+  runnable?: boolean;
   documentation: string;
   error?: string;
   [key: string]: Array<string> | string | APITemplateType | boolean;
