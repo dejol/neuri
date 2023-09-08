@@ -6,6 +6,7 @@ import ReactFlow, {
   Controls,
   Edge,
   EdgeChange,
+  MiniMap,
   NodeChange,
   NodeDragHandler,
   OnEdgesDelete,
@@ -410,9 +411,12 @@ export default function Page({ flow }: { flow: FlowType }) {
                   maxZoom={8}
                 >
                   <Background className="" />
+                  <MiniMap pannable={true} position="bottom-left" zoomable={true} />
                   <Controls
                     className="bg-muted fill-foreground stroke-foreground text-primary
                    [&>button]:border-b-border hover:[&>button]:bg-border"
+                   showZoom={false}
+                   position="top-right"
                   ></Controls>
                 </ReactFlow>
                 <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>

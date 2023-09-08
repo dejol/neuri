@@ -13,7 +13,7 @@ const GradientSparkles = forwardRef<SVGSVGElement, React.PropsWithChildren<{}>>(
             </linearGradient>
           </defs>
         </svg>
-        <Infinity stroke="url(#grad1)" ref={ref} {...props} />
+        {/* <Infinity stroke="url(#grad1)" ref={ref} {...props} /> 在windows服务器上面不支持，暂时屏蔽动态LOGO*/}
       </>
     );
   }
