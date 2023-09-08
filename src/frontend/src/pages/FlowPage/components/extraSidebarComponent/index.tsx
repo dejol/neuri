@@ -161,7 +161,6 @@ export default function ExtraSidebar() {
       <div className="side-bar-components-div-arrangement">
       <DisclosureComponent
         openDisc={search.length == 0 ? false : true}
-        key="M0"
         className="components-disclosure-top-arrangement"
         button={{
           title: "Notes",
@@ -230,7 +229,6 @@ export default function ExtraSidebar() {
       </DisclosureComponent>
       <DisclosureComponent
         openDisc={search.length == 0 ? false : true}
-        key="M1"
         className="components-disclosure-top-arrangement"
         button={{
           title: "AI Tools",
