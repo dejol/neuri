@@ -3,9 +3,12 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  ChevronUp,
   ChevronLeft,
   ChevronRight,
   ChevronsUpDown,
+  ChevronsLeft,
+  ChevronsRight,
   Circle,
   Clipboard,
   Code2,
@@ -23,6 +26,7 @@ import {
   FileSearch2,
   FileText,
   FileUp,
+  Folder,
   Fingerprint,
   Gift,
   GitFork,
@@ -65,6 +69,7 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
+// all icon here : https://www.figma.com/file/dyJRSFTIajik4cdkcXN8yA3K/Feather-Component-Library?type=design&node-id=0-1&mode=design
 import { AirbyteIcon } from "../icons/Airbyte";
 import { AnthropicIcon } from "../icons/Anthropic";
 import { BingIcon } from "../icons/Bing";
@@ -93,6 +98,7 @@ import SvgWolfram from "../icons/Wolfram/Wolfram";
 import { HackerNewsIcon } from "../icons/hackerNews";
 import { SupabaseIcon } from "../icons/supabase";
 import { NoteBooksIcon } from "../icons/NoteBook";
+import { CubeIcon } from "@radix-ui/react-icons";
 
 export const gradients = [
   "bg-gradient-to-br from-gray-800 via-rose-700 to-violet-900",
@@ -234,7 +240,7 @@ export const nodeIconsLucide = {
   unknown: HelpCircle,
   WikipediaQueryRun: SvgWikipedia,
   WolframAlphaQueryRun: SvgWolfram,
-  custom_components: GradientSparkles,
+  custom_components: CubeIcon,
   custom: Edit,
   Trash2,
   X,
@@ -253,6 +259,8 @@ export const nodeIconsLucide = {
   Bell,
   ChevronLeft,
   ChevronDown,
+  ChevronsLeft,
+  ChevronsRight,
   Plus,
   Redo,
   Settings2,
@@ -271,6 +279,7 @@ export const nodeIconsLucide = {
   DownloadCloud,
   File,
   FileText,
+  Folder,
   GitFork,
   GithubIcon,
   FileDown,
@@ -282,4 +291,5 @@ export const nodeIconsLucide = {
   Upload,
   MessageSquare,
   MoreHorizontal,
+  ChevronUp,
 };

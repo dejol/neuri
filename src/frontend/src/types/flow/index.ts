@@ -4,9 +4,15 @@ import { APIClassType } from "../api/index";
 export type FlowType = {
   name: string;
   id: string;
+  folder_id?:string;
   data: ReactFlowJsonObject;
   description: string;
   style?: FlowStyleType;
+};
+export type FolderType = {
+  name: string;
+  id: string;
+  description?: string;
 };
 export type NodeType = {
   id: string;

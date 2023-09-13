@@ -84,7 +84,7 @@ export const EXPORT_DIALOG_SUBTITLE = "Export flow as JSON file.";
  * The base text for subtitle of Flow Settings (Menubar)
  * @constant
  */
-export const SETTINGS_DIALOG_SUBTITLE = "Edit details about your project.";
+export const SETTINGS_DIALOG_SUBTITLE = "More details about your Notebook.";
 
 /**
  * The base text for subtitle of Code Dialog (Toolbar)

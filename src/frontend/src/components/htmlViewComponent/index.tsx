@@ -92,16 +92,21 @@ const [editor, setEditor] = useState<IDomEditor | null>(null)
 // 工具栏配置
 const toolbarConfig: Partial<IToolbarConfig> = { }  
 // 编辑器配置
+const [focus,setFocus] =useState(false);
 const editorConfig: Partial<IEditorConfig> = {   
-    placeholder: '请输入内容...',
+    placeholder: 'Type something...',
     autoFocus:false,
     onChange :(editor:IDomEditor)=>{
-        onChange(editor.getHtml());
+        if(focus){
+          onChange(editor.getHtml());
+        }
     },
     onBlur:(editor:IDomEditor)=>{
+      setFocus(false);
       setToolbarOn(false);
     },
     onFocus:(editor:IDomEditor)=>{
+      setFocus(true)
       setToolbarOn(true);
     }    
 }

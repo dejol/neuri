@@ -54,13 +54,13 @@ export const EditFlowSettings: React.FC<InputProps> = ({
     setName(value);
   };
 
-  const [desc, setDesc] = useState(
-    flows.find((flow) => flow.id === tabId).description
-  );
+  // const [desc, setDesc] = useState(
+  //   flows.find((flow) => flow.id === tabId).description
+  // );
 
   const handleDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    flows.find((flow) => flow.id === tabId).description = event.target.value;
-    setDesc(flows.find((flow) => flow.id === tabId).description);
+    // flows.find((flow) => flow.id === tabId).description = event.target.value;
+    // setDesc(flows.find((flow) => flow.id === tabId).description);
     setDescription(event.target.value);
   };
 
@@ -96,8 +96,8 @@ export const EditFlowSettings: React.FC<InputProps> = ({
           name="description"
           id="description"
           onChange={handleDescriptionChange}
-          value={desc}
-          placeholder="Flow description"
+          value={description}
+          placeholder="Notebook description"
           className="mt-2 max-h-[100px] font-normal"
           rows={3}
         />

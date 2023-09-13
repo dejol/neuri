@@ -100,12 +100,14 @@ export async function getExamples(): Promise<FlowType[]> {
 export async function saveFlowToDatabase(newFlow: {
   name: string;
   id: string;
+  folder_id:string;
   data: ReactFlowJsonObject;
   description: string;
   style?: FlowStyleType;
 }): Promise<FlowType> {
   try {
     const response = await api.post("/api/v1/flows/", {
+      folder_id:newFlow.folder_id,
       name: newFlow.name,
       data: newFlow.data,
       description: newFlow.description,
@@ -135,6 +137,7 @@ export async function updateFlowInDatabase(
       name: updatedFlow.name,
       data: updatedFlow.data,
       description: updatedFlow.description,
+      folder_id: updatedFlow.folder_id,
     });
 
     if (response.status !== 200) {
@@ -154,6 +157,7 @@ export async function updateFlowInDatabase(
  * @throws Will throw an error if reading fails.
  */
 export async function readFlowsFromDatabase() {
+
   try {
     const response = await api.get("/api/v1/flows/");
     if (response.status !== 200) {
@@ -345,4 +349,52 @@ export async function postCustomComponent(
   apiClass: APIClassType
 ): Promise<AxiosResponse<APIClassType>> {
   return await api.post(`/api/v1/custom_component`, { code });
+}
+
+
+/**
+ * Reads all folders from the database.
+ *
+ * @returns {Promise<any>} The folders data.
+ * @throws Will throw an error if reading fails.
+ */
+export async function readFoldersFromDatabase() {
+  try {
+    const response = await api.get("/api/v1/folders/");
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+/**
+ * Saves a new folder to the database.
+ *
+ * @param {FolderType} newFolder - The folder data to save.
+ * @returns {Promise<any>} The saved folder data.
+ * @throws Will throw an error if saving fails.
+ */
+export async function saveFolderToDatabase(newFolder: {
+  name: string;
+  id: string;
+  description: string;
+}): Promise<FlowType> {
+  try {
+    const response = await api.post("/api/v1/folders/", {
+      name: newFolder.name,
+      description: newFolder.description,
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }

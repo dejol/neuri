@@ -68,11 +68,14 @@
   .side-bar-arrangement {
     @apply flex h-full w-52 flex-col overflow-hidden border-r scrollbar-hide;
   }
+  .small-side-bar-arrangement {
+    @apply flex h-full w-16 flex-col overflow-hidden border-r scrollbar-hide;
+  }
   .left-side-bar-arrangement {
     @apply flex h-full w-96 flex-col overflow-hidden border-r scrollbar-hide;
   }
   .side-bar-search-div-placement {
-    @apply relative mx-auto mb-2 mt-2 flex items-center;
+    @apply relative mx-auto mb-2 mt-2 flex items-center justify-between;
   }
   .side-bar-components-icon {
     @apply h-6 w-4 text-ring;
@@ -93,7 +96,7 @@
     @apply w-full overflow-auto scrollbar-hide pb-10;
   }
   .search-icon {
-    @apply absolute inset-y-0 right-0 flex items-center py-1.5 pr-5;
+    @apply absolute inset-y-0 right-14 flex items-center py-1.5;
   }
   .extra-side-bar-save-disable {
     @apply text-muted-foreground;
@@ -148,10 +151,10 @@
     background-color: #f7ee9a; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 90%;
   }
   .input-note-dark {
-    background-color: #8e8857; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 90%;
+    background-color: #b5ae75; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 90%;
   }
   .input-search {
-    @apply primary-input mx-2 pr-7;
+    @apply primary-input mx-2 pr-7;width: 90%;
   }
   .input-disable {
     @apply border-transparent bg-border placeholder:text-ring;

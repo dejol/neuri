@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { FlowType, TweaksType } from "../flow";
+import { FlowType, TweaksType,FolderType } from "../flow";
 
 export type TabsContextType = {
   saveFlow: (flow: FlowType) => Promise<void>;
@@ -7,8 +7,10 @@ export type TabsContextType = {
   tabId: string;
   setTabId: (index: string) => void;
   flows: Array<FlowType>;
+  folders:Array<FolderType>;
   removeFlow: (id: string) => void;
-  addFlow: (flowData?: FlowType, newProject?: boolean) => Promise<String>;
+  addFlow: (flowData?: FlowType, newProject?: boolean,folder_id?:string) => Promise<String>;
+  addFolder: (folderData?: FolderType) => Promise<String>;
   updateFlow: (newFlow: FlowType) => void;
   incrementNodeId: () => string;
   downloadFlow: (

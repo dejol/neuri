@@ -41,26 +41,27 @@ export default function FullTextAreaComponent({
   const toolbarConfig: Partial<IToolbarConfig> = { }  
   // 编辑器配置
   // console.log('runnable:',data.node.runnable);
-  const [focus,setFocus] =useState(true);
+  const [focus,setFocus] =useState(false);
   const editorConfig: Partial<IEditorConfig> = {   
-      placeholder: '请输入内容...',
+      placeholder: 'Type something...',
       autoFocus:false,
       
       onChange :(editor:IDomEditor)=>{
+        // console.log('onChange')
         // console.log('runnable 1:',data.node.runnable);
-        // if(focus){
+        if(focus){
           // console.log('content', editor.getHtml());
           onChange(editor.getHtml());
           // console.log('runnable 2:',data.node.runnable);
 
-        // }
+        }
       },
       onBlur:(editor:IDomEditor)=>{
         setToolbarOn(false);
-        // console.log('onBlur');
+        setFocus(false)
       },
       onFocus:(editor:IDomEditor)=>{
-        // setFocus(true)
+        setFocus(true)
         // console.log('onFocus');
         setToolbarOn(true);
       }

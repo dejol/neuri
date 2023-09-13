@@ -18,6 +18,7 @@ import { classNames } from "../../../../utils/utils";
 import IconComponent from "../../../genericIconComponent";
 import { Button } from "../../../ui/button";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
+import FolderPopover from "../../../../pages/FlowPage/components/FolderComponent";
 
 export const MenuBar = ({ flows, tabId }) => {
   const { addFlow,saveFlow,uploadFlow,tabsState } = useContext(TabsContext);
@@ -47,8 +48,9 @@ export const MenuBar = ({ flows, tabId }) => {
       {/* <Link to="/">
         <IconComponent name="ChevronLeft" className="w-4" />
       </Link> */}
-              
-              <ShadTooltip content="New" side="bottom">
+        <FolderPopover/>
+{/*   
+        <ShadTooltip content="New" side="bottom">
           <button
             className={
               "extra-side-bar-buttons " 
@@ -64,7 +66,8 @@ export const MenuBar = ({ flows, tabId }) => {
               }
             />
           </button>
-        </ShadTooltip>      
+        </ShadTooltip>  */}
+
         <ShadTooltip content="Save" side="bottom">
           <button
             className={

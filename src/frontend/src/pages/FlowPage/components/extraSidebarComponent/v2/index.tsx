@@ -16,7 +16,22 @@ import {
 } from "../../../../utils/styleUtils";
 import { classNames } from "../../../../utils/utils";
 import DisclosureComponent from "../DisclosureComponent";
-import { Button } from "../../../../components/ui/button"
+////MUI
+import { Link } from "react-router-dom";
+
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+
 
 export default function ExtraSidebar() {
   const { data, templates } = useContext(typesContext);
@@ -69,17 +84,85 @@ export default function ExtraSidebar() {
     if (errors.length > 0)
       setErrorData({ title: " Components with errors: ", list: errors });
   }, []);
+////MUI
+const drawerWidth = 240;
 
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(9)} + 1px)`,
+  },
+});
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(open && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  }),
+);
+// const DrawerHeader = styled('div')(({ theme }) => ({
+//   display: 'flex',
+//   alignItems: 'center',
+//   justifyContent: 'flex-end',
+//   padding: theme.spacing(0, 1),
+//   // necessary for content to be below app bar
+//   ...theme.mixins.toolbar,
+// }));
+
+// interface AppBarProps extends MuiAppBarProps {
+//   open?: boolean;
+// }
+// const AppBar = styled(MuiAppBar, {
+//   shouldForwardProp: (prop) => prop !== 'open',
+// })<AppBarProps>(({ theme, open }) => ({
+//   zIndex: theme.zIndex.drawer + 1,
+//   transition: theme.transitions.create(['width', 'margin'], {
+//     easing: theme.transitions.easing.sharp,
+//     duration: theme.transitions.duration.leavingScreen,
+//   }),
+//   ...(open && {
+//     marginLeft: drawerWidth,
+//     width: `calc(100% - ${drawerWidth}px)`,
+//     transition: theme.transitions.create(['width', 'margin'], {
+//       easing: theme.transitions.easing.sharp,
+//       duration: theme.transitions.duration.enteringScreen,
+//     }),
+//   }),
+// }));
+
+// const theme = useTheme();
 const [menuopen, setMenuOpen] = useState(false);
 
 const handleDrawer = () => {
-  setSearch("");
   setMenuOpen(!menuopen);
 };
 
   return (
     <div 
-    className={menuopen?"side-bar-arrangement":"small-side-bar-arrangement"}
+    className="side-bar-arrangement"
     >
       {/* <div className="side-bar-buttons-arrangement">
         <div className="side-bar-button">
@@ -147,113 +230,134 @@ const handleDrawer = () => {
       </div>
       <Separator /> */}
 
-{/* 工具栏从这里开始 */}
-<div className={menuopen?"side-bar-search-div-placement":"flex justify-end mt-2"}>
-      {menuopen &&(
-        <div>
+
+      <Drawer variant="permanent" open={menuopen}>
+        <div className="flex justify-between">
+          <Link to="/" className="m-2">
+            <img src="/logo.svg" width="40px" alt="Neuri"/>
+          </Link>
+          <IconButton onClick={handleDrawer}>
+            {menuopen?(
+              <IconComponent
+              name="ChevronLeft"
+              className="side-bar-components-icon "
+            />
+
+            ):(
+              <IconComponent name="Menu" className="side-bar-components-icon "/>
+            )}
+
+          </IconButton>          
+        </div>
+
+        <Divider />
+        <div className="side-bar-search-div-placement">
         <Input
-        type="text"
-        name="search"
-        id="search"
-        placeholder="Search"
-        className="nopan nodrag noundo nocopy input-search"
-        onChange={(event) => {
-          handleSearchInput(event.target.value);
-          // Set search input state
-          setSearch(event.target.value);
-        }}
-      />
-      <div className="search-icon">
-        <IconComponent
-          name="Search"
-          className={"h-5 w-5 stroke-[1.5] text-primary"}
-          aria-hidden="true"
-        
+          type="text"
+          name="search"
+          id="search"
+          placeholder="Search"
+          className="nopan nodrag noundo nocopy input-search"
+          onChange={(event) => {
+            handleSearchInput(event.target.value);
+            // Set search input state
+            setSearch(event.target.value);
+          }}
         />
+        <div className="search-icon">
+          <IconComponent
+            name="Search"
+            className={"h-5 w-5 stroke-[1.5] text-primary"}
+            aria-hidden="true"
+          />
+        </div>
       </div>
-      </div>
-      )}
-        <Button
-            className="gap-2"
-            variant={ "link"}
-            size="sm"
-            onClick={handleDrawer}
-          >
+      
+        <List
+              sx={{
+                // width: '100%',
+                // maxWidth: 360,
+                // bgcolor: 'background.paper',
+                position: 'relative',
+                // overflow: 'auto',
+                overflowX:'hidden',
+                // overflowY:'clip',
+                // maxHeight: 300,
+                '& ul': { padding: 0 },
+              }}
+              subheader={<li />}
+              >
 
-          {menuopen ?(
-          <IconComponent name="ChevronsLeft" className="w-3"   />
-          ):(
-            <IconComponent name="ChevronsRight" className="w-3" />
-          )}
-        </Button>
-
-    </div>
-    {!menuopen ?(
-      <>
-      {Object.keys(dataFilter)
-        .sort()
-        .map((SBSectionName: keyof APIObjectType, index) =>
-          Object.keys(dataFilter[SBSectionName]).length > 0 && (
-        <>
-        {Object.keys(dataFilter[SBSectionName])
+        {Object.keys(dataFilter)
           .sort()
-          .map((SBItemName: string, index) => (
-            (SBItemName=="Note"||SBItemName=="AINote"||SBItemName=="CustomComponent")&&(
-            <ShadTooltip
-              content={data[SBSectionName][SBItemName].display_name}
-              side="right"
-              key={index}
-            >
-              <div key={index} data-tooltip-id={SBItemName} className="m-1">
-                <div
-                  draggable={!data[SBSectionName][SBItemName].error}
-                  className={
-                    "side-bar-components-border bg-background" +
-                    (data[SBSectionName][SBItemName].error
-                      ? " cursor-not-allowed select-none"
-                      : "")
-                  }
-                  style={{
-                    borderLeftColor:
-                      nodeColors[SBSectionName] ?? nodeColors.unknown,
-                  }}
-                  onDragStart={(event) =>
-                    onDragStart(event, {
-                      type: SBItemName,
-                      node: data[SBSectionName][SBItemName],
-                    })
-                  }
-                  onDragEnd={() => {
-                    document.body.removeChild(
-                      document.getElementsByClassName(
-                        "cursor-grabbing"
-                      )[0]
-                    );
-                  }}
-                >
-                  <div className="side-bar-components-div-form">
-                  <IconComponent
-                      name={nodeIconsLucide[SBItemName] ? SBItemName : SBSectionName }
-                      className="side-bar-components-icon"
-                      iconColor={`${nodeColors[SBItemName]}`}
-                    />
-                  </div>
-                </div>
-              </div>
-            </ShadTooltip>
+          .map((SBSectionName: keyof APIObjectType, index) =>
+            Object.keys(dataFilter[SBSectionName]).length > 0 ? (
+              <li key={index}>
+              <ul>
+              <ListSubheader>{nodeNames[SBSectionName] ?? nodeNames.unknown}</ListSubheader>
+                  {Object.keys(dataFilter[SBSectionName])
+                    .sort()
+                    .map((SBItemName: string, index) => (
+                          <ListItem  key={index} data-tooltip-id={SBItemName}>
+                            <div key={index} data-tooltip-id={SBItemName}>
+                          <div
+                            draggable={!data[SBSectionName][SBItemName].error}
+                            className={
+                              " bg-background" +
+                              (data[SBSectionName][SBItemName].error
+                                ? " cursor-not-allowed select-none"
+                                : "")
+                            } 
+                            style={{
+                              borderLeftColor:
+                                nodeColors[SBSectionName] ?? nodeColors.unknown,
+                                display:"flex"
+                            }}
+                            onDragStart={(event) =>
+                              onDragStart(event, {
+                                type: SBItemName,
+                                node: data[SBSectionName][SBItemName],
+                              })
+                            }
+                            onDragEnd={() => {
+                              document.body.removeChild(
+                                document.getElementsByClassName(
+                                  "cursor-grabbing"
+                                )[0]
+                              );
+                            }}
+                          >
+                            <ListItemIcon>
+                              <IconComponent
+                                  name={nodeIconsLucide[SBItemName] ? SBItemName : SBSectionName}
+                                  className="side-bar-components-icon"
+                                  iconColor={`${nodeColors[SBItemName]}`}
+                                />
+                            </ListItemIcon>
+                            <ListItemText primary={data[SBSectionName][SBItemName].display_name} />
+                          </div>
+                          </div>
+
+                        </ListItem>
+                      
+                    )
+                    )}
+                    </ul>
+                    </li>
+            ): (
+              <div key={index}></div>
             )
-          ))}
-        </>
-          )
-        )}
-      </>
-      
-      
-    ):(
+            )}
+        </List>
+        </Drawer>
+
+
+
+{/* 工具栏从这里开始 */}
       <div className="side-bar-components-div-arrangement">
       <DisclosureComponent
         openDisc={search.length == 0 ? false : true}
-        className={"components-disclosure-top-arrangement"}
+        className="components-disclosure-top-arrangement"
         button={{
           title: "Notes",
           Icon:
@@ -321,7 +425,7 @@ const handleDrawer = () => {
       </DisclosureComponent>
       <DisclosureComponent
         openDisc={search.length == 0 ? false : true}
-        className={"components-disclosure-top-arrangement"}
+        className="components-disclosure-top-arrangement"
         button={{
           title: "AI Tools",
           Icon:
@@ -405,8 +509,6 @@ const handleDrawer = () => {
           )}
       </DisclosureComponent>
       </div>
-
-    )}
     </div>
   );
 }

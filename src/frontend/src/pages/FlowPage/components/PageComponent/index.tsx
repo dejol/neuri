@@ -31,7 +31,7 @@ import { isValidConnection } from "../../../../utils/reactflowUtils";
 import { isWrappedWithClass } from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
-import LeftFormModal from "../../../../modals/leftFormModal";
+// import LeftFormModal from "../../../../modals/leftFormModal";
 
 const nodeTypes = {
   genericNode: GenericNode,
@@ -188,7 +188,10 @@ export default function Page({ flow }: { flow: FlowType }) {
         addEdge(
           {
             ...params,
-            style: { stroke: "#555" },
+            style: { 
+              // stroke: "#555",
+              strokeWidth:3 
+            },
             className:
               (params.targetHandle.split("|")[0] === "Text"
                 ? "stroke-foreground "
@@ -364,9 +367,10 @@ export default function Page({ flow }: { flow: FlowType }) {
   const onSelectionChange = useCallback((flow) => {
     setLastSelection(flow);
   }, []);
-  
+
   return (
     <div className="flex h-full overflow-hidden">
+      
       <ExtraSidebar />
       {/* Main area */}
       <main className="flex flex-1">

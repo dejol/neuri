@@ -6,6 +6,7 @@ from langflow.api.v1 import (
     validate_router,
     flows_router,
     component_router,
+    folders_router,
 )
 
 router = APIRouter(
@@ -16,3 +17,4 @@ router.include_router(endpoints_router)
 router.include_router(validate_router)
 router.include_router(component_router)
 router.include_router(flows_router)
+router.include_router(folders_router)

@@ -16,9 +16,11 @@ import {
   saveFlowToDatabase,
   updateFlowInDatabase,
   uploadFlowsToDatabase,
+  readFoldersFromDatabase,
+  saveFolderToDatabase,
 } from "../controllers/API";
 import { APIClassType, APITemplateType } from "../types/api";
-import { FlowType, NodeType } from "../types/flow";
+import { FlowType, NodeType,FolderType } from "../types/flow";
 import { TabsContextType, TabsState } from "../types/tabs";
 import {
   addVersionToDuplicates,
@@ -36,8 +38,10 @@ const TabsContextInitialValue: TabsContextType = {
   tabId: "",
   setTabId: (index: string) => {},
   flows: [],
+  folders:[],
   removeFlow: (id: string) => {},
   addFlow: async (flowData?: any) => "",
+  addFolder: async (folderData?: any) => "",
   updateFlow: (newFlow: FlowType) => {},
   incrementNodeId: () => uid(),
   downloadFlow: (flow: FlowType) => {},
@@ -71,6 +75,9 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const [tabId, setTabId] = useState("");
 
   const [flows, setFlows] = useState<Array<FlowType>>([]);
+  
+  const [folders, setFolders] = useState<Array<FolderType>>([]);
+
   const [id, setId] = useState(uid());
   const { templates, reactFlowInstance } = useContext(typesContext);
   const [lastCopiedSelection, setLastCopiedSelection] = useState(null);
@@ -110,12 +117,28 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     getTabsDataFromDB().then((DbData) => {
       if (DbData && Object.keys(templates).length > 0) {
         try {
+          
           processDBData(DbData);
           updateStateWithDbData(DbData);
         } catch (e) {
           console.error(e);
         }
       }
+    });
+  }
+  function refreshFolders() {
+    getFoldersDataFromDB().then((DbData) => {
+      setFolders(DbData);
+      // console.log("folders:",DbData)
+      // if (DbData && Object.keys(templates).length > 0) {
+      //   try {
+          
+      //     processDBData(DbData);
+          
+      //   } catch (e) {
+      //     console.error(e);
+      //   }
+      // }
     });
   }
 
@@ -126,9 +149,19 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     refreshFlows();
   }, [templates]);
 
+  useEffect(() => {
+    // get data from db
+    //get tabs locally saved
+    refreshFolders();
+  }, []);
+
   function getTabsDataFromDB() {
     //get tabs from db
     return readFlowsFromDatabase();
+  }
+  function getFoldersDataFromDB() {
+    //get tabs from db
+    return readFoldersFromDatabase();
   }
   function processDBData(DbData) {
     DbData.forEach((flow) => {
@@ -148,7 +181,10 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     if (!flow.data || !flow.data.edges) return;
     flow.data.edges.forEach((edge) => {
       edge.className = "";
-      edge.style = { stroke: "#555" };
+      edge.style = { 
+        // stroke: "#555", 
+        strokeWidth:3 
+      };
     });
   }
 
@@ -443,7 +479,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const addFlow = async (
     flow?: FlowType,
-    newProject?: Boolean
+    newProject?: Boolean,
+    folder_id?:string
   ): Promise<String> => {
     if (newProject) {
       let flowData = extractDataFromFlow(flow);
@@ -459,7 +496,10 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       const flowName = addVersionToDuplicates(newFlow, flows);
 
       newFlow.name = flowName;
-
+      if(folder_id){
+        newFlow.folder_id=folder_id;
+      }
+    
       try {
         const { id } = await saveFlowToDatabase(newFlow);
         // Change the id to the new id.
@@ -481,6 +521,30 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         { x: 10, y: 10 }
       );
     }
+  };
+  const addFolder = async (
+    folder?: FolderType
+  ): Promise<String> => {
+      let newFolder = {
+        description: "NOT DESC",
+        name: getRandomName(),
+        id: "",
+      }
+      if(folder){
+        newFolder.description=folder.description;
+        newFolder.name=folder.name;
+      }
+      try {
+        const { id } = await saveFolderToDatabase(newFolder);
+        refreshFolders();
+        // Return the id
+        return id;
+      } catch (error) {
+        // Handle the error if needed
+        console.error("Error while adding folder:", error);
+        throw error; // Re-throw the error so the caller can handle it if needed
+      }
+
   };
 
   const extractDataFromFlow = (flow) => {
@@ -537,6 +601,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     description: flowData.description,
     name: flow?.name ?? getRandomName(),
     data: flowData.data,
+    folder_id: flow?.folder_id ?? "",
     id: "",
   });
 
@@ -574,6 +639,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
           const index = newFlows.findIndex((flow) => flow.id === newFlow.id);
           if (index !== -1) {
             newFlows[index].description = newFlow.description ?? "";
+            newFlows[index].folder_id = newFlow.folder_id ?? "";
             newFlows[index].data = newFlow.data;
             newFlows[index].name = newFlow.name;
           }
@@ -609,10 +675,12 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         tabId,
         setTabId,
         flows,
+        folders,
         save,
         incrementNodeId,
         removeFlow,
         addFlow,
+        addFolder,
         updateFlow,
         downloadFlow,
         downloadFlows,

@@ -10,6 +10,7 @@ from typing import Dict, Optional
 
 
 class FlowBase(SQLModelSerializable):
+    folder_id:str=Field(default="")
     name: str = Field(index=True)
     description: Optional[str] = Field(index=True)
     data: Optional[Dict] = Field(default=None)
@@ -45,6 +46,7 @@ class FlowRead(FlowBase):
 
 
 class FlowUpdate(SQLModelSerializable):
+    folder_id:str=""
     name: Optional[str] = None
     description: Optional[str] = None
     data: Optional[Dict] = None

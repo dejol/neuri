@@ -28,14 +28,14 @@ export default function FlowPage() {
         flows.findIndex((flow) => flow.id === tabId) !== -1 && (
           <Page flow={flows.find((flow) => flow.id === tabId)} />
         )}
-      <a
+      {/* <a
         target={"_blank"}
         href="https://neuri.ai/"
         className="logspace-page-icon"
       >
         {version && <div className="mt-1"> Neuri v{version}</div>}
         <div className={version ? "mt-2" : "mt-1"}>Created by King Yu</div>
-      </a>
+      </a> */}
     </div>
   );
 }
