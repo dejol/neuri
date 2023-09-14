@@ -187,7 +187,7 @@ export default function FolderPopover() {
       <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Fragment key={'right'}>
-      <ShadTooltip content="New Folder" side="bottom">
+      <ShadTooltip content="Folder" side="bottom">
         <Button onClick={toggleDrawer(true)}><IconComponent name="Folder" className="w-6" /></Button>
       </ShadTooltip>
         <Drawer
@@ -201,9 +201,6 @@ export default function FolderPopover() {
           onClick={() => {
             setPopoverState(false);
             setOpenFolder(true);
-            // addFolder(null).then((id) => {
-              //
-            // });
           }}
           >
           <IconComponent name="Plus" className="w-6" />
@@ -218,12 +215,15 @@ export default function FolderPopover() {
         isNew={true}
         newFolderId={newFolderId}
       ></FlowSettingsModal>
+
       <FolderModal
         open={openFolder}
         setOpen={setOpenFolder}
         isNew={true}
         popoverStatus={popoverState}
         setPopoverStatus={setPopoverState}
+        folders={folders}
+        folderId={newFolderId}
       ></FolderModal>
   </div>  
   );

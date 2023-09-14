@@ -14,7 +14,14 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import IntegrityError
 from fastapi import File, UploadFile
 import json
+from datetime import timezone
+from datetime import datetime
 
+
+
+FOLDER_NOT_FOUND = "Folder not found"
+FOLDER_ALREADY_EXISTS = "A Folder with the same id already exists."
+FOLDER_DELETED = "Folder deleted"
 # build router
 router = APIRouter(prefix="/folders", tags=["Folders"])
 
@@ -43,43 +50,30 @@ def read_folders(*, db: Session = Depends(get_session)):
         raise HTTPException(status_code=500, detail=str(e)) from e
     return [jsonable_encoder(folder) for folder in folders]
 
-# @router.get("/{folder_id}", response_model=FolderRead, status_code=200)
-# def read_folder(*, session: Session = Depends(get_session), folder_id: UUID):
-#     """Read a folder."""
-#     if folder := session.get(Folder, folder_id):
-#         return folder
-#     else:
-#         raise HTTPException(status_code=404, detail="Folder not found")
+@router.patch("/{folder_id}", response_model=Folder)
+def update_folder(
+    folder_id: UUID, folder: FolderModel, db: Session = Depends(get_session)
+):
+    db_folder = db.get(Folder, folder_id)
+    if not db_folder:
+        raise HTTPException(status_code=404, detail=FOLDER_NOT_FOUND)
+    folder_data = folder.dict(exclude_unset=True)
+
+    for key, value in folder_data.items():
+        setattr(db_folder, key, value)
+
+    db_folder.update_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(db_folder)
+    return db_folder
 
 
-# @router.patch("/{folder_id}", response_model=FolderRead, status_code=200)
-# def update_folder(
-#     *, session: Session = Depends(get_session), folder_id: UUID, folder: FolderUpdate
-# ):
-#     """Update a folder."""
-
-#     db_folder = session.get(Folder, folder_id)
-#     if not db_folder:
-#         raise HTTPException(status_code=404, detail="folder not found")
-#     folder_data = folder.dict(exclude_unset=True)
-#     settings_manager = get_settings_manager()
-#     if settings_manager.settings.REMOVE_API_KEYS:
-#         folder_data = remove_api_keys(folder_data)
-#     for key, value in folder_data.items():
-#         setattr(db_folder, key, value)
-#     session.add(db_folder)
-#     session.commit()
-#     session.refresh(db_folder)
-#     return db_folder
-
-
-# @router.delete("/{folder_id}", status_code=200)
-# def delete_folder(*, session: Session = Depends(get_session), folder_id: UUID):
-#     """Delete a folder."""
-#     folder = session.get(Folder, folder_id)
-#     if not folder:
-#         raise HTTPException(status_code=404, detail="folder not found")
-#     session.delete(folder)
-#     session.commit()
-#     return {"message": "folder deleted successfully"}
+@router.delete("/{folder_id}")
+def delete_folder(folder_id: UUID, db: Session = Depends(get_session)):
+    folder = db.get(Folder, folder_id)
+    if not folder:
+        raise HTTPException(status_code=404, detail=FOLDER_NOT_FOUND)
+    db.delete(folder)
+    db.commit()
+    return {"detail":FOLDER_DELETED}
 

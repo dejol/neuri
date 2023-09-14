@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { ReactFlowJsonObject } from "reactflow";
 import { api } from "../../controllers/API/api";
 import { APIObjectType, sendAllProps } from "../../types/api/index";
-import { FlowStyleType, FlowType } from "../../types/flow";
+import { FlowStyleType, FlowType, FolderType } from "../../types/flow";
 import {
   APIClassType,
   BuildStatusTypeAPI,
@@ -375,20 +375,66 @@ export async function readFoldersFromDatabase() {
  * Saves a new folder to the database.
  *
  * @param {FolderType} newFolder - The folder data to save.
- * @returns {Promise<any>} The saved folder data.
+ * @returns {Promise<FolderType>} The saved folder data.
  * @throws Will throw an error if saving fails.
  */
 export async function saveFolderToDatabase(newFolder: {
   name: string;
   id: string;
   description: string;
-}): Promise<FlowType> {
+}): Promise<FolderType> {
   try {
     const response = await api.post("/api/v1/folders/", {
       name: newFolder.name,
       description: newFolder.description,
     });
 
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+/**
+ * Updates an existing folder in the database.
+ *
+ * @param {FolderType} updatedFolder - The updated folder data.
+ * @returns {Promise<FolderType>} The updated folder data.
+ * @throws Will throw an error if the update fails.
+ */
+export async function updateFolderInDatabase(
+  updatedFolder: FolderType
+): Promise<FolderType> {
+  try {
+    const response = await api.patch(`/api/v1/folders/${updatedFolder.id}`, {
+      name: updatedFolder.name,
+      description: updatedFolder.description,
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+/**
+ * Deletes a folder from the database.
+ *
+ * @param {string} folderId - The ID of the folder to delete.
+ * @returns {Promise<any>} The deleted folder data.
+ * @throws Will throw an error if deletion fails.
+ */
+export async function deleteFolderFromDatabase(folderId: string) {
+  try {
+    const response = await api.delete(`/api/v1/folders/${folderId}`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

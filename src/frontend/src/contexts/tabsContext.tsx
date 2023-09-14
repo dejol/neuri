@@ -18,6 +18,8 @@ import {
   uploadFlowsToDatabase,
   readFoldersFromDatabase,
   saveFolderToDatabase,
+  updateFolderInDatabase,
+  deleteFolderFromDatabase,
 } from "../controllers/API";
 import { APIClassType, APITemplateType } from "../types/api";
 import { FlowType, NodeType,FolderType } from "../types/flow";
@@ -39,9 +41,11 @@ const TabsContextInitialValue: TabsContextType = {
   setTabId: (index: string) => {},
   flows: [],
   folders:[],
-  removeFlow: (id: string) => {},
+  removeFlow: (id: string) => {},  
   addFlow: async (flowData?: any) => "",
   addFolder: async (folderData?: any) => "",
+  saveFolder: async (folder: FolderType) => {},
+  removeFolder: (id: string) => {},
   updateFlow: (newFlow: FlowType) => {},
   incrementNodeId: () => uid(),
   downloadFlow: (flow: FlowType) => {},
@@ -383,6 +387,19 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       });
     }
   }
+    /**
+   * Removes a folder from an array of folders based on its id.
+   * Updates the state of folders and tabIndex using setFolders.
+   * @param {string} id - The id of the folder to remove.
+   */
+    function removeFolder(id: string) {
+      const index = folders.findIndex((folder) => folder.id === id);
+      if (index >= 0) {
+        deleteFolderFromDatabase(id).then(() => {
+          setFolders(folders.filter((folder) => folder.id !== id));
+        });
+      }
+    }
   /**
    * Add a new flow to the list of flows.
    * @param flow Optional flow to add.
@@ -660,6 +677,36 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       setErrorData(err);
     }
   }
+  async function saveFolder(newFolder: FolderType) {
+    try {
+      // updates folder in db
+      const updatedFolder = await updateFolderInDatabase(newFolder);
+      if (updatedFolder) {
+        // updates folder in state
+        setFolders((prevFolders) => {
+          const newFolders = [...prevFolders];
+          const index = newFolders.findIndex((folder) => folder.id === newFolder.id);
+          if (index !== -1) {
+            newFolders[index].description = newFolder.description ?? "";
+            newFolders[index].name = newFolder.name;
+          }
+          return newFolders;
+        });
+        // //update tabs state
+        // setTabsState((prev) => {
+        //   return {
+        //     ...prev,
+        //     [tabId]: {
+        //       ...prev[tabId],
+        //       isPending: false,
+        //     },
+        //   };
+        // });
+      }
+    } catch (err) {
+      setErrorData(err);
+    }
+  }
 
   const [isBuilt, setIsBuilt] = useState(false);
 
@@ -681,6 +728,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         removeFlow,
         addFlow,
         addFolder,
+        saveFolder,
+        removeFolder,
         updateFlow,
         downloadFlow,
         downloadFlows,

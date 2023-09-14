@@ -231,7 +231,7 @@
   }
 
   .main-page-description-text {
-    @apply flex w-[60%] px-6 pb-14 text-muted-foreground;
+    @apply flex w-[60%] px-14  text-muted-foreground;
   }
 
   .main-page-flows-display {

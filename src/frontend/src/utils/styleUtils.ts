@@ -286,6 +286,7 @@ export const nodeIconsLucide = {
   FileUp,
   Menu,
   Save,
+  Edit,
   Search,
   Copy,
   Upload,

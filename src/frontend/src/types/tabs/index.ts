@@ -11,6 +11,8 @@ export type TabsContextType = {
   removeFlow: (id: string) => void;
   addFlow: (flowData?: FlowType, newProject?: boolean,folder_id?:string) => Promise<String>;
   addFolder: (folderData?: FolderType) => Promise<String>;
+  saveFolder: (folder: FolderType) => Promise<void>;
+  removeFolder: (id: string) => void;
   updateFlow: (newFlow: FlowType) => void;
   incrementNodeId: () => string;
   downloadFlow: (
