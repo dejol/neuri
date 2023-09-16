@@ -162,6 +162,11 @@ export const nodeColors: { [char: string]: string } = {
   unknown: "#9CA3AF",
   custom_components: "#ab11ab",
   notes:"#f7ee9a",
+  AINote:"#049524",
+  ArticleGeneraterComponent:"#ab11ab",
+  TranslaterComponent:"#e6b25a",
+  ArticleStructureComponent:"#E6A627",
+  VideoScriptComponent: "#31A3CC",  
 };
 
 export const nodeNames: { [char: string]: string } = {

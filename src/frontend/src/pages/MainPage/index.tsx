@@ -89,7 +89,7 @@ export default function HomePage() {
                 <IconComponent name="Edit" className="w-3" />
               </Button>
           </ShadTooltip>
-          {flows.findIndex((flow) => flow.folder_id === folder.id)<0&&(
+          {(flows&&flows.length>0&&flows.findIndex((flow) => flow.folder_id === folder.id)<0)&&(
               <ShadTooltip content="Delete folder" side="bottom">
               <Button
                   size="sm"
