@@ -10,8 +10,8 @@ CUSTOM_NODES = {
         "PythonFunctionTool": frontend_node.tools.PythonFunctionToolNode(),
         "PythonFunction": frontend_node.tools.PythonFunctionNode(),
         # "TestFunction": frontend_node.tools.TestFunctionNode(),
-        "Note":frontend_node.notes.NoteFrontendNode(),
-        "AINote":frontend_node.notes.AINoteFrontendNode(),
+        # "Note":frontend_node.notes.NoteFrontendNode(),
+        # "AINote":frontend_node.notes.AINoteFrontendNode(),
         "Tool": frontend_node.tools.ToolNode(),
     },
     "agents": {
@@ -37,12 +37,17 @@ CUSTOM_NODES = {
     },
     "custom_components": {
         "CustomComponent": frontend_node.custom_components.CustomComponentFrontendNode(),
-        
+        "TranslaterComponent": frontend_node.custom_components.TranslaterFrontendNode(),
+        "ArticleGeneraterComponent": frontend_node.custom_components.ArticleGeneraterFrontendNode(),
+        "ArticleStructureComponent": frontend_node.custom_components.ArticleStructureFrontendNode(),
+        "VideoScriptComponent":frontend_node.custom_components.VideoScriptFrontendNode(),
+
+
     },
-    # "notes":{
-    #     "Note":frontend_node.notes.NoteFrontendNode(),
-    #     "AINote":frontend_node.notes.AINoteFrontendNode(),
-    # },
+    "notes":{
+        "Note":frontend_node.notes.NoteFrontendNode(),
+        "AINote":frontend_node.notes.AINoteFrontendNode(),
+    },
 }
 
 

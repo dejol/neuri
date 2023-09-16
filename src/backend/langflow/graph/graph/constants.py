@@ -14,6 +14,7 @@ from langflow.interface.wrappers.base import wrapper_creator
 from langflow.interface.output_parsers.base import output_parser_creator
 from langflow.interface.retrievers.base import retriever_creator
 from langflow.interface.custom.base import custom_component_creator
+from langflow.interface.notes.base import notes_creator
 from langflow.utils.lazy_load import LazyLoadDictBase
 
 
@@ -52,7 +53,7 @@ class VertexTypesDict(LazyLoadDictBase):
                 for t in custom_component_creator.to_list()
             },
             **{t: types.RetrieverVertex for t in retriever_creator.to_list()},
-            # **{t: types.NotesVertex for t in notes_creator.to_list()},
+            **{t: types.NotesVertex for t in notes_creator.to_list()},
 
         }
 

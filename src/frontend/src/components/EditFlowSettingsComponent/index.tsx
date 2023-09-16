@@ -97,7 +97,7 @@ export const EditFlowSettings: React.FC<InputProps> = ({
           id="description"
           onChange={handleDescriptionChange}
           value={description}
-          placeholder="Notebook description"
+          placeholder="Description"
           className="mt-2 max-h-[100px] font-normal"
           rows={3}
         />

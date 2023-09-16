@@ -14,7 +14,7 @@ from langflow.interface.wrappers.base import wrapper_creator
 from langflow.interface.output_parsers.base import output_parser_creator
 from langflow.interface.retrievers.base import retriever_creator
 from langflow.interface.custom.base import custom_component_creator
-# from langflow.interface.notes.base import notes_creator
+from langflow.interface.notes.base import notes_creator
 from langflow.utils.lazy_load import LazyLoadDictBase
 
 
@@ -51,7 +51,7 @@ class AllTypesDict(LazyLoadDictBase):
             "outputParsers": output_parser_creator.to_list(),
             "retrievers": retriever_creator.to_list(),
             "custom_components": custom_component_creator.to_list(),
-            # "notes":notes_creator.to_list(),
+            "notes":notes_creator.to_list(),
         }
 
 

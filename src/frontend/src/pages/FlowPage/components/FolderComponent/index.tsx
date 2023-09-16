@@ -35,11 +35,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import Button from '@mui/material/Button';
+import {Button as Button1} from "../../../../components/ui/button"
+
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Collapse from '@mui/material/Collapse';
 import FlowSettingsModal from "../../../../modals/flowSettingsModal";
 import FolderModal from "../../../../modals/folderModal";
+import AccordionComponent from "../../../../components/AccordionComponent";
 
 export default function FolderPopover() {
   const { data, templates } = useContext(typesContext);
@@ -85,7 +88,7 @@ export default function FolderPopover() {
       }
       return createTheme({
         palette: {
-          // mode: 'dark',
+           mode: 'light',
         },
       });
 
@@ -102,37 +105,39 @@ export default function FolderPopover() {
       onKeyDown={toggleDrawer(false)}
     >
     {folders.map((folder, idx) => (
-      <DisclosureComponent
-        openDisc={false}
-        // className={"components-disclosure-top-arrangement"}
-        button={{
-          title: folder.name,
-          Icon:
-          nodeIconsLucide["Folder"] ?? nodeIconsLucide.unknown,
-        }}
-
-      >        
+      <div className="file-component-accordion-div" key={idx}>
+      <AccordionComponent
+        trigger={
+          <div className="file-component-badge-div justify-start">
+          <div
+          className="-mb-1"
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
+                  <ShadTooltip content="New notebook" side="bottom">
+                  <Button1
+                    size="sm"
+                    variant="link"
+                    onClick={() => {
+                      setNewFolderId(folder.id);
+                      setPopoverState(false);
+                      // console.log("folder id is :",folder.id)
+                      setOpen(true)
+                    }}
+                    >
+                      <IconComponent name="Plus" className="main-page-nav-button" />
+                    </Button1>
+                    </ShadTooltip>
+            </div>
+            {folder.name}
+          </div>
+        }
+        key={idx}
+        keyValue={folder.name}
+      >
+        <div className="file-component-tab-column">
         <List component="div" disablePadding={true}>
-          <ListItemButton  
-              sx={{ pl: 4 }}
-              // onClick={() => {
-              //   addFlow(null,true,folder.id).then((id) => {
-              //     window.location.href="/flow/"+ id;
-              //   });
-
-              // }}
-              onClick={() => {
-                setNewFolderId(folder.id);
-                setPopoverState(false);
-                // console.log("folder id is :",folder.id)
-                setOpen(true)
-              }}
-            >
-              <ListItemIcon>
-                <IconComponent name="Plus" className="w-4"/>
-              </ListItemIcon>
-              <ListItemText primary="New NoteBook" />
-          </ListItemButton>
       {flows.map((flow, idx) => (
           (flow.folder_id && flow.folder_id==folder.id)&&(
             <ListItemButton  
@@ -149,8 +154,10 @@ export default function FolderPopover() {
           )
         ))}
         
-        </List>
-        </DisclosureComponent>
+        </List>          
+        </div>
+      </AccordionComponent>
+    </div>
     ))}
       <DisclosureComponent
         openDisc={false}

@@ -245,10 +245,10 @@ tools:
     documentation: ""
   # TestFunction:
   #   documentation: ""
-  Note:
-    documentation: ""
-  AINote:
-    documentation: ""    
+  # Note:
+  #   documentation: ""
+  # AINote:
+  #   documentation: ""    
 utilities:
   BingSearchAPIWrapper:
     documentation: ""
@@ -303,9 +303,17 @@ output_parsers:
 custom_components:
   CustomComponent:
     documentation: ""
-# notes:
-#   Note:
-#     documentation: ""
-#   AINote:
-#     documentation: ""
+  TranslaterComponent:
+    documentation: ""   
+  ArticleGeneraterComponent:
+    documentation: ""    
+  ArticleStructureComponent:
+    documentation: ""    
+  VideoScriptComponent:
+    documentation: ""             
+notes:
+  Note:
+    documentation: ""
+  AINote:
+    documentation: ""
   

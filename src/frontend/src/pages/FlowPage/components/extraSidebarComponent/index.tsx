@@ -193,12 +193,12 @@ const handleDrawer = () => {
       {Object.keys(dataFilter)
         .sort()
         .map((SBSectionName: keyof APIObjectType, index) =>
-          Object.keys(dataFilter[SBSectionName]).length > 0 && (
+          ((SBSectionName=="notes"||SBSectionName=="custom_components")&&Object.keys(dataFilter[SBSectionName]).length > 0) && (
         <>
         {Object.keys(dataFilter[SBSectionName])
           .sort()
           .map((SBItemName: string, index) => (
-            (SBItemName=="Note"||SBItemName=="AINote"||SBItemName=="CustomComponent")&&(
+            (!(SBSectionName=="custom_components"&&SBItemName=="CustomComponent"))&&(
             <ShadTooltip
               content={data[SBSectionName][SBItemName].display_name}
               side="right"
@@ -247,87 +247,8 @@ const handleDrawer = () => {
           )
         )}
       </>
-      
-      
     ):(
       <div className="side-bar-components-div-arrangement">
-      <DisclosureComponent
-        openDisc={search.length == 0 ? false : true}
-        className={"components-disclosure-top-arrangement"}
-        button={{
-          title: "Notes",
-          Icon:
-          nodeIconsLucide["NoteBooks"] ?? nodeIconsLucide.unknown,
-        }}
-      >
-                <div className="side-bar-components-gap">
-                  {Object.keys(dataFilter["tools"])
-                    .sort()
-                    .map((SBItemName: string, index) => (
-                      SBItemName=="Note" &&(
-                      <ShadTooltip
-                        content={data["tools"][SBItemName].display_name}
-                        side="right"
-                        key={index}
-                      >
-                        <div key={index} data-tooltip-id={SBItemName}>
-                          <div
-                            draggable={!data["tools"][SBItemName].error}
-                            className={
-                              "side-bar-components-border bg-background" +
-                              (data["tools"][SBItemName].error
-                                ? " cursor-not-allowed select-none"
-                                : "")
-                            }
-                            style={{
-                              borderLeftColor:
-                                nodeColors["tools"] ?? nodeColors.unknown,
-                              marginLeft:20
-                            }}
-                            onDragStart={(event) =>
-                              onDragStart(event, {
-                                type: SBItemName,
-                                node: data["tools"][SBItemName],
-                              })
-                            }
-                            onDragEnd={() => {
-                              document.body.removeChild(
-                                document.getElementsByClassName(
-                                  "cursor-grabbing"
-                                )[0]
-                              );
-                            }}
-                          >
-                            <div className="side-bar-components-div-form">
-                            <IconComponent
-                                name={nodeIconsLucide[SBItemName] ? SBItemName : "tools" }
-                                className="side-bar-components-icon"
-                                iconColor={`${nodeColors[SBItemName]}`}
-                              />
-                              <span className="side-bar-components-text">
-                                {data["tools"][SBItemName].display_name}
-                              </span>
-                              {/* <IconComponent
-                                name="Menu"
-                                className="side-bar-components-icon "
-                              /> */}
-                            </div>
-                          </div>
-                        </div>
-                      </ShadTooltip>
-                      )
-                    ))}
-                </div>
-      </DisclosureComponent>
-      <DisclosureComponent
-        openDisc={search.length == 0 ? false : true}
-        className={"components-disclosure-top-arrangement"}
-        button={{
-          title: "AI Tools",
-          Icon:
-          nodeIconsLucide["llms"] ?? nodeIconsLucide.unknown,
-        }}
-      >
         {Object.keys(dataFilter)
           .sort()
           .map((SBSectionName: keyof APIObjectType, index) =>
@@ -403,7 +324,6 @@ const handleDrawer = () => {
               <div key={index}></div>
             )
           )}
-      </DisclosureComponent>
       </div>
 
     )}

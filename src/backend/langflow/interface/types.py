@@ -19,6 +19,7 @@ from langflow.interface.vector_store.base import vectorstore_creator
 from langflow.interface.wrappers.base import wrapper_creator
 from langflow.interface.output_parsers.base import output_parser_creator
 from langflow.interface.custom.base import custom_component_creator
+from langflow.interface.notes.base import notes_creator
 from langflow.interface.custom.custom_component import CustomComponent
 
 from langflow.template.field.base import TemplateField
@@ -72,6 +73,7 @@ def build_langchain_types_dict():  # sourcery skip: dict-assign-update-to-union
         output_parser_creator,
         retriever_creator,
         custom_component_creator,
+        notes_creator,
     ]
 
     all_types = {}

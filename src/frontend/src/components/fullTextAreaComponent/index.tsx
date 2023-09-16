@@ -41,28 +41,43 @@ export default function FullTextAreaComponent({
   const toolbarConfig: Partial<IToolbarConfig> = { }  
   // 编辑器配置
   // console.log('runnable:',data.node.runnable);
-  const [focus,setFocus] =useState(false);
+  const [focusEditor,setFocusEditor] =useState(false);
+  const focusEditorRef = useRef(false);
+
+  useEffect(() => {
+    focusEditorRef.current = focusEditor;
+    // console.log('useEFF,focus=',focusEditor);
+  }, [focusEditor]);
+  function handleChange(content){
+    // console.log('handleChange,focus=',focusEditorRef.current);
+    if(focusEditorRef.current){
+      onChange(content);
+    }
+  }
   const editorConfig: Partial<IEditorConfig> = {   
       placeholder: 'Type something...',
       autoFocus:false,
       
       onChange :(editor:IDomEditor)=>{
-        // console.log('onChange')
+        // console.log('onChange,focus=',focus);
         // console.log('runnable 1:',data.node.runnable);
-        if(focus){
-          // console.log('content', editor.getHtml());
-          onChange(editor.getHtml());
+        // console.log('content', editor.getHtml());
+
+
+        // if(focus){
+
+          handleChange(editor.getHtml());
           // console.log('runnable 2:',data.node.runnable);
 
-        }
+        // }
       },
       onBlur:(editor:IDomEditor)=>{
         setToolbarOn(false);
-        setFocus(false)
+        setFocusEditor(false)
       },
       onFocus:(editor:IDomEditor)=>{
-        setFocus(true)
-        // console.log('onFocus');
+        setFocusEditor(true)
+        // console.log('onFocus:',focusEditor);
         setToolbarOn(true);
       }
   }
@@ -136,11 +151,11 @@ export default function FullTextAreaComponent({
                     defaultConfig={editorConfig}
                     value={value}
                     onCreated={setEditor}
-                    onChange={editor => {
+                    // onChange={editor => {
                       
                       //onChange(editor.getHtml());
                       // console.log(editor.getHtml());
-                    }}
+                    // }}
                     mode="default"
                     style={{ height: '95%',
 

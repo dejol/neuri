@@ -10,6 +10,7 @@ from langchain.chains.base import Chain
 from langchain.chat_models.base import BaseChatModel
 from langchain.tools import BaseTool
 from langflow.interface.custom.custom_component import CustomComponent
+
 from langflow.utils import validate
 from langflow.interface.wrappers.base import wrapper_creator
 
@@ -49,6 +50,7 @@ def import_by_type(_type: str, name: str) -> Any:
         "output_parsers": import_output_parser,
         "retrievers": import_retriever,
         "custom_components": import_custom_component,
+        "notes":import_notes,
     }
     if _type == "llms":
         key = "chat" if "chat" in name.lower() else "llm"
@@ -58,6 +60,13 @@ def import_by_type(_type: str, name: str) -> Any:
 
     return loaded_func(name)
 
+def import_notes(notes: str) -> BaseTool:
+    """Import notes from notes name"""
+    from langflow.interface.notes.base import notes_creator
+    if notes in notes_creator.type_to_loader_dict:
+        return notes_creator.type_to_loader_dict[notes]
+
+    return import_class(f"langchain.tools.{notes}")
 
 def import_custom_component(custom_component: str) -> CustomComponent:
     """Import custom component from custom component name"""

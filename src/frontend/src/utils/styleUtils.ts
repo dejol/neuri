@@ -68,6 +68,11 @@ import {
   X,
   XCircle,
   Zap,
+  Headphones,
+  Coffee,
+  CoffeeIcon,
+  GridIcon,
+  Video,
 } from "lucide-react";
 // all icon here : https://www.figma.com/file/dyJRSFTIajik4cdkcXN8yA3K/Feather-Component-Library?type=design&node-id=0-1&mode=design
 import { AirbyteIcon } from "../icons/Airbyte";
@@ -156,6 +161,7 @@ export const nodeColors: { [char: string]: string } = {
   retrievers: "#e6b25a",
   unknown: "#9CA3AF",
   custom_components: "#ab11ab",
+  notes:"#f7ee9a",
 };
 
 export const nodeNames: { [char: string]: string } = {
@@ -193,6 +199,10 @@ export const nodeIconsLucide = {
   EverNoteLoader: EvernoteIcon,
   Note:NoteNailIcon,
   AINote:Lightbulb,
+  ArticleGeneraterComponent:CoffeeIcon,
+  TranslaterComponent:Headphones,
+  ArticleStructureComponent:GridIcon,
+  VideoScriptComponent: Video,
   NoteBooks:NoteBooksIcon,
   FacebookChatLoader: FBIcon,
   GitbookLoader: GitBookIcon,
@@ -241,6 +251,7 @@ export const nodeIconsLucide = {
   WikipediaQueryRun: SvgWikipedia,
   WolframAlphaQueryRun: SvgWolfram,
   custom_components: CubeIcon,
+  notes:NoteBooksIcon,
   custom: Edit,
   Trash2,
   X,

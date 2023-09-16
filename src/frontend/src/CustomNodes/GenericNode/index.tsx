@@ -24,7 +24,7 @@ export default function GenericNode({
   selected: boolean;
 }) {
   const [data, setData] = useState(olddata);
-  const { updateFlow, flows, tabId } = useContext(TabsContext);
+  const { updateFlow, flows, tabId,saveFlow } = useContext(TabsContext);
   const updateNodeInternals = useUpdateNodeInternals();
   const { types, deleteNode, reactFlowInstance } = useContext(typesContext);
   const name = nodeIconsLucide[data.type] ? data.type : types[data.type];
@@ -37,7 +37,6 @@ export default function GenericNode({
     let myFlow = flows.find((flow) => flow.id === tabId);
     if (reactFlowInstance && myFlow) {
       let flow = cloneDeep(myFlow);
-      
       flow.data = reactFlowInstance.toObject();
       cleanEdges({
         flow: {
@@ -50,6 +49,7 @@ export default function GenericNode({
           updateNodeInternals(data.id);
         },
       });
+      reactFlowInstance.setNodes(flow.data.nodes);
       updateFlow(flow);
     }
   }, [data]);
@@ -64,25 +64,19 @@ export default function GenericNode({
     }
   }, [sseData, data.id]);
 
-  const handleOnNewValue = (newValue: boolean): void => {
-    
-    // console.log("newValue:",newValue)
-    // console.log("oldValue:",data.node.runnable)
-    // data.node.runnable=newValue;
-    // olddata.node.runnable=newValue;
+  // const handleOnNewValue = (newValue: boolean): void => {
+  //   let newData = cloneDeep(olddata);
+  //   newData.node.runnable=newValue;
+  //   if(newValue != data.node.runnable){
+  //     setData(newData);
+  //   }
+  // };
+  const [runnabler,setRunnabler] = useState(data.node.runnable==undefined||data.node.runnable);
+  useEffect(()=>{
     let newData = cloneDeep(olddata);
-    newData.node.runnable=newValue;
-    if(newValue != data.node.runnable){
-      setData(newData);
-    }
-    
-    // console.log("newValue of data:",newData.node.runnable)
-
-   
-    // console.log("NewValue of data:",data)
-
-  };
-
+    newData.node.runnable=runnabler;
+    setData(newData);
+  },[runnabler]);
   return (
     <>
       <NodeToolbar>
@@ -127,7 +121,7 @@ export default function GenericNode({
           <div className="round-button-div">
             <Tooltip
                title={
-                (data.node.runnable!=undefined&&!data.node.runnable)?(
+                (!runnabler)?(
                     <span>Not Runnable</span>
                 ):(
                     <span>Runnable</span>
@@ -136,8 +130,8 @@ export default function GenericNode({
               <div>
                 <ToggleShadComponent
                   disabled={false}
-                  enabled={(data.node.runnable===undefined||data.node.runnable) ? true:false}
-                  setEnabled={handleOnNewValue}
+                  enabled={runnabler}
+                  setEnabled={setRunnabler}
                   size="small"
                 />
               </div>

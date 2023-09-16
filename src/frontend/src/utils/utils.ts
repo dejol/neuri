@@ -234,7 +234,7 @@ export function getRandomKeyByssmm(): string {
 }
 
 export function varHighlightHTML({ name }: IVarHighlightType): string {
-  const html = `<span class="font-semibold chat-message-highlight">{${name}}</span>`;
+  const html = `<span className="font-semibold chat-message-highlight">{${name}}</span>`;
   return html;
 }
 

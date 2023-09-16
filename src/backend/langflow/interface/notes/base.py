@@ -26,6 +26,7 @@ class NotesCreator(LangChainTypeCreator):
         if self.type_dict is None:
             self.type_dict: dict[str, Any] = {
                 "Note": Note,
+                "AINote": AINote,
             }
         return self.type_dict
     

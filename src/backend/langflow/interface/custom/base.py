@@ -25,6 +25,11 @@ class CustomComponentCreator(LangChainTypeCreator):
         if self.type_dict is None:
             self.type_dict: dict[str, Any] = {
                 "CustomComponent": CustomComponent,
+                "TranslaterComponent":CustomComponent,
+                "ArticleGeneraterComponent":CustomComponent,
+                "ArticleStructureComponent":CustomComponent,
+                "VideoScriptComponent":CustomComponent,
+
             }
         return self.type_dict
 

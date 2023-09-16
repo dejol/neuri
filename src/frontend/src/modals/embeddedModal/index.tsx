@@ -212,7 +212,7 @@ export default function EmbeddedModal({
       let newData = cloneDeep(sourceData);
       newData.node!.template[name].value = data.message;
       setSourceData(newData);
-      console.log("after data:", data.message);  
+      // console.log("after data:", data.message);  
       }
       if (data.intermediate_steps) {
         updateLastMessage({
