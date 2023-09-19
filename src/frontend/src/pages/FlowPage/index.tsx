@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { TabsContext } from "../../contexts/tabsContext";
 import { getVersion } from "../../controllers/API";
 import Page from "./components/PageComponent";
 
 export default function FlowPage() {
-  const { flows, tabId, setTabId } = useContext(TabsContext);
+  const { flows, tabId, setTabId,isLogin } = useContext(TabsContext);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Set flow tab id
   useEffect(() => {
@@ -16,6 +17,9 @@ export default function FlowPage() {
   // Initialize state variable for the version
   const [version, setVersion] = useState("");
   useEffect(() => {
+    if(localStorage.getItem('login')!="true"){
+      navigate("/");
+    }
     getVersion().then((data) => {
       setVersion(data.version);
     });

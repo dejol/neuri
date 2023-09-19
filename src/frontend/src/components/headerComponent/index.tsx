@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate} from "react-router-dom";
 import AlertDropdown from "../../alerts/alertDropDown";
 import { USER_PROJECTS_HEADER } from "../../constants/constants";
 import { alertContext } from "../../contexts/alertContext";
@@ -18,9 +18,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import ShadTooltip from "../ShadTooltipComponent";
 
 export default function Header() {
-  const { flows, tabId } = useContext(TabsContext);
+  const { flows, tabId,isLogin,setIsLogin } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter } = useContext(alertContext);
   const location = useLocation();
@@ -37,6 +38,13 @@ export default function Header() {
   //   }
   //   fetchStars();
   // }, []);
+  const navigate = useNavigate();
+
+  function logout(){
+    localStorage.setItem('login',"");
+    setIsLogin(false);
+    navigate("/");
+  }
   return (
     <div className="header-arrangement">
       <div className="header-start-display">
@@ -138,6 +146,20 @@ export default function Header() {
           <MenuBar flows={flows} tabId={tabId} />
         )}
           <Separator orientation="vertical" />
+          <ShadTooltip content="Log Out" side="bottom">
+          <button
+            className="extra-side-bar-save-disable"
+            onClick={() => {
+              logout();      
+            }}
+          >
+            {(localStorage.getItem('login')=="true") ? (
+              <IconComponent name="LogOut" className="side-bar-button-size" />
+            ) : (
+              <IconComponent name="LogIn" className="side-bar-button-size" />
+            )}
+          </button>       
+          </ShadTooltip>   
           <button
             className="extra-side-bar-save-disable"
             onClick={() => {

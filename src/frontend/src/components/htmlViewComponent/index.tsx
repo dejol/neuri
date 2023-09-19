@@ -92,21 +92,29 @@ const [editor, setEditor] = useState<IDomEditor | null>(null)
 // 工具栏配置
 const toolbarConfig: Partial<IToolbarConfig> = { }  
 // 编辑器配置
-const [focus,setFocus] =useState(false);
+// const [focus,setFocus] =useState(false);
+const [focusEditor,setFocusEditor] =useState(false);
+const focusEditorRef = useRef(false);
+useEffect(() => {
+  focusEditorRef.current = focusEditor;
+}, [focusEditor]);
+function handleChange(content){
+  if(focusEditorRef.current){
+    onChange(content);
+  }
+}
 const editorConfig: Partial<IEditorConfig> = {   
     placeholder: 'Type something...',
     autoFocus:false,
     onChange :(editor:IDomEditor)=>{
-        if(focus){
-          onChange(editor.getHtml());
-        }
+      handleChange(editor.getHtml());
     },
     onBlur:(editor:IDomEditor)=>{
-      setFocus(false);
+      setFocusEditor(false);
       setToolbarOn(false);
     },
     onFocus:(editor:IDomEditor)=>{
-      setFocus(true)
+      setFocusEditor(true)
       setToolbarOn(true);
     }    
 }
@@ -212,11 +220,11 @@ const handleMouseUp = () => {
                     defaultConfig={editorConfig}
                     value={contentValue}
                     onCreated={setEditor}
-                    onChange={editor => {
+                    // onChange={editor => {
                       // setHtml(editor.getHtml());
                       // onChange(editor.getHtml());
-                    }}
-                    mode="default"
+                    // }}
+                    mode="simple"
                     style={{ height: '95%',
                     //  overflowY: 'scroll' 
                     }}

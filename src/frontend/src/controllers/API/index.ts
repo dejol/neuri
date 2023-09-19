@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { ReactFlowJsonObject } from "reactflow";
 import { api } from "../../controllers/API/api";
 import { APIObjectType, sendAllProps } from "../../types/api/index";
-import { FlowStyleType, FlowType, FolderType } from "../../types/flow";
+import { FlowStyleType, FlowType, FolderType, UserType } from "../../types/flow";
 import {
   APIClassType,
   BuildStatusTypeAPI,
@@ -435,6 +435,24 @@ export async function updateFolderInDatabase(
 export async function deleteFolderFromDatabase(folderId: string) {
   try {
     const response = await api.delete(`/api/v1/folders/${folderId}`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function loginUserFromDatabase(user:UserType) {
+  try {
+    
+    const response = await api.post("/api/v1/users/", {
+      name: user.name,
+      password: user.password,
+    });
+
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

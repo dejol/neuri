@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { FlowType, TweaksType,FolderType } from "../flow";
+import { FlowType, TweaksType,FolderType, UserType } from "../flow";
 
 export type TabsContextType = {
   saveFlow: (flow: FlowType) => Promise<void>;
@@ -24,6 +24,8 @@ export type TabsContextType = {
   uploadFlows: () => void;
   isBuilt: boolean;
   setIsBuilt: (state: boolean) => void;
+  isLogin: boolean;
+  setIsLogin: (state: boolean) => void;
   uploadFlow: (newFlow?: boolean, file?: File) => void;
   hardReset: () => void;
   getNodeId: (nodeType: string) => string;
@@ -37,6 +39,7 @@ export type TabsContextType = {
   setLastCopiedSelection: (selection: { nodes: any; edges: any }) => void;
   setTweak: (tweak: TweaksType) => void;
   getTweak: TweaksType[];
+  login:(user:UserType) => Promise<String>;
 };
 
 export type TabsState = {

@@ -166,7 +166,11 @@ export default function GenericModal({
   }
 
   const [modalOpen, setModalOpen] = useState(false);
-
+  useEffect(()=>{
+    if (type === TypeModal.PROMPT && inputValue && inputValue != "") {
+      validatePrompt(false);
+    }
+  },[]);
   return (
     <BaseModal open={modalOpen} setOpen={setModalOpen}>
       <BaseModal.Trigger>{children}</BaseModal.Trigger>

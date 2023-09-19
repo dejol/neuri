@@ -62,6 +62,7 @@ import {
   Undo,
   Upload,
   Users2,
+  User,
   Variable,
   Wand2,
   Wrench,
@@ -73,6 +74,8 @@ import {
   CoffeeIcon,
   GridIcon,
   Video,
+  LogOut,
+  LogIn,
 } from "lucide-react";
 // all icon here : https://www.figma.com/file/dyJRSFTIajik4cdkcXN8yA3K/Feather-Component-Library?type=design&node-id=0-1&mode=design
 import { AirbyteIcon } from "../icons/Airbyte";
@@ -270,6 +273,9 @@ export const nodeIconsLucide = {
   Check,
   Home,
   Users2,
+  User,
+  LogIn,
+  LogOut,
   SunIcon,
   MoonIcon,
   Bell,

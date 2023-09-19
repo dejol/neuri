@@ -20,9 +20,10 @@ import {
   saveFolderToDatabase,
   updateFolderInDatabase,
   deleteFolderFromDatabase,
+  loginUserFromDatabase,
 } from "../controllers/API";
 import { APIClassType, APITemplateType } from "../types/api";
-import { FlowType, NodeType,FolderType } from "../types/flow";
+import { FlowType, NodeType,FolderType, UserType } from "../types/flow";
 import { TabsContextType, TabsState } from "../types/tabs";
 import {
   addVersionToDuplicates,
@@ -36,37 +37,40 @@ import { typesContext } from "./typesContext";
 const uid = new ShortUniqueId({ length: 5 });
 
 const TabsContextInitialValue: TabsContextType = {
-  save: () => {},
+  save: () => { },
   tabId: "",
-  setTabId: (index: string) => {},
+  setTabId: (index: string) => { },
   flows: [],
-  folders:[],
-  removeFlow: (id: string) => {},  
+  folders: [],
+  removeFlow: (id: string) => { },
   addFlow: async (flowData?: any) => "",
   addFolder: async (folderData?: any) => "",
-  saveFolder: async (folder: FolderType) => {},
-  removeFolder: (id: string) => {},
-  updateFlow: (newFlow: FlowType) => {},
+  saveFolder: async (folder: FolderType) => { },
+  removeFolder: (id: string) => { },
+  updateFlow: (newFlow: FlowType) => { },
   incrementNodeId: () => uid(),
-  downloadFlow: (flow: FlowType) => {},
-  downloadFlows: () => {},
-  uploadFlows: () => {},
-  uploadFlow: () => {},
+  downloadFlow: (flow: FlowType) => { },
+  downloadFlows: () => { },
+  uploadFlows: () => { },
+  uploadFlow: () => { },
   isBuilt: false,
-  setIsBuilt: (state: boolean) => {},
-  hardReset: () => {},
-  saveFlow: async (flow: FlowType) => {},
+  setIsBuilt: (state: boolean) => { },
+  isLogin: false,
+  setIsLogin: (state: boolean) => { },
+  hardReset: () => { },
+  saveFlow: async (flow: FlowType) => { },
   lastCopiedSelection: null,
-  setLastCopiedSelection: (selection: any) => {},
+  setLastCopiedSelection: (selection: any) => { },
   tabsState: {},
-  setTabsState: (state: TabsState) => {},
+  setTabsState: (state: TabsState) => { },
   getNodeId: (nodeType: string) => "",
-  setTweak: (tweak: any) => {},
+  setTweak: (tweak: any) => { },
   getTweak: [],
   paste: (
-    selection: { nodes: any; edges: any },
-    position: { x: number; y: number; paneX?: number; paneY?: number }
-  ) => {},
+    selection: { nodes: any; edges: any; },
+    position: { x: number; y: number; paneX?: number; paneY?: number; }
+  ) => { },
+  login: async (user: UserType)=>""
 };
 
 export const TabsContext = createContext<TabsContextType>(
@@ -707,8 +711,20 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       setErrorData(err);
     }
   }
+  const login = async (
+    user: UserType
+  ): Promise<String> => {
+    const resp = await loginUserFromDatabase(user);
+    // console.log("response return:",resp)
+    if(resp.password=="******"){
+      return "true";
+    }
+    return "false";
+
+  }
 
   const [isBuilt, setIsBuilt] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
 
   return (
     <TabsContext.Provider
@@ -716,6 +732,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         saveFlow,
         isBuilt,
         setIsBuilt,
+        isLogin,
+        setIsLogin,        
         lastCopiedSelection,
         setLastCopiedSelection,
         hardReset,
@@ -741,6 +759,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         paste,
         getTweak,
         setTweak,
+        login,
       }}
     >
       {children}

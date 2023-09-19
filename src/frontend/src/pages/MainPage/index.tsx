@@ -7,26 +7,34 @@ import { USER_PROJECTS_HEADER } from "../../constants/constants";
 import { TabsContext } from "../../contexts/tabsContext";
 import ShadTooltip from "../../components/ShadTooltipComponent";
 import FlowSettingsModal from "../../modals/flowSettingsModal";
+import LoginModal from "../../modals/loginModal";
 import FolderModal from "../../modals/folderModal";
 import { alertContext } from "../../contexts/alertContext";
+import BaseModal from "../../modals/baseModal";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+
 export default function HomePage() {
-  const { flows, setTabId, downloadFlows, uploadFlows, addFlow, removeFlow,folders,addFolder,removeFolder } =
+  const { login, isLogin,setIsLogin,flows, setTabId, downloadFlows, uploadFlows, addFlow, removeFlow,folders,addFolder,removeFolder } =
     useContext(TabsContext);
 
   // Set a null id
   useEffect(() => {
     setTabId("");
   }, []);
-  
+
   // const navigate = useNavigate();
   const [open,setOpen]=useState(false);
-
   const [newFolderId,setNewFolderId]=useState("");
-
   const [popoverState, setPopoverState] = useState(false);
   const [openFolder, setOpenFolder] = useState(false);
   const { setErrorData, setSuccessData } = useContext(alertContext);
 
+
+
+const handleLogin = (user) => {
+  console.log("user:",user);
+};
 
   // Personal flows display
   return (
@@ -71,6 +79,10 @@ export default function HomePage() {
       <span className="main-page-description-text">
         Manage your NoteBooks. 
       </span>
+      {(localStorage.getItem('login')!="true")&&(
+        <LoginModal>
+        </LoginModal>
+     )}
 
     {folders.map((folder, idx) => (
       <>

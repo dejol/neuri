@@ -40,16 +40,13 @@ export default function FullTextAreaComponent({
   // 工具栏配置
   const toolbarConfig: Partial<IToolbarConfig> = { }  
   // 编辑器配置
-  // console.log('runnable:',data.node.runnable);
   const [focusEditor,setFocusEditor] =useState(false);
   const focusEditorRef = useRef(false);
 
   useEffect(() => {
     focusEditorRef.current = focusEditor;
-    // console.log('useEFF,focus=',focusEditor);
   }, [focusEditor]);
   function handleChange(content){
-    // console.log('handleChange,focus=',focusEditorRef.current);
     if(focusEditorRef.current){
       onChange(content);
     }
@@ -59,17 +56,7 @@ export default function FullTextAreaComponent({
       autoFocus:false,
       
       onChange :(editor:IDomEditor)=>{
-        // console.log('onChange,focus=',focus);
-        // console.log('runnable 1:',data.node.runnable);
-        // console.log('content', editor.getHtml());
-
-
-        // if(focus){
-
           handleChange(editor.getHtml());
-          // console.log('runnable 2:',data.node.runnable);
-
-        // }
       },
       onBlur:(editor:IDomEditor)=>{
         setToolbarOn(false);
@@ -77,7 +64,6 @@ export default function FullTextAreaComponent({
       },
       onFocus:(editor:IDomEditor)=>{
         setFocusEditor(true)
-        // console.log('onFocus:',focusEditor);
         setToolbarOn(true);
       }
   }
@@ -156,7 +142,7 @@ export default function FullTextAreaComponent({
                       //onChange(editor.getHtml());
                       // console.log(editor.getHtml());
                     // }}
-                    mode="default"
+                    mode="simple"
                     style={{ height: '95%',
 
                     //  overflowY: 'scroll' 

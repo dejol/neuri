@@ -41,3 +41,9 @@ export type TweaksType = Array<
     };
   } & FlowStyleType
 >;
+
+export type UserType = {
+  name: string;
+  id: string;
+  password?: string;
+};
