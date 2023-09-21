@@ -55,6 +55,7 @@ class FrontendNode(BaseModel):
     beta: bool = False
     error: Optional[str] = None
     runnable: bool = True # flag for node whether run able
+    mini_size:bool =False # showing as mini size
 
     # field formatters is an instance attribute but it is not used in the class
     # so we need to create a method to get it
@@ -89,6 +90,7 @@ class FrontendNode(BaseModel):
                 "beta": self.beta,
                 "error": self.error,
                 "runnable":self.runnable,
+                "mini_size":self.mini_size,
             },
         }
 

@@ -7,8 +7,9 @@ import { TabsContext } from "../../../../contexts/tabsContext";
 import EditNodeModal from "../../../../modals/EditNodeModal";
 import { classNames } from "../../../../utils/utils";
 import { NodeType } from "../../../../types/flow";
+import ToggleShadComponent from "../../../../components/toggleShadComponent";
 
-export default function NodeToolbarComponent({ data, setData, deleteNode }) {
+export default function NodeToolbarComponent({ data, setData, deleteNode,runnabler,setRunnabler,miniSize,setMiniSize }) {
   const [nodeLength, setNodeLength] = useState(
     Object.keys(data.node.template).filter(
       (templateField) =>
@@ -60,6 +61,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
         // console.info("after new :",newNode)
     return newNode;
   }
+
   return (
     <>
       <div className="w-26 h-10">
@@ -124,7 +126,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
                 );
               }}
             >
-              <IconComponent name="Copy" className="h-4 w-4" />
+              <IconComponent name="Copy" className="h-4 w-4" iconColor="Green"/>
             </button>
           </ShadTooltip>
  )}
@@ -154,7 +156,45 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
               <IconComponent name="FileText" className="h-4 w-4 " />
             </a>
           </ShadTooltip>
-
+          {(data.type=="Note" || data.type=="AINote")?(
+            <ShadTooltip content="Runnable" side="top">
+                <div
+                  className={classNames(
+                    "relative -ml-px inline-flex items-center rounded-r-md bg-background px-0 py-0 text-foreground shadow-md ring-1 ring-inset  ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10" +
+                      (nodeLength == 0
+                        ? " text-muted-foreground"
+                        : " text-foreground")
+                  )}
+                >
+                <ToggleShadComponent
+                  disabled={false}
+                  enabled={runnabler}
+                  setEnabled={setRunnabler}
+                  size="small"
+                />
+            </div>
+          </ShadTooltip>
+          ):(
+            <>
+          <ShadTooltip content={miniSize?"Full Size":"Mini Size"} side="top">
+            <button
+              className={classNames(
+                "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10" 
+              )}
+              // rel="noopener noreferrer"
+              // href={"#"}
+              // deactivate link if no documentation is provided
+              onClick={(event) => {
+                setMiniSize(!miniSize);
+              }}
+            >
+            {miniSize?(
+              <IconComponent name="Menu" className="h-4 w-4" />
+            ):(
+              <IconComponent name="Minus" className="h-4 w-4 " />
+            )}
+            </button>
+          </ShadTooltip>              
           <ShadTooltip content="Edit" side="top">
             <div>
               <EditNodeModal
@@ -174,7 +214,11 @@ export default function NodeToolbarComponent({ data, setData, deleteNode }) {
                 </div>
               </EditNodeModal>
             </div>
-          </ShadTooltip>
+          </ShadTooltip>      
+      </>  
+          )}
+
+
         </span>
       </div>
     </>

@@ -421,7 +421,8 @@ export default function Page({ flow }: { flow: FlowType }) {
                    [&>button]:border-b-border hover:[&>button]:bg-border"
                    showZoom={false}
                    position="top-right"
-                  ></Controls>
+                  >
+                    </Controls>
                 </ReactFlow>
                 <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
               </div>

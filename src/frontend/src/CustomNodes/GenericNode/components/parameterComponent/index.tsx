@@ -49,6 +49,7 @@ export default function ParameterComponent({
   required = false,
   optionalHandle = null,
   info = "",
+  nodeSelected,
 }: ParameterComponentType): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
   const refHtml = useRef<HTMLDivElement & ReactNode>(null);
@@ -185,7 +186,13 @@ export default function ParameterComponent({
   return (
     <div
       ref={ref}
-      className="mt-1 flex w-full h-full flex-wrap items-center justify-between bg-muted px-5 py-2"
+      className={
+        (data.type=="AINote"&&!left)?"hidden ":""+
+        ((data.node.mini_size==undefined||!data.node.mini_size)?"h-full ":"generic-node-merge-template h-10 ")+
+      "mt-1 flex w-full flex-wrap items-center justify-between bg-muted px-5 "+
+      ((data.node.mini_size==undefined||!data.node.mini_size)?"py-2":"")
+
+      }
     >
       <>
       {!(type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view)) && (
@@ -254,7 +261,7 @@ export default function ParameterComponent({
         {left === true &&
         type === "str" &&
         !data.node?.template[name].options ? (
-          <div className="mt-2 w-full h-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full h-full"}>
             {data.node?.template[name].list ? (
               <InputListComponent
                 disabled={disabled}
@@ -278,6 +285,7 @@ export default function ParameterComponent({
                   value={data.node.template[name].value ?? ""}
                   onChange={handleOnNewValue}
                   data={data}
+                  nodeSelected={nodeSelected}
                 />  
               ) : data.node?.template[name].chat_view ? (
                   <div className="input-full-node-wrap input-note dark:input-note-dark">
@@ -296,6 +304,7 @@ export default function ParameterComponent({
                       contentValue={data.node.template[name].value}
                       onChange={handleOnNewValue}
                       data={data}
+                      nodeSelected={nodeSelected}
                     />
                   )}
                 </div>                             
@@ -310,7 +319,7 @@ export default function ParameterComponent({
             )}
           </div>
         ) : left === true && type === "bool" ? (
-          <div className="mt-2 w-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full"}>
             <ToggleShadComponent
               disabled={disabled}
               enabled={data.node?.template[name].value ?? false}
@@ -321,7 +330,7 @@ export default function ParameterComponent({
             />
           </div>
         ) : left === true && type === "float" ? (
-          <div className="mt-2 w-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full"}>
             <FloatComponent
               disabled={disabled}
               value={data.node?.template[name].value ?? ""}
@@ -331,7 +340,7 @@ export default function ParameterComponent({
         ) : left === true &&
           type === "str" &&
           data.node?.template[name].options ? (
-          <div className="mt-2 w-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full"}>
             <Dropdown
               options={data.node.template[name].options}
               onSelect={handleOnNewValue}
@@ -339,7 +348,7 @@ export default function ParameterComponent({
             ></Dropdown>
           </div>
         ) : left === true && type === "code" ? (
-          <div className="mt-2 w-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full"}>
             <CodeAreaComponent
               dynamic={data.node?.template[name].dynamic ?? false}
               setNodeClass={(nodeClass) => {
@@ -352,7 +361,7 @@ export default function ParameterComponent({
             />
           </div>
         ) : left === true && type === "file" ? (
-          <div className="mt-2 w-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full"}>
             <InputFileComponent
               disabled={disabled}
               value={data.node?.template[name].value ?? ""}
@@ -366,7 +375,7 @@ export default function ParameterComponent({
             ></InputFileComponent>
           </div>
         ) : left === true && type === "int" ? (
-          <div className="mt-2 w-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full"}>
             <IntComponent
               disabled={disabled}
               value={data.node?.template[name].value ?? ""}
@@ -374,7 +383,7 @@ export default function ParameterComponent({
             />
           </div>
         ) : left === true && type === "prompt" ? (
-          <div className="mt-2 w-full">
+          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full"}>
             <PromptAreaComponent
               field_name={name}
               setNodeClass={(nodeClass) => {

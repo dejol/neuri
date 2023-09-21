@@ -27,9 +27,11 @@ export default function HtmlViewComponent({
   contentValue,
   onChange,
   data,
+  nodeSelected,
 }: {contentValue:any;  
   onChange: (value: string[] | string) => void;
   data:NodeDataType;
+  nodeSelected:boolean;
 }) {
   /*
    // The configuration of the <CKEditor> instance.
@@ -98,6 +100,13 @@ const focusEditorRef = useRef(false);
 useEffect(() => {
   focusEditorRef.current = focusEditor;
 }, [focusEditor]);
+
+useEffect(() => {
+  if(!nodeSelected &&toolbarOn){
+    setToolbarOn(false);
+  }
+}, [nodeSelected]);
+
 function handleChange(content){
   if(focusEditorRef.current){
     onChange(content);
@@ -226,6 +235,9 @@ const handleMouseUp = () => {
                     // }}
                     mode="simple"
                     style={{ height: '95%',
+                    minWidth:'200px',
+                    minHeight:'200px',
+                    width:'100%',                    
                     //  overflowY: 'scroll' 
                     }}
                 />

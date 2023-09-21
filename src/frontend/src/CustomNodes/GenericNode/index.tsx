@@ -15,6 +15,7 @@ import { classNames, toTitleCase } from "../../utils/utils";
 import ParameterComponent from "./components/parameterComponent";
 import ToggleShadComponent from "../../components/toggleShadComponent";
 import { time } from "console";
+import AccordionComponent from "../../components/AccordionComponent";
 
 export default function GenericNode({
   data: olddata,
@@ -32,8 +33,18 @@ export default function GenericNode({
   // State for outline color
   
   const { sseData, isBuilding } = useSSE();
+
+  const [miniSize,setMiniSize] = useState(data.node.mini_size!=undefined&&data.node.mini_size);
+  useEffect(()=>{
+    let newData = cloneDeep(olddata);
+    newData.node.mini_size=miniSize;
+    setData(newData);
+  },[miniSize]);
+
   useEffect(() => {
+
     olddata.node = data.node;
+    olddata.node.mini_size=miniSize;
     let myFlow = flows.find((flow) => flow.id === tabId);
     if (reactFlowInstance && myFlow) {
       let flow = cloneDeep(myFlow);
@@ -77,6 +88,7 @@ export default function GenericNode({
     newData.node.runnable=runnabler;
     setData(newData);
   },[runnabler]);
+
   return (
     <>
       <NodeToolbar>
@@ -84,10 +96,15 @@ export default function GenericNode({
           data={data}
           setData={setData}
           deleteNode={deleteNode}
+          runnabler={runnabler}
+          setRunnabler={setRunnabler}
+          miniSize={miniSize}
+          setMiniSize={setMiniSize}
+
         ></NodeToolbarComponent>
       </NodeToolbar>
       {(data.type=="Note" || data.type=="AINote") &&(
-        <NodeResizer color="red" handleStyle={{background:'red'}} lineStyle={{background:'red'}} isVisible={selected} minWidth={100} minHeight={100}/>
+        <NodeResizer  isVisible={selected} minWidth={255} minHeight={290}/>
       )}
       <div
         className={classNames(
@@ -98,6 +115,8 @@ export default function GenericNode({
         )}
         
       >
+        {!(data.type=="Note" || data.type=="AINote") &&(
+          <>
         {data.node.beta && (
           <div className="beta-badge-wrapper">
             <div className="beta-badge-content">BETA</div>
@@ -191,21 +210,31 @@ export default function GenericNode({
             </div>
           </div>
         </div>
+        </>
+        )}
 
         <div className={classNames(
           data.type == "Note"
           ?"generic-resize-node-desc"
           :data.type == "AINote"
-          ?"generic-resize-2-node-desc":"generic-node-desc"
+          ?"generic-resize-2-node-desc":
+          miniSize?"generic-node-desc relative":"generic-node-desc"
         )}
         >
-          {data.node.description!==""?(
-          <div className="generic-node-desc-text">{data.node.description}</div>
+          {(data.node.description!=="")?(
+          <div className={
+            miniSize?"hidden ":""+
+            "generic-node-desc-text"
+          }
+          
+          >
+            {data.node.description}
+          </div>
           ):(
             <></>
           )
           }
-          <>
+
             {Object.keys(data.node.template)
               .filter((templateField) => templateField.charAt(0) !== "_")
               .map((templateField: string, idx) => (
@@ -260,6 +289,7 @@ export default function GenericNode({
                       optionalHandle={
                         data.node.template[templateField].input_types
                       }
+                      nodeSelected={selected}
                     />
                     
                   ) : (
@@ -291,7 +321,6 @@ export default function GenericNode({
               type={data.node.base_classes.join("|")}
               left={false}
             />
-          </>
         </div>
       </div>
     </>

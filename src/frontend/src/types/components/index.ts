@@ -39,6 +39,7 @@ export type ParameterComponentType = {
   dataContext?: typesContextType;
   optionalHandle?: Array<String>;
   info?: string;
+  nodeSelected?:boolean;
 };
 export type InputListComponentType = {
   value: string[];

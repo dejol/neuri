@@ -16,10 +16,12 @@ export default function FullTextAreaComponent({
   value,
   onChange,
   data,
+  nodeSelected,
 }: {
   onChange: (value: string[] | string) => void;
   value: string;
   data:NodeDataType;
+  nodeSelected:boolean;
 }) {
   const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
@@ -46,6 +48,13 @@ export default function FullTextAreaComponent({
   useEffect(() => {
     focusEditorRef.current = focusEditor;
   }, [focusEditor]);
+  useEffect(() => {
+    if(!nodeSelected &&toolbarOn){
+      setToolbarOn(false);
+    }
+  }, [nodeSelected]);
+
+
   function handleChange(content){
     if(focusEditorRef.current){
       onChange(content);
@@ -144,6 +153,9 @@ export default function FullTextAreaComponent({
                     // }}
                     mode="simple"
                     style={{ height: '95%',
+                    minWidth:'200px',
+                    minHeight:'200px',
+                    width:'100%',
 
                     //  overflowY: 'scroll' 
                     }} 
