@@ -73,7 +73,10 @@ class YourComponent(CustomComponent):
     description: str = "统一翻译成英文"
     beta:bool=False
     def build_config(self):
-        return { "content": { "required": True } }
+        return { 
+            "content": { "required": True },
+            "code":{"show":False},
+        }
 
     def build(self, content:Document ) -> LLMChain:
         # if content and isinstance(content, list):
@@ -109,6 +112,7 @@ class YourComponent(CustomComponent):
                  "keyword1": { "required": True },
                  "keyword2": { "required": True },
                  "keyword3": { "required": False },
+                 "code":{"show":False}
         }
 
     def build(self, articleTitle:Document,keyword1:Document,keyword2:Document,keyword3:Document,articleTemplate:Document ) -> LLMChain:
@@ -144,7 +148,9 @@ class YourComponent(CustomComponent):
     description: str = "通读文章，并输出文章结构"
     beta:bool=False
     def build_config(self):
-        return { "content": { "required": True } }
+        return { "content": { "required": True },
+            "code":{"show":False}
+              }
 
     def build(self, content:Document ) -> LLMChain:
         # if content and isinstance(content, list):
@@ -178,6 +184,7 @@ class YourComponent(CustomComponent):
                  "content": { "required": True },
                  "keyword1": { "required": False },
                  "keyword2": { "required": False },
+                 "code":{"show":False}
         }
 
     def build(self, keyword1:Document,keyword2:Document,content:Document,articleTemplate:Document ) -> LLMChain:
