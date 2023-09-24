@@ -40,7 +40,23 @@ export default function FullTextAreaComponent({
   // }, [])
   
   // 工具栏配置
-  const toolbarConfig: Partial<IToolbarConfig> = { }  
+  const toolbarConfig: Partial<IToolbarConfig> = { }
+  toolbarConfig.toolbarKeys=[    
+    'bold',
+    'italic',
+    'through',
+    'bulletedList',
+    'numberedList',
+    'insertLink',
+    'justifyCenter',
+    'insertImage',
+  ];
+//   toolbarConfig.excludeKeys = [
+//     'headerSelect',
+//     'italic',
+//     'group-more-style' // 排除菜单组，写菜单组 key 的值即可
+// ];
+  
   // 编辑器配置
   const [focusEditor,setFocusEditor] =useState(false);
   const focusEditorRef = useRef(false);
@@ -118,7 +134,7 @@ export default function FullTextAreaComponent({
   };
 
   return (
-    <div className="w-full  items-center input-full-node input-note dark:input-note-dark"
+    <div className="w-full items-center input-full-node input-note dark:input-note-dark"
     style={{cursor: 'text'}}
     onMouseDownCapture={handleMouseDown}
     // onMouseMove={handleMouseMove}

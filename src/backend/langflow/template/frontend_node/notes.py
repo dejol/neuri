@@ -38,13 +38,13 @@ class AINoteFrontendNode(FrontendNode):
             TemplateField(
                 field_type="str",
                 required=True,
-                placeholder="",
+                placeholder="Type something...",
                 is_list=False,
                 fulline=False,
                 multiline=False,
                 chat_view=True,
                 show=True,
-                value="Type something...",
+                value="",
                 name="note",
                 advanced=False,
             ),
@@ -64,3 +64,27 @@ class AINoteFrontendNode(FrontendNode):
     
     def to_dict(self):
         return super().to_dict()    
+
+class CustomPromptFrontendNode(FrontendNode):
+    name: str = "CustomPrompt"
+    runnable:bool = True
+    template: Template = Template(
+        type_name="Prompt",
+        fields=[
+            TemplateField(
+                field_type="prompt",
+                required=True,
+                is_list=False,
+                fulline=False,
+                show=True,
+                value="",
+                name="template",
+                advanced=False,
+            )
+        ],
+    )
+    description: str = "输入你的Prompt"
+    base_classes: list[str] = ["PromptTemplate"]
+    
+    def to_dict(self):
+        return super().to_dict()

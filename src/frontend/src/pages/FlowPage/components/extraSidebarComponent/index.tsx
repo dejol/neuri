@@ -193,12 +193,13 @@ const handleDrawer = () => {
       {Object.keys(dataFilter)
         .sort()
         .map((SBSectionName: keyof APIObjectType, index) =>
-          ((SBSectionName=="notes"||SBSectionName=="custom_components")&&Object.keys(dataFilter[SBSectionName]).length > 0) && (
+          ((SBSectionName=="notes"||SBSectionName=="custom_components"||SBSectionName=="prompts")&&Object.keys(dataFilter[SBSectionName]).length > 0) && (
         <>
         {Object.keys(dataFilter[SBSectionName])
           .sort()
           .map((SBItemName: string, index) => (
             (!(SBSectionName=="custom_components"&&SBItemName=="CustomComponent"))&&(
+              (!(SBSectionName=="prompts"&&SBItemName!="PromptTemplate"))&&(
             <ShadTooltip
               content={data[SBSectionName][SBItemName].display_name}
               side="right"
@@ -241,6 +242,7 @@ const handleDrawer = () => {
                 </div>
               </div>
             </ShadTooltip>
+              )
             )
           ))}
         </>

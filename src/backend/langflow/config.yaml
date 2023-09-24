@@ -316,4 +316,5 @@ notes:
     documentation: ""
   AINote:
     documentation: ""
-  
+  CustomPrompt:
+    documentation: ""  

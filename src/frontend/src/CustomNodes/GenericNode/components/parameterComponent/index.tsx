@@ -189,8 +189,10 @@ export default function ParameterComponent({
       className={
         (data.type=="AINote"&&!left)?"hidden ":""+
         ((data.node.mini_size==undefined||!data.node.mini_size)?"h-full ":"generic-node-merge-template h-10 ")+
-      "mt-1 flex w-full flex-wrap items-center justify-between bg-muted px-5 "+
-      ((data.node.mini_size==undefined||!data.node.mini_size)?"py-2":"")
+      "mt-1 flex w-full flex-wrap items-center justify-between bg-muted " +
+      ((type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view))?"":"px-5 ")+
+      ((data.node.mini_size==undefined||!data.node.mini_size)?
+      !(type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view))?"py-2 ":"":"") 
 
       }
     >

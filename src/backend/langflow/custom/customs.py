@@ -41,12 +41,15 @@ CUSTOM_NODES = {
         "ArticleGeneraterComponent": frontend_node.custom_components.ArticleGeneraterFrontendNode(),
         "ArticleStructureComponent": frontend_node.custom_components.ArticleStructureFrontendNode(),
         "VideoScriptComponent":frontend_node.custom_components.VideoScriptFrontendNode(),
+        "HandlerComponent":frontend_node.custom_components.HandlerFrontendNode(),
+
 
 
     },
     "notes":{
         "Note":frontend_node.notes.NoteFrontendNode(),
         "AINote":frontend_node.notes.AINoteFrontendNode(),
+        "CustomPrompt":frontend_node.notes.CustomPromptFrontendNode(),
     },
 }
 

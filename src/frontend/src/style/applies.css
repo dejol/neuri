@@ -148,11 +148,12 @@
     @apply primary-input w-full pb-0.5 pt-0.5 text-left h-full;white-space: unset;
   }
   .input-note {
-    background-color: #f7ee9a; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 90%;
+    background-color: #f7ee9a; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 98%;
   }
   .input-note-dark {
-    background-color: #b5ae75; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 90%;
+    background-color: #b5ae75; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 98%;
   }
+  
   .input-search {
     @apply primary-input mx-2 pr-7;width: 90%;
   }
@@ -1012,7 +1013,7 @@
     @apply relative flex h-full w-full flex-col rounded-md border bg-muted;
   }
   .eraser-size-embedded {
-    @apply relative flex h-full w-full flex-col rounded-md border;
+    @apply relative flex h-full w-full flex-col rounded-md ;
   }
   .eraser-position {
     @apply absolute right-3 top-3 z-50;

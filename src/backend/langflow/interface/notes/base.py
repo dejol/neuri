@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Type
 
 from langchain import SQLDatabase, utilities
 from langchain.schema import Document
+from langchain.prompts import PromptTemplate
 from langflow.custom.customs import get_custom_nodes
 from langflow.interface.base import LangChainTypeCreator
 from langflow.interface.importing.utils import import_class
@@ -27,6 +28,7 @@ class NotesCreator(LangChainTypeCreator):
             self.type_dict: dict[str, Any] = {
                 "Note": Note,
                 "AINote": AINote,
+                # "CustomPrompt":PromptTemplate,
             }
         return self.type_dict
     
@@ -59,4 +61,7 @@ class Note(Function):
      code: str
 
 class AINote(BaseModel):
+     code: str
+
+class CustomPrompt(BaseModel):
      code: str

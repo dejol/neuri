@@ -105,12 +105,12 @@ export default function FolderPopover() {
       onKeyDown={toggleDrawer(false)}
     >
     {folders.map((folder, idx) => (
-      <div className="file-component-accordion-div" key={idx}>
+      <div className="file-component-accordion-div mr-5" key={idx}>
       <AccordionComponent
         trigger={
           <div className="file-component-badge-div justify-start">
           <div
-          className="-mb-1"
+          className="-mb-1 "
           onClick={(event) => {
             event.stopPropagation();
           }}
@@ -168,6 +168,7 @@ export default function FolderPopover() {
           nodeIconsLucide["NoteBooks"] ?? nodeIconsLucide.unknown,
         }}
       >
+        
         <List component="div" disablePadding>
         {flows.map((flow, idx) => (
           !flow.folder_id&&(
@@ -192,16 +193,32 @@ export default function FolderPopover() {
   return (
     <div>
       <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
       <Fragment key={'right'}>
       <ShadTooltip content="Folder" side="bottom">
         <Button onClick={toggleDrawer(true)}><IconComponent name="Folder" className="w-6" /></Button>
       </ShadTooltip>
         <Drawer
-          anchor={'right'}
+          anchor={'left'}
           open={popoverState}
           onClose={toggleDrawer(false)}
+          hideBackdrop={true}
         >
+          <div className="mt-1 ml-3 flex justify-start mt-1">
+          <Link to="/" className="mr-5">
+            <img src="/logo.svg" width="40px" alt="Neuri"/>
+          </Link>
+          <Link to="/">
+          <Button1
+            className="gap-2"
+            variant={location.pathname === "/" ? "primary" : "secondary"}
+            size="sm"
+          >
+          <IconComponent name="ChevronLeft" className="w-4" />
+          <div className="flex-1">Back</div>
+          </Button1>
+          
+        </Link>    
+          </div>
           {list()}
         <ShadTooltip content="New Folder" side="left">
           <Button 

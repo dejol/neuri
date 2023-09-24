@@ -29,6 +29,7 @@ class CustomComponentCreator(LangChainTypeCreator):
                 "ArticleGeneraterComponent":CustomComponent,
                 "ArticleStructureComponent":CustomComponent,
                 "VideoScriptComponent":CustomComponent,
+                "HandlerComponent":CustomComponent,
 
             }
         return self.type_dict

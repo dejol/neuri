@@ -93,6 +93,16 @@ const [editor, setEditor] = useState<IDomEditor | null>(null)
 
 // 工具栏配置
 const toolbarConfig: Partial<IToolbarConfig> = { }  
+toolbarConfig.toolbarKeys=[    
+  'bold',
+  'italic',
+  'through',
+  'bulletedList',
+  'numberedList',
+  'insertLink',
+  'justifyCenter',
+  'insertImage',
+];
 // 编辑器配置
 // const [focus,setFocus] =useState(false);
 const [focusEditor,setFocusEditor] =useState(false);

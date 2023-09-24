@@ -2,7 +2,7 @@ from langflow.template.field.base import TemplateField
 from langflow.template.frontend_node.base import FrontendNode
 from langflow.template.template.base import Template
 from langflow.interface.custom.constants import DEFAULT_CUSTOM_COMPONENT_CODE
-from langflow.interface.custom.constants import TRANSLATER_CUSTOM_COMPONENT_CODE,ARTICLE_GENERATER_CC_CODE,ARTICLE_STRUCTURE_CC_CODE,VIDEO_SCRIPT_CC_CODE
+from langflow.interface.custom.constants import TRANSLATER_CUSTOM_COMPONENT_CODE,ARTICLE_GENERATER_CC_CODE,ARTICLE_STRUCTURE_CC_CODE,VIDEO_SCRIPT_CC_CODE,HANDLER_CC_CODE
 
 
 class CustomComponentFrontendNode(FrontendNode):
@@ -134,3 +134,29 @@ class VideoScriptFrontendNode(FrontendNode):
 
     def to_dict(self):
         return super().to_dict()      
+    
+class HandlerFrontendNode(FrontendNode):
+    name: str = "HandlerComponent"
+    display_name: str = "Handler"
+    beta: bool = False
+    template: Template = Template(
+        type_name="HandlerComponent",
+        fields=[
+            TemplateField(
+                field_type="code",
+                required=True,
+                placeholder="",
+                is_list=False,
+                show=False,
+                value=HANDLER_CC_CODE,
+                name="code",
+                advanced=False,
+                dynamic=True,
+            )
+        ],
+    )
+    description: str = " what you want!"
+    base_classes: list[str] = []
+
+    def to_dict(self):
+        return super().to_dict()     

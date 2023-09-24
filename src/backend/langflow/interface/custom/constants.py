@@ -202,3 +202,35 @@ class YourComponent(CustomComponent):
 
 
 """
+
+HANDLER_CC_CODE="""from langflow import CustomComponent
+
+from langchain.llms.base import BaseLLM
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.prompts import Prompt
+from langchain.schema import Document
+from langchain.chat_models import ChatOpenAI
+
+import requests
+
+class YourComponent(CustomComponent):
+    display_name: str = "全能处理器"
+    description: str = "根据您提供的Prompt,智能处理您的要求"
+    beta:bool=False
+    def build_config(self):
+        return { "prompt": { "required": True }, 
+                 "code":{"show":False}
+        }
+
+    def build(self, prompt:PromptTemplate ) -> LLMChain:
+        # params={'keyword1':keyword1,'articleTemplate':articleTemplate,'keyword2':keyword2,'content':content}
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
+        # prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables=params, template=prompt_template, template_format='f-string', validate_template=True)
+        chain = LLMChain(llm=llm,prompt=prompt)
+        chain(prompt.partial_variables)
+        
+        return chain
+
+
+"""

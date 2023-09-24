@@ -214,6 +214,7 @@ export const nodeIconsLucide = {
   ArticleStructureComponent:GridIcon,
   VideoScriptComponent: Video,
   NoteBooks:NoteBooksIcon,
+  PromptTemplate:NoteBooksIcon,
   FacebookChatLoader: FBIcon,
   GitbookLoader: GitBookIcon,
   GoogleSearchAPIWrapper: GoogleIcon,
