@@ -189,7 +189,9 @@ export default function ParameterComponent({
       className={
         (data.type=="AINote"&&!left)?"hidden ":""+
         ((data.node.mini_size==undefined||!data.node.mini_size)?"h-full ":"generic-node-merge-template h-10 ")+
-      "mt-1 flex w-full flex-wrap items-center justify-between bg-muted " +
+        ((type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view))?"":"mt-1 ")+
+
+      "flex w-full flex-wrap items-center justify-between bg-muted " +
       ((type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view))?"":"px-5 ")+
       ((data.node.mini_size==undefined||!data.node.mini_size)?
       !(type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view))?"py-2 ":"":"") 
@@ -263,7 +265,11 @@ export default function ParameterComponent({
         {left === true &&
         type === "str" &&
         !data.node?.template[name].options ? (
-          <div className={(data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+"mt-2 w-full h-full"}>
+          <div className={
+            (data.node.mini_size!=undefined&&data.node.mini_size) ?"hidden ":""+
+            ((data.node?.template[name].fulline)?"":"mt-2 ")+
+             "w-full h-full"
+          }>
             {data.node?.template[name].list ? (
               <InputListComponent
                 disabled={disabled}

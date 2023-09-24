@@ -45,7 +45,7 @@ export default function ChatTrigger({ open, setOpen, isBuilt, canOpen }) {
       <button
         onClick={handleClick}
         className={
-          "shadow-round-btn-shadow hover:shadow-round-btn-shadow message-button " +
+          "shadow-round-btn-shadow hover:shadow-round-btn-shadow message-button bottom-2 left-1 " +
           (!isBuilt || !canOpen ? "cursor-not-allowed" : "cursor-pointer")
         }
       >
