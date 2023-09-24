@@ -44,7 +44,7 @@ class AINoteFrontendNode(FrontendNode):
                 multiline=False,
                 chat_view=True,
                 show=True,
-                value="",
+                value="...",
                 name="note",
                 advanced=False,
             ),
