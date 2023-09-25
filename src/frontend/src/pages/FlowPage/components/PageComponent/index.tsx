@@ -447,7 +447,12 @@ export default function Page({ flow }: { flow: FlowType }) {
                   maxZoom={8}
                 >
                   <Background className="" />
-                  <MiniMap pannable={true} position="bottom-right" zoomable={true} ariaLabel="Zoom In/Out & Move" />
+                  <MiniMap pannable={true} 
+                  position="bottom-right" 
+                  zoomable={true} 
+                  ariaLabel="Zoom In/Out & Move" 
+                  className="dark:bg-ring"
+                  />
                   <Controls
                     className="bg-muted fill-foreground stroke-foreground text-primary
                    [&>button]:border-b-border hover:[&>button]:bg-border"
