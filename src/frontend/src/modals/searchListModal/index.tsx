@@ -44,7 +44,7 @@ export default function SearchListModal({
                 </div>
                 <div ref={messagesRef} className="chat-message-div">
                   
-                  <div ref={ref} className="my-2">{results.length} Search Results</div>
+                  <div ref={ref} className="my-2">{results.length} {results.length>1?"Results":"Result"}</div>
                   <Separator orientation="horizontal" />
                   {results.map((node, id) => (
                     <>
