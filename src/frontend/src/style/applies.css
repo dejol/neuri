@@ -89,12 +89,19 @@
   .side-bar-components-div-form {
     @apply flex w-full items-center justify-between rounded-md rounded-l-none border border-l-0 border-dashed border-ring  bg-white px-3 py-1 text-sm;
   }
+  .side-bar-mini-components-div-form {
+    @apply flex w-full items-center justify-between rounded-md border  border-dashed border-ring  bg-white px-3 py-1 text-sm;
+  }
   .side-bar-components-border {
     @apply cursor-grab rounded-l-md border-l-8;
+  }
+  .side-bar-mini-components-border {
+    @apply cursor-grab rounded-l-md;
   }
   .side-bar-components-gap {
     @apply flex flex-col gap-2 p-2;
   }
+
   .side-bar-components-div-arrangement {
     @apply w-full overflow-auto scrollbar-hide pb-10;
   }

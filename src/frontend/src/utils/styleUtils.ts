@@ -81,6 +81,7 @@ import {
   Slack,
   Crosshair,
   Sidebar,
+  Smile,
 } from "lucide-react";
 // all icon here : https://www.figma.com/file/dyJRSFTIajik4cdkcXN8yA3K/Feather-Component-Library?type=design&node-id=0-1&mode=design
 import { AirbyteIcon } from "../icons/Airbyte";
@@ -171,6 +172,7 @@ export const nodeColors: { [char: string]: string } = {
   custom_components: "#ab11ab",
   notes:"#f7ee9a",
   AINote:"#049524",
+  PromptTemplate:"#049524",
   ArticleGeneraterComponent:"#ab11ab",
   TranslaterComponent:"#e6b25a",
   ArticleStructureComponent:"#E6A627",
@@ -217,7 +219,7 @@ export const nodeIconsLucide = {
   ArticleStructureComponent:GridIcon,
   VideoScriptComponent: Video,
   NoteBooks:NoteBooksIcon,
-  PromptTemplate:NoteBooksIcon,
+  PromptTemplate:Smile,
   FacebookChatLoader: FBIcon,
   GitbookLoader: GitBookIcon,
   GoogleSearchAPIWrapper: GoogleIcon,
@@ -326,4 +328,5 @@ export const nodeIconsLucide = {
   List,
   Crosshair,
   Sidebar,
+  Smile,
 };

@@ -451,7 +451,7 @@ export default function Page({ flow }: { flow: FlowType }) {
                   position="bottom-right" 
                   zoomable={true} 
                   ariaLabel="Zoom In/Out & Move" 
-                  className="dark:bg-ring"
+                  className="dark:bg-muted"
                   />
                   <Controls
                     className="bg-muted fill-foreground stroke-foreground text-primary

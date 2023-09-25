@@ -168,7 +168,7 @@ export default function FolderPopover() {
               <ListItemIcon>
                 <IconComponent name="File" className="w-4"/>
               </ListItemIcon>
-              <ListItemText primary={flow.name} />
+              <ListItemText primary={flow.name} secondary= {flow.description}/>
             </ListItemButton>
           )
         ))}

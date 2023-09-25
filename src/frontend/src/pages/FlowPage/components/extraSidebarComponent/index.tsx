@@ -209,7 +209,7 @@ const handleDrawer = () => {
                 <div
                   draggable={!data[SBSectionName][SBItemName].error}
                   className={
-                    "side-bar-components-border bg-background" +
+                    "side-bar-mini-components-border bg-background" +
                     (data[SBSectionName][SBItemName].error
                       ? " cursor-not-allowed select-none"
                       : "")
@@ -232,10 +232,10 @@ const handleDrawer = () => {
                     );
                   }}
                 >
-                  <div className="side-bar-components-div-form">
+                  <div className="side-bar-mini-components-div-form">
                   <IconComponent
                       name={nodeIconsLucide[SBItemName] ? SBItemName : SBSectionName }
-                      className="side-bar-components-icon"
+                      className="side-bar-components-icon w-10 h-8"
                       iconColor={`${nodeColors[SBItemName]}`}
                     />
                   </div>
