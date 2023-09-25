@@ -108,7 +108,7 @@ export default function GenericNode({
       )}
       <div
         className={classNames(
-          selected ? "border border-ring" : "border",
+          selected ? "border-4 border-ring" : "border-4",
           data.type =="Note"?" generic-resize-node-div"
           :data.type =="AINote"?" generic-resize-node-div"
           :" generic-node-div"
