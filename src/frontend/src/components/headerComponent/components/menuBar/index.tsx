@@ -48,7 +48,7 @@ export const MenuBar = ({ flows, tabId }) => {
       {/* <Link to="/">
         <IconComponent name="ChevronLeft" className="w-4" />
       </Link> */}
-        <FolderPopover/>
+        
 {/*   
         <ShadTooltip content="New" side="bottom">
           <button

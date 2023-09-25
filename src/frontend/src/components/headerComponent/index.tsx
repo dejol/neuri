@@ -19,9 +19,14 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import ShadTooltip from "../ShadTooltipComponent";
+import { Input } from "../ui/input";
+
+import { useStoreApi, useReactFlow } from 'reactflow';
+import { forEach } from "lodash";
+import FolderPopover from "../../pages/FlowPage/components/FolderComponent";
 
 export default function Header() {
-  const { flows, tabId,isLogin,setIsLogin } = useContext(TabsContext);
+  const { flows, tabId,isLogin,setIsLogin,setSearchResult } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter } = useContext(alertContext);
   const location = useLocation();
@@ -45,6 +50,44 @@ export default function Header() {
     setIsLogin(false);
     navigate("/");
   }
+
+  const store = useStoreApi();
+  const { zoomIn, zoomOut, setCenter } = useReactFlow();
+  const [searchKeyword,setSearchKeyword] =useState('');
+
+  const searchNode = () => {
+    const { nodeInternals } = store.getState();
+    const nodes = Array.from(nodeInternals).map(([, node]) => node);
+    // let kws="Note-Ezsnh";
+    let results=[];
+    if (nodes.length > 0) {
+      nodes.forEach((node) => {
+        if(node.data.type=="Note"||node.data.type=="AINote"){
+          let content=node.data.node.template.note.value;
+          content=content.replace(/(<([^>]+)>)/ig,"");
+          if(content&&content.indexOf(searchKeyword)>=0){
+            const x = node.position.x + node.width / 2;
+            const y = node.position.y + node.height / 2;
+            // const zoom = 1.1;
+            content=content.substring(content.indexOf(searchKeyword)+searchKeyword.length+10,-20);
+            results.push({"id":node.id,"x":x,"y":y,"content":content})
+            // setCenter(x, y, { zoom, duration: 1000 });
+          }
+        }
+        // if(node.id==nodeId){
+        //   const x = node.position.x + node.width / 2;
+        //   const y = node.position.y + node.height / 2;
+        //   const zoom = 1.85;
+        //   setCenter(x, y, { zoom, duration: 1000 });
+        // }
+      });
+
+    }
+    setSearchResult(results);
+  };
+
+
+
   return (
     <div className="header-arrangement">
       <div className="header-start-display">
@@ -78,15 +121,53 @@ export default function Header() {
           </Button>
           
         </Link> 
+        <FolderPopover/>
         </>         
         )}
       </div>
       <div className="round-button-div">
-
           {(current_flow&&current_flow.name) ?(
+            <>
             <div className="header-menu-bar">
               {current_flow.name}
             </div>
+          <div className="side-bar-search-div-placement">
+          <div className="ml-1 ">
+          <Input
+          type="text"
+          name="search"
+          id="search-node"
+          placeholder="Search note"
+          className="nopan nodrag noundo nocopy input-search w-60"
+          onKeyUp={(event)=>{
+            // console.log("event.key:",event.key);
+            // console.log("value:",event);
+            if(event.key=="Enter"){
+              searchNode();
+            }
+            
+          }}
+          onChange={(event) => {
+            // handleSearchInput(event.target.value);
+            // Set search input state
+            // setSearch(event.target.value);
+            // if(event.target.value&&event.target.value.length>3){
+              setSearchKeyword(event.target.value);
+              // focusNode(event.target.value);
+            // }
+          }}
+        />
+        <div className="search-icon right-5">
+          <IconComponent
+            name="Search"
+            className={"h-5 w-5 stroke-[1.5] text-primary"}
+            aria-hidden="true"
+          
+          />
+        </div>
+        </div>
+        </div>       
+        </>     
             ):(
               <Link to="/">
               <Button

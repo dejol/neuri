@@ -66,6 +66,8 @@ const TabsContextInitialValue: TabsContextType = {
   getNodeId: (nodeType: string) => "",
   setTweak: (tweak: any) => { },
   getTweak: [],
+  setSearchResult: (node: Array<any>) => { },
+  getSearchResult: [],
   paste: (
     selection: { nodes: any; edges: any; },
     position: { x: number; y: number; paneX?: number; paneY?: number; }
@@ -91,6 +93,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const [lastCopiedSelection, setLastCopiedSelection] = useState(null);
   const [tabsState, setTabsState] = useState<TabsState>({});
   const [getTweak, setTweak] = useState([]);
+  const [getSearchResult, setSearchResult] = useState([]);
 
   const newNodeId = useRef(uid());
   function incrementNodeId() {
@@ -759,6 +762,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         paste,
         getTweak,
         setTweak,
+        setSearchResult,
+        getSearchResult,
         login,
       }}
     >

@@ -22,6 +22,8 @@ export default function AccordionComponent({
     open.forEach((el) => {
       if (el == trigger) {
         value = trigger;
+      }else if(el==keyValue){
+        value = keyValue;
       }
     });
 
@@ -30,6 +32,7 @@ export default function AccordionComponent({
 
   function handleClick() {
     value === "" ? setValue(keyValue) : setValue("");
+    console.log("value:",value);
   }
 
   return (
@@ -46,6 +49,7 @@ export default function AccordionComponent({
               handleClick();
             }}
             className="ml-3"
+            
           >
             {trigger}
           </AccordionTrigger>

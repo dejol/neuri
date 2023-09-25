@@ -39,6 +39,8 @@ export type TabsContextType = {
   setLastCopiedSelection: (selection: { nodes: any; edges: any }) => void;
   setTweak: (tweak: TweaksType) => void;
   getTweak: TweaksType[];
+  setSearchResult: (node: Array<any>) => void;
+  getSearchResult: any[];
   login:(user:UserType) => Promise<String>;
 };
 

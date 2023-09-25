@@ -31,6 +31,8 @@ import { isValidConnection } from "../../../../utils/reactflowUtils";
 import { isWrappedWithClass } from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
+import LeftFormModal from "../../../../modals/leftFormModal";
+import SearchListModal from "../../../../modals/searchListModal";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 const nodeTypes = {
@@ -62,8 +64,14 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {isBuilt, setIsBuilt } = useContext(TabsContext);
-  
+  const {isBuilt, setIsBuilt,getSearchResult } = useContext(TabsContext);
+  const [openSearch,setOpenSearch]=useState(false);
+  useEffect(() => {
+    if(getSearchResult&&getSearchResult.length>0){
+      setOpenSearch(true);
+    }
+  },[getSearchResult]);
+
   useEffect(() => {
     // this effect is used to attach the global event handlers
 
@@ -370,8 +378,32 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   return (
     <div className="flex h-full overflow-hidden">
-      
       <ExtraSidebar />
+      {/* {
+        open && isBuilt && tabsState[flow.id] &&
+          tabsState[flow.id].formKeysData 
+          && canOpen
+          &&  (
+            <div className="left-side-bar-arrangement">
+            <LeftFormModal
+            open={open}
+            setOpen={setOpen}
+            key={flow.id}
+            flow={flow}
+          />
+          </div>
+          )
+          }         */}
+      {openSearch && getSearchResult&&getSearchResult.length>0&&(
+            <div className="search-list-bar-arrangement">
+            <SearchListModal
+            open={openSearch}
+            setOpen={setOpenSearch}
+            results={getSearchResult}
+          />
+          </div>
+          )
+          }                  
       {/* Main area */}
       <main className="flex flex-1">
         {/* Primary column */}
@@ -433,21 +465,6 @@ export default function Page({ flow }: { flow: FlowType }) {
           </div>
         </div>
       </main>
-      
-        {/*open && isBuilt && tabsState[flow.id] &&
-          tabsState[flow.id].formKeysData 
-          && canOpen
-          &&  (
-            <div className="left-side-bar-arrangement">
-            <LeftFormModal
-            open={open}
-            setOpen={setOpen}
-            key={flow.id}
-            flow={flow}
-          />
-          </div>
-          )
-          */}
      </div>
   );
 }

@@ -46,20 +46,10 @@ import AccordionComponent from "../../../../components/AccordionComponent";
 
 export default function FolderPopover() {
   const { data, templates } = useContext(typesContext);
-  const { flows, tabId, uploadFlow, tabsState, saveFlow, isBuilt,folders,addFlow,addFolder } =
+  const { flows, tabId, tabsState, isBuilt,folders,addFlow,addFolder } =
     useContext(TabsContext);
-  const { setSuccessData, setErrorData } = useContext(alertContext);
-  const [dataFilter, setFilterData] = useState(data);
-  const [search, setSearch] = useState("");
-  const isPending = tabsState[tabId]?.isPending;
   const { dark, setDark } = useContext(darkContext);
-
-  // Handle showing notebook after use search input
-  function handleSearchInput(e: string) {
-
-  }
   const flow = flows.find((flow) => flow.id === tabId);
-
   const [popoverState, setPopoverState] = useState(false);
   const [open, setOpen] = useState(false);
   const [openFolder, setOpenFolder] = useState(false);
@@ -95,13 +85,10 @@ export default function FolderPopover() {
   };
 
   const [newFolderId, setNewFolderId] = useState("");
-
-
   const list = () => (
     <Box
       sx={{ width: 265 }}
       role="presentation"
-      // onClick={toggleDrawer()}
       onKeyDown={toggleDrawer(false)}
     >
     {folders.map((folder, idx) => (
@@ -109,32 +96,32 @@ export default function FolderPopover() {
       <AccordionComponent
         trigger={
           <div className="file-component-badge-div justify-start">
-          <div
-          className="-mb-1 "
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-        >
-                  <ShadTooltip content="New notebook" side="bottom">
-                  <Button1
-                    size="sm"
-                    variant="link"
-                    onClick={() => {
-                      setNewFolderId(folder.id);
-                      setPopoverState(false);
-                      // console.log("folder id is :",folder.id)
-                      setOpen(true)
-                    }}
-                    >
-                      <IconComponent name="Plus" className="main-page-nav-button" />
-                    </Button1>
-                    </ShadTooltip>
+            <div
+            className="-mb-1 "
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
+            >
+              <ShadTooltip content="New notebook" side="bottom">
+              <Button1
+                size="sm"
+                variant="link"
+                onClick={() => {
+                  setNewFolderId(folder.id);
+                  setPopoverState(false);
+                  setOpen(true)
+                }}
+                >
+                  <IconComponent name="Plus" className="main-page-nav-button" />
+                </Button1>
+                </ShadTooltip>
             </div>
             {folder.name}
           </div>
         }
         key={idx}
-        keyValue={folder.name}
+        keyValue={folder.id}
+        open={[(flow&&flow.folder_id)?flow.folder_id:""]}
       >
         <div className="file-component-tab-column">
         <List component="div" disablePadding={true}>
@@ -149,7 +136,7 @@ export default function FolderPopover() {
               <ListItemIcon>
                 <IconComponent name="File" className="w-4"/>
               </ListItemIcon>
-              <ListItemText primary={flow.name} />
+              <ListItemText primary={flow.name} secondary= {flow.description}/>
             </ListItemButton>
           )
         ))}
@@ -195,7 +182,12 @@ export default function FolderPopover() {
       <ThemeProvider theme={darkTheme}>
       <Fragment key={'right'}>
       <ShadTooltip content="Folder" side="bottom">
-        <Button onClick={toggleDrawer(true)}><IconComponent name="Folder" className="w-6" /></Button>
+        <button 
+        className="extra-side-bar-save-disable mt-2"
+        onClick={toggleDrawer(true)}
+        >
+          <IconComponent name="Sidebar" className="side-bar-button-size " />
+        </button>
       </ShadTooltip>
         <Drawer
           anchor={'left'}
