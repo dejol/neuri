@@ -57,6 +57,10 @@ const TabsContextInitialValue: TabsContextType = {
   setIsBuilt: (state: boolean) => { },
   isLogin: false,
   setIsLogin: (state: boolean) => { },
+  openFolderList:false,
+  setOpenFolderList: (state: boolean) => { },
+  openWebEditor:false,
+  setOpenWebEditor: (state: boolean) => { },
   hardReset: () => { },
   saveFlow: async (flow: FlowType) => { },
   lastCopiedSelection: null,
@@ -728,6 +732,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const [isBuilt, setIsBuilt] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [openFolderList, setOpenFolderList] = useState(false);
+  const [openWebEditor, setOpenWebEditor] = useState(false);
 
   return (
     <TabsContext.Provider
@@ -736,7 +742,11 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         isBuilt,
         setIsBuilt,
         isLogin,
-        setIsLogin,        
+        setIsLogin, 
+        openFolderList,
+        setOpenFolderList,    
+        openWebEditor,
+        setOpenWebEditor,   
         lastCopiedSelection,
         setLastCopiedSelection,
         hardReset,

@@ -181,9 +181,9 @@ const handleDrawer = () => {
           >
 
           {menuopen ?(
-          <IconComponent name="ChevronsLeft" className="w-3"   />
+          <IconComponent name="ChevronsRight" className="w-3"   />
           ):(
-            <IconComponent name="ChevronsRight" className="w-3" />
+            <IconComponent name="ChevronsLeft" className="w-3" />
           )}
         </Button>
 
@@ -202,7 +202,7 @@ const handleDrawer = () => {
               (!(SBSectionName=="prompts"&&SBItemName!="PromptTemplate"))&&(
             <ShadTooltip
               content={data[SBSectionName][SBItemName].display_name}
-              side="right"
+              side="left"
               key={index}
             >
               <div key={index} data-tooltip-id={SBItemName} className="m-1">
@@ -235,7 +235,7 @@ const handleDrawer = () => {
                   <div className="side-bar-mini-components-div-form">
                   <IconComponent
                       name={nodeIconsLucide[SBItemName] ? SBItemName : SBSectionName }
-                      className="side-bar-components-icon w-10 h-8"
+                      className="side-bar-components-icon w-6 h-4"
                       iconColor={`${nodeColors[SBItemName]}`}
                     />
                   </div>
@@ -271,7 +271,7 @@ const handleDrawer = () => {
                     .map((SBItemName: string, index) => (
                       <ShadTooltip
                         content={data[SBSectionName][SBItemName].display_name}
-                        side="right"
+                        side="left"
                         key={index}
                       >
                         <div key={index} data-tooltip-id={SBItemName}>

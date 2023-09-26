@@ -43,61 +43,68 @@ import Collapse from '@mui/material/Collapse';
 import FlowSettingsModal from "../../../../modals/flowSettingsModal";
 import FolderModal from "../../../../modals/folderModal";
 import AccordionComponent from "../../../../components/AccordionComponent";
+import { transform } from "lodash";
+import { filterHTML } from "../../../../utils/utils";
+import WebEditorModal from "../../../../modals/webEditorModal";
 
 export default function FolderPopover() {
   const { data, templates } = useContext(typesContext);
-  const { flows, tabId, tabsState, isBuilt,folders,addFlow,addFolder } =
-    useContext(TabsContext);
+  const { flows, tabId, tabsState, isBuilt,folders,
+    addFlow,addFolder,setOpenFolderList,setOpenWebEditor,openWebEditor
+   } =useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const flow = flows.find((flow) => flow.id === tabId);
   const [popoverState, setPopoverState] = useState(false);
   const [open, setOpen] = useState(false);
   const [openFolder, setOpenFolder] = useState(false);
 
-
-  const toggleDrawer =
-    (status:boolean) =>
-    (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === 'keydown' &&
-        ((event as React.KeyboardEvent).key === 'Tab' ||
-          (event as React.KeyboardEvent).key === 'Shift')
-      ) {
-        return;
-      }
-
-      setPopoverState(status);
-    };
-    const darkTheme = ()=>{
-      if(dark){
-        return createTheme({
-          palette: {
-            mode: 'dark',
-          },
-        });
-      }
-      return createTheme({
-        palette: {
-           mode: 'light',
-        },
-      });
-
-  };
+  function onDragStart(
+    event: React.DragEvent<any>,
+    data: { type: string; node?: APIClassType }
+  ) {
+    //start drag event
+    var crt = event.currentTarget.cloneNode(true);
+    crt.style.position = "absolute";
+    crt.style.top = "-500px";
+    crt.style.right = "-500px";
+    crt.classList.add("cursor-grabbing");
+    document.body.appendChild(crt);
+    event.dataTransfer.setDragImage(crt, 0, 0);
+    event.dataTransfer.setData("nodedata", JSON.stringify(data));
+  }
+  function webEdit(flow_id,node){
+    let cont=node.node.template.note.value;
+      // setNoteContent(cont);
+      setEditFlowId(flow_id);
+      setEditNodeId(node.id);
+      // console.log("vaaue:",node);
+      setOpenWebEditor(true);
+  }
 
   const [newFolderId, setNewFolderId] = useState("");
+  // const [noteContent, setNoteContent] = useState("");
+  const [editFlowId, setEditFlowId] = useState("");
+  const [editNodeId, setEditNodeId] = useState("");
+
+
+  // useEffect(()=>{
+  //   console.log("noteContent:",noteContent);
+  // },[noteContent]);
   const list = () => (
     <Box
-      sx={{ width: 265 }}
+      sx={{ width: 200 }}
       role="presentation"
-      onKeyDown={toggleDrawer(false)}
+      // onKeyDown={toggleDrawer(false)}
+      
     >
+      
     {folders.map((folder, idx) => (
-      <div className="file-component-accordion-div mr-5" key={idx}>
+      <div className="file-component-accordion-div mr-2" key={idx}>
       <AccordionComponent
         trigger={
           <div className="file-component-badge-div justify-start">
             <div
-            className="-mb-1 "
+            // className="-mb-1 "
             onClick={(event) => {
               event.stopPropagation();
             }}
@@ -112,10 +119,11 @@ export default function FolderPopover() {
                   setOpen(true)
                 }}
                 >
-                  <IconComponent name="Plus" className="main-page-nav-button" />
+                <IconComponent name="Plus" className="main-page-nav-button" />
                 </Button1>
                 </ShadTooltip>
             </div>
+            <IconComponent name="Folder" className="main-page-nav-button" />
             {folder.name}
           </div>
         }
@@ -127,17 +135,68 @@ export default function FolderPopover() {
         <List component="div" disablePadding={true}>
       {flows.map((flow, idx) => (
           (flow.folder_id && flow.folder_id==folder.id)&&(
-            <ListItemButton  
-              sx={{ pl: 4 }}
-              onClick={() => {
-                window.location.href="/flow/"+flow.id;
-              }}
-            >
-              <ListItemIcon>
-                <IconComponent name="File" className="w-4"/>
-              </ListItemIcon>
-              <ListItemText primary={flow.name} secondary= {flow.description}/>
-            </ListItemButton>
+              <AccordionComponent
+                      trigger={
+                        <ShadTooltip content={flow.description} side="right">
+                          <div className="ml-3">
+                          <Button1
+                          size="sm"
+                          variant="link"
+                          onClick={() => {
+                            window.location.href="/flow/"+flow.id;
+                          }}
+                          >
+                          <IconComponent name="Book" className="main-page-nav-button" />
+                           {flow.name}
+                          </Button1>                          
+                        </div>
+                        </ShadTooltip>
+                      }
+                      key={idx}
+                      keyValue={flow.id}
+                    >
+                      <List component="div" disablePadding={true}>
+                      {flow.data?.nodes.map((node, idx) => (
+                        (node.data.type=="Note"||node.data.type=="AINote")&&(
+                          <ShadTooltip content={filterHTML(node.data.node.template.note.value)} side="right">
+                          <ListItem  
+                            sx={{ pl: 2 }}
+                            draggable={true}
+                            onDragStart={(event) =>
+                              onDragStart(event, {
+                                type: node.data.type,
+                                node: node.data.node,
+                              })
+                            }
+                            onDragEnd={() => {
+                              document.body.removeChild(
+                                document.getElementsByClassName(
+                                  "cursor-grabbing"
+                                )[0]
+                              );
+                            }}
+                          >
+                            <div className="ml-5 items-center border border-dashed border-ring input-note w-25 h-25 cursor-grab font-normal">
+                            {filterHTML(node.data.node.template.note.value).substring(0,20)}
+                            </div>
+                            <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">
+                              <IconComponent
+                                name="ExternalLink"
+                                className="h-4 w-4 text-primary hover:text-gray-600"
+                                aria-hidden="true"
+                              />
+                            </button>
+                          </ListItem>
+                          </ShadTooltip>
+                        )
+                      ))
+                      }
+
+                      </List>
+                      
+              </AccordionComponent>
+
+
           )
         ))}
         
@@ -159,17 +218,66 @@ export default function FolderPopover() {
         <List component="div" disablePadding>
         {flows.map((flow, idx) => (
           !flow.folder_id&&(
-            <ListItemButton  
-              sx={{ pl: 4 }}
-              onClick={() => {
-                window.location.href="/flow/"+flow.id;
-              }}
-            >
-              <ListItemIcon>
-                <IconComponent name="File" className="w-4"/>
-              </ListItemIcon>
-              <ListItemText primary={flow.name} secondary= {flow.description}/>
-            </ListItemButton>
+            <AccordionComponent
+            trigger={
+              <ShadTooltip content={flow.description} side="right">
+                <div className="ml-6">
+                <Button1
+                size="sm"
+                variant="link"
+                onClick={() => {
+                  window.location.href="/flow/"+flow.id;
+                }}
+                >
+                  <IconComponent name="Book" className="main-page-nav-button" />
+                 {flow.name}
+                </Button1>                          
+              </div>
+              </ShadTooltip>
+            }
+            key={idx}
+            keyValue={flow.id}
+          >
+            <List component="div" disablePadding={true}>
+            {flow.data.nodes.map((node, idx) => (
+              (node.data.type=="Note"||node.data.type=="AINote")&&(
+                <ShadTooltip content={filterHTML(node.data.node.template.note.value)} side="right">
+                <ListItem 
+                  sx={{ pl: 2 }}
+                  draggable={true}
+                  onDragStart={(event) =>
+                    onDragStart(event, {
+                      type: node.data.type,
+                      node: node.data.node,
+                    })
+                  }
+                  onDragEnd={() => {
+                    document.body.removeChild(
+                      document.getElementsByClassName(
+                        "cursor-grabbing"
+                      )[0]
+                    );
+                  }}
+                >
+                  <div className="ml-5 items-center border border-dashed border-ring input-note w-25 h-25 cursor-grab font-normal">
+                  {filterHTML(node.data.node.template.note.value).substring(0,20)}
+                  </div>
+                  <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">
+                    <IconComponent
+                      name="ExternalLink"
+                      className="h-4 w-4 text-primary hover:text-gray-600"
+                      aria-hidden="true"
+                    />
+                  </button>                  
+                </ListItem>
+                </ShadTooltip>
+              )
+            ))
+            }
+
+            </List>
+            
+    </AccordionComponent>
           )
         ))}
         </List>
@@ -178,53 +286,29 @@ export default function FolderPopover() {
   );
 
   return (
-    <div>
-      <ThemeProvider theme={darkTheme}>
-      <Fragment key={'right'}>
-      <ShadTooltip content="Folder" side="bottom">
-        <button 
-        className="extra-side-bar-save-disable mt-2"
-        onClick={toggleDrawer(true)}
-        >
-          <IconComponent name="Sidebar" className="side-bar-button-size " />
-        </button>
-      </ShadTooltip>
-        <Drawer
-          anchor={'left'}
-          open={popoverState}
-          onClose={toggleDrawer(false)}
-          hideBackdrop={true}
-        >
-          <div className="mt-1 ml-3 flex justify-start mt-1">
-          <Link to="/" className="mr-5">
-            <img src="/logo.svg" width="40px" alt="Neuri"/>
-          </Link>
-          <Link to="/">
-          <Button1
-            className="gap-2"
-            variant={location.pathname === "/" ? "primary" : "secondary"}
-            size="sm"
-          >
-          <IconComponent name="ChevronLeft" className="w-4" />
-          <div className="flex-1">Back</div>
-          </Button1>
-          
-        </Link>    
-          </div>
+    <div >
+    <div className="left-form-modal-iv-box mt-0">
+    <div className="eraser-column-arrangement">
+      <div className="eraser-size">
+        <div className="chat-message-div">
           {list()}
-        <ShadTooltip content="New Folder" side="left">
-          <Button 
-          onClick={() => {
-            setPopoverState(false);
-            setOpenFolder(true);
-          }}
-          >
-          <IconComponent name="Plus" className="w-6" />
-          </Button>
-        </ShadTooltip>
-        </Drawer>
-      </Fragment>
-      </ThemeProvider>
+          <ShadTooltip content="New Folder" side="left">
+            <Button 
+            onClick={() => {
+              setPopoverState(false);
+              setOpenFolder(true);
+            }}
+            >
+            <IconComponent name="Plus" className="w-6" />
+            </Button>
+          </ShadTooltip>
+
+        </div>
+      </div>
+    </div>
+    </div>
+
+
       <FlowSettingsModal
         open={open}
         setOpen={setOpen}
@@ -241,6 +325,14 @@ export default function FolderPopover() {
         folders={folders}
         folderId={newFolderId}
       ></FolderModal>
+      <WebEditorModal
+        // value={noteContent}
+        // setValue={setNoteContent}
+        setOpen={setOpenWebEditor}
+        open={openWebEditor}
+        flow_id={editFlowId}
+        node_id={editNodeId}
+      ></WebEditorModal>
   </div>  
   );
 }

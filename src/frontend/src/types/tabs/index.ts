@@ -26,6 +26,10 @@ export type TabsContextType = {
   setIsBuilt: (state: boolean) => void;
   isLogin: boolean;
   setIsLogin: (state: boolean) => void;
+  openFolderList:boolean;
+  setOpenFolderList: (state: boolean) => void;
+  openWebEditor:boolean,
+  setOpenWebEditor: (state: boolean) => void;
   uploadFlow: (newFlow?: boolean, file?: File) => void;
   hardReset: () => void;
   getNodeId: (nodeType: string) => string;

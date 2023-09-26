@@ -32,7 +32,6 @@ export default function AccordionComponent({
 
   function handleClick() {
     value === "" ? setValue(keyValue) : setValue("");
-    console.log("value:",value);
   }
 
   return (

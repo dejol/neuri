@@ -115,6 +115,13 @@ export const CODE_PROMPT_DIALOG_SUBTITLE =
   "Edit your Python code. This code snippet accepts module import and a single function definition. Make sure that your function returns a string.";
 
 /**
+ * The base text for subtitle of web editor
+ * @constant
+ */
+export const WEB_EDITOR_DIALOG_SUBTITLE =
+"Edit your note in full funtion editor.";
+
+/**
  * The base text for subtitle of Prompt Dialog
  * @constant
  */

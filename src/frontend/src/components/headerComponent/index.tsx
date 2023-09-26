@@ -1,32 +1,30 @@
 import { useContext, useEffect, useState } from "react";
-import { FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
+// import { FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
 import { Link, useLocation, useNavigate} from "react-router-dom";
 import AlertDropdown from "../../alerts/alertDropDown";
 import { USER_PROJECTS_HEADER } from "../../constants/constants";
 import { alertContext } from "../../contexts/alertContext";
 import { darkContext } from "../../contexts/darkContext";
 import { TabsContext } from "../../contexts/tabsContext";
-import { getRepoStars } from "../../controllers/API";
+// import { getRepoStars } from "../../controllers/API";
 import IconComponent from "../genericIconComponent";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import MenuBar from "./components/menuBar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuTrigger,
+// } from "../ui/dropdown-menu";
 import ShadTooltip from "../ShadTooltipComponent";
 import { Input } from "../ui/input";
 
 import { useStoreApi, useReactFlow } from 'reactflow';
-import { forEach } from "lodash";
-import FolderPopover from "../../pages/FlowPage/components/FolderComponent";
-
+import { filterHTML } from "../../utils/utils";
 export default function Header() {
-  const { flows, tabId,isLogin,setIsLogin,setSearchResult } = useContext(TabsContext);
+  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter } = useContext(alertContext);
   const location = useLocation();
@@ -52,34 +50,29 @@ export default function Header() {
   }
 
   const store = useStoreApi();
-  const { zoomIn, zoomOut, setCenter } = useReactFlow();
   const [searchKeyword,setSearchKeyword] =useState('');
 
   const searchNode = () => {
     const { nodeInternals } = store.getState();
     const nodes = Array.from(nodeInternals).map(([, node]) => node);
-    // let kws="Note-Ezsnh";
     let results=[];
     if (nodes.length > 0) {
       nodes.forEach((node) => {
         if(node.data.type=="Note"||node.data.type=="AINote"){
           let content=node.data.node.template.note.value;
-          content=content.replace(/(<([^>]+)>)/ig,"");
+          content=filterHTML(content)
           if(content&&content.indexOf(searchKeyword)>=0){
             const x = node.position.x + node.width / 2;
             const y = node.position.y + node.height / 2;
             // const zoom = 1.1;
-            content=content.substring(content.indexOf(searchKeyword)+searchKeyword.length+10,-20);
+            let begin=content.indexOf(searchKeyword);
+            begin=(begin-10)>0?begin-10:0;
+            content=content.substring(begin,begin+20+searchKeyword.length);
+            content=(begin==0?"":"...")+content+"...";
             results.push({"id":node.id,"x":x,"y":y,"content":content})
             // setCenter(x, y, { zoom, duration: 1000 });
           }
         }
-        // if(node.id==nodeId){
-        //   const x = node.position.x + node.width / 2;
-        //   const y = node.position.y + node.height / 2;
-        //   const zoom = 1.85;
-        //   setCenter(x, y, { zoom, duration: 1000 });
-        // }
       });
 
     }
@@ -121,7 +114,14 @@ export default function Header() {
           </Button>
           
         </Link> 
-        <FolderPopover/>
+        <ShadTooltip content="Folder" side="bottom">
+        <button 
+        className="extra-side-bar-save-disable"
+         onClick={()=>{setOpenFolderList(!openFolderList);}}
+        >
+          <IconComponent name={openFolderList?"X":"Sidebar"} className="side-bar-button-size " />
+        </button>
+      </ShadTooltip>
         </>         
         )}
       </div>

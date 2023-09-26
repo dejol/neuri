@@ -16,9 +16,9 @@ import ExportModal from "../../../../modals/exportModal";
 import { classNames } from "../../../../utils/utils";
 
 import IconComponent from "../../../genericIconComponent";
-import { Button } from "../../../ui/button";
+// import { Button } from "../../../ui/button";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
-import FolderPopover from "../../../../pages/FlowPage/components/FolderComponent";
+// import FolderPopover from "../../../../pages/FlowPage/components/FolderComponent";
 
 export const MenuBar = ({ flows, tabId }) => {
   const { addFlow,saveFlow,uploadFlow,tabsState } = useContext(TabsContext);
@@ -31,17 +31,17 @@ export const MenuBar = ({ flows, tabId }) => {
 
   const navigate = useNavigate();
 
-  function handleAddFlow() {
-    try {
-      addFlow(null, true).then((id) => {
-        navigate("/flow/" + id);
-      });
-      // saveFlowStyleInDataBase();
-    } catch (err) {
-      setErrorData(err);
-    }
-  }
-  let current_flow = flows.find((flow) => flow.id === tabId);
+  // function handleAddFlow() {
+  //   try {
+  //     addFlow(null, true).then((id) => {
+  //       navigate("/flow/" + id);
+  //     });
+  //     // saveFlowStyleInDataBase();
+  //   } catch (err) {
+  //     setErrorData(err);
+  //   }
+  // }
+  // let current_flow = flows.find((flow) => flow.id === tabId);
 
   return (
     <div className="round-button-div">

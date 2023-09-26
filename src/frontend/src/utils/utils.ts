@@ -489,3 +489,11 @@ export function tabsArray(codes: string[], method: number) {
     },
   ];
 }
+
+export function filterHTML(content:string){
+  content=content.replace(/(<([^>]+)>)/ig,"");
+  content=content.replace(/&amp;/ig,"").replace(/&lt;/ig,"").replace( /&gt;/ig,"")
+  .replace( /&quot;/ig,"").replace(/&#x27;/ig,"").replace(/&#x2F;/ig,"")
+  .replace(/&nbsp;/ig,"");
+  return content;  
+}

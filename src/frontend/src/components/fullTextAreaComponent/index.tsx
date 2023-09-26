@@ -20,7 +20,7 @@ export default function FullTextAreaComponent({
 }: {
   onChange: (value: string[] | string) => void;
   value: string;
-  data:NodeDataType;
+  data?:NodeDataType;
   nodeSelected:boolean;
 }) {
   const [toolbarOn,setToolbarOn] = useState(false);
@@ -117,21 +117,21 @@ export default function FullTextAreaComponent({
     // });
   };
   
-  const handleMouseMove = (event) => {
-    if (isDragging) {
-      const dx = event.clientX - mouseOffset.x - reactFlowInstance.getNode(data.id).position.x - dragOffset.x;
-      const dy = event.clientY - mouseOffset.y - reactFlowInstance.getNode(data.id).position.y - dragOffset.y;
-      if (dx > 10 && dx < 90 && dy > 10 && dy < 90) {
-        reactFlowInstance.getNode(data.id).position = { x: reactFlowInstance.getNode(data.id).position.x + dx, y: reactFlowInstance.getNode(data.id).position.y + dy };
-        setDragOffset({ x: dragOffset.x + dx, y: dragOffset.y + dy });
-      }
-    }
-  };
+  // const handleMouseMove = (event) => {
+  //   if (isDragging) {
+  //     const dx = event.clientX - mouseOffset.x - reactFlowInstance.getNode(data.id).position.x - dragOffset.x;
+  //     const dy = event.clientY - mouseOffset.y - reactFlowInstance.getNode(data.id).position.y - dragOffset.y;
+  //     if (dx > 10 && dx < 90 && dy > 10 && dy < 90) {
+  //       reactFlowInstance.getNode(data.id).position = { x: reactFlowInstance.getNode(data.id).position.x + dx, y: reactFlowInstance.getNode(data.id).position.y + dy };
+  //       setDragOffset({ x: dragOffset.x + dx, y: dragOffset.y + dy });
+  //     }
+  //   }
+  // };
   
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setDragOffset({ x: 0, y: 0 });
-  };
+  // const handleMouseUp = () => {
+  //   setIsDragging(false);
+  //   setDragOffset({ x: 0, y: 0 });
+  // };
 
   return (
     <div className="w-full items-center input-full-node input-note dark:input-note-dark"

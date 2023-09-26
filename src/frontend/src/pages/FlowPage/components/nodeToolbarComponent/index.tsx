@@ -8,6 +8,7 @@ import EditNodeModal from "../../../../modals/EditNodeModal";
 import { classNames } from "../../../../utils/utils";
 import { NodeType } from "../../../../types/flow";
 import ToggleShadComponent from "../../../../components/toggleShadComponent";
+import WebEditorModal from "../../../../modals/webEditorModal";
 
 export default function NodeToolbarComponent({ data, setData, deleteNode,runnabler,setRunnabler,miniSize,setMiniSize }) {
   const [nodeLength, setNodeLength] = useState(
@@ -26,7 +27,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
     ).length
   );
 
-  const { paste } = useContext(TabsContext);
+  const { paste,openWebEditor,setOpenWebEditor,tabId } = useContext(TabsContext);
   const reactFlowInstance = useReactFlow();
   function changeAINoteToNote(node:NodeType){
     // console.info("type is :",node)
@@ -61,7 +62,14 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
         // console.info("after new :",newNode)
     return newNode;
   }
+  const [editFlowId, setEditFlowId] = useState("");
+  const [editNodeId, setEditNodeId] = useState("");
 
+  function webEdit(){
+      setEditFlowId(tabId);
+      setEditNodeId(data.id);
+      setOpenWebEditor(true);
+  }
   return (
     <>
       <div className="w-26 h-10">
@@ -157,6 +165,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             </a>
           </ShadTooltip>
           {(data.type=="Note" || data.type=="AINote")?(
+            <>
             <ShadTooltip content="Runnable" side="top">
                 <div
                   className={classNames(
@@ -171,6 +180,22 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
                 />
             </div>
           </ShadTooltip>
+          <ShadTooltip content="Full editor" side="top">
+            
+            <button
+              className={classNames(
+                "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
+              )}
+              onClick={(event) => {
+                event.preventDefault();
+                webEdit();
+                
+              }}
+            >
+              <IconComponent name="ExternalLink" className="h-4 w-4"/>
+            </button>
+          </ShadTooltip>
+          </>
           ):(
             
           <ShadTooltip content={miniSize?"Full Size":"Mini Size"} side="top">
@@ -220,6 +245,14 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
 
         </span>
       </div>
+      <WebEditorModal
+        // value={noteContent}
+        // setValue={setNoteContent}
+        setOpen={setOpenWebEditor}
+        open={openWebEditor}
+        flow_id={editFlowId}
+        node_id={editNodeId}
+      ></WebEditorModal>
     </>
   );
 }
