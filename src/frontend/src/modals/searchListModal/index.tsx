@@ -49,7 +49,7 @@ export default function SearchListModal({
                   {results.map((node, id) => (
                     <>
                     <div className="flex justify-start mx-2">
-                      <div className="mx-1 border border-dashed border-ring input-note font-normal">{node.content}</div>
+                      <div className="mx-1 border border-dashed border-ring input-note dark:input-note-dark font-normal">{node.content}</div>
                     <button onClick={()=>{focusNode(node.x,node.y);}}>
                     <IconComponent
                       name="Crosshair"

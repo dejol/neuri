@@ -176,7 +176,7 @@ export default function FolderPopover() {
                               );
                             }}
                           >
-                            <div className="ml-5 items-center border border-dashed border-ring input-note w-25 h-25 cursor-grab font-normal">
+                            <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-25 h-25 cursor-grab font-normal">
                             {filterHTML(node.data.node.template.note.value).substring(0,20)}
                             </div>
                             <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">
@@ -259,7 +259,7 @@ export default function FolderPopover() {
                     );
                   }}
                 >
-                  <div className="ml-5 items-center border border-dashed border-ring input-note w-25 h-25 cursor-grab font-normal">
+                  <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-25 h-25 cursor-grab font-normal">
                   {filterHTML(node.data.node.template.note.value).substring(0,20)}
                   </div>
                   <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">

@@ -161,7 +161,7 @@
     background-color: #f7ee9a; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 98%;
   }
   .input-note-dark {
-    background-color: #b5ae75; border: 1px solid black; padding: 5px; font-family: Arial; font-size: 14px; font-weight: bold; border-radius: 10px;height: 98%;
+    background-color: #b5ae75; border: 1px solid black; padding: 5px; font-family: Arial; color:black; font-size: 14px; font-weight: bold; border-radius: 10px;height: 98%;
   }
   
   .input-search {
