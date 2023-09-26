@@ -5,7 +5,7 @@ from langchain.llms.base import BaseLLM
 
 class NoteFrontendNode(FrontendNode):
     name: str = "Note"
-    runnable:bool = False
+    runnable:bool = True
     template: Template = Template(
         type_name="Note",
         fields=[
