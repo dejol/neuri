@@ -134,7 +134,7 @@ const handleLogin = (user) => {
                       setOpen(true)
                     }}
                   >
-                    <IconComponent name="Plus" className="main-page-nav-button" />
+                    <IconComponent name="FilePlus" className="main-page-nav-button" />
                   </Button>
                   </ShadTooltip>
               </div>
@@ -186,7 +186,7 @@ const handleLogin = (user) => {
               setOpen(true)
             }}
           >
-            <IconComponent name="Plus" className="main-page-nav-button" />
+            <IconComponent name="FilePlus" className="main-page-nav-button" />
           </Button>
           </ShadTooltip>
       </div>      

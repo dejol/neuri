@@ -21,12 +21,14 @@ import {
   Eraser,
   ExternalLink,
   File,
+  FilePlus,
   FileDown,
   FileSearch,
   FileSearch2,
   FileText,
   FileUp,
   Folder,
+  FolderPlus,
   Fingerprint,
   Gift,
   GitFork,
@@ -83,6 +85,7 @@ import {
   Sidebar,
   Smile,
   Book,
+  PlusSquare,
 } from "lucide-react";
 // all icon here : https://www.figma.com/file/dyJRSFTIajik4cdkcXN8yA3K/Feather-Component-Library?type=design&node-id=0-1&mode=design
 import { AirbyteIcon } from "../icons/Airbyte";
@@ -310,8 +313,10 @@ export const nodeIconsLucide = {
   Sparkles,
   DownloadCloud,
   File,
+  FilePlus,
   FileText,
   Folder,
+  FolderPlus,
   GitFork,
   GithubIcon,
   FileDown,
@@ -332,4 +337,5 @@ export const nodeIconsLucide = {
   Smile,
   Book,
   NoteBooksIcon,
+  PlusSquare,
 };

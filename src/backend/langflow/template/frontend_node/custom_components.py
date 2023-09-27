@@ -33,7 +33,7 @@ class CustomComponentFrontendNode(FrontendNode):
     
 class TranslaterFrontendNode(FrontendNode):
     name: str = "TranslaterComponent"
-    display_name: str = "Translater"
+    display_name: str = "英文翻译器"
     beta: bool = False
     template: Template = Template(
         type_name="TranslaterComponent",
@@ -59,7 +59,7 @@ class TranslaterFrontendNode(FrontendNode):
 
 class ArticleGeneraterFrontendNode(FrontendNode):
     name: str = "ArticleGeneraterComponent"
-    display_name: str = "Article Generater"
+    display_name: str = "文案生成器"
     beta: bool = False
     template: Template = Template(
         type_name="ArticleGeneraterComponent",
@@ -85,7 +85,7 @@ class ArticleGeneraterFrontendNode(FrontendNode):
     
 class ArticleStructureFrontendNode(FrontendNode):
     name: str = "ArticleStructureComponent"
-    display_name: str = "Article Structure"
+    display_name: str = "文章结构生成器"
     beta: bool = False
     template: Template = Template(
         type_name="ArticleStructureComponent",
@@ -111,7 +111,7 @@ class ArticleStructureFrontendNode(FrontendNode):
 
 class VideoScriptFrontendNode(FrontendNode):
     name: str = "VideoScriptComponent"
-    display_name: str = "Video Script"
+    display_name: str = "小视频脚本生成器"
     beta: bool = False
     template: Template = Template(
         type_name="VideoScriptComponent",
@@ -137,7 +137,7 @@ class VideoScriptFrontendNode(FrontendNode):
     
 class HandlerFrontendNode(FrontendNode):
     name: str = "HandlerComponent"
-    display_name: str = "Handler"
+    display_name: str = "全能处理器"
     beta: bool = False
     template: Template = Template(
         type_name="HandlerComponent",

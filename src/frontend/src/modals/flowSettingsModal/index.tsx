@@ -74,7 +74,7 @@ export default function FlowSettingsModal({
         ):(
           <span className="pr-2">Settings</span>
         )}
-        <IconComponent name="Settings2" className="mr-2 h-4 w-4 " />
+        <IconComponent name={isNew?"File":"Settings2"} className="mr-2 h-4 w-4 " />
       </BaseModal.Header>
       <BaseModal.Content>
       <Label>

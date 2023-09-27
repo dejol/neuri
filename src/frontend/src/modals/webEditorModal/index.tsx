@@ -4,7 +4,7 @@ import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-twilight";
 // import "ace-builds/webpack-resolver";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState,useRef } from "react";
 import AceEditor from "react-ace";
 import IconComponent from "../../components/genericIconComponent";
 import { Button } from "../../components/ui/button";
@@ -18,7 +18,7 @@ import BaseModal from "../baseModal";
 import FullTextAreaComponent from "../../components/fullTextAreaComponent";
 import { NodeDataType, NodeType } from "../../types/flow";
 import { TabsContext } from "../../contexts/tabsContext";
-
+import {useNodesState,useReactFlow} from "reactflow";
 export default function WebEditorModal({
   flow_id,
   node_id,
@@ -34,20 +34,63 @@ export default function WebEditorModal({
 }) {
 
   const [height, setHeight] = useState(null);
-
+  const { data ,reactFlowInstance} = useContext(typesContext);
   const [editValue, setEditValue] = useState("");
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const [error, setError] = useState<{
     detail: { error: string; traceback: string };
   }>(null);
-  const { flows, saveFlow} = useContext(TabsContext);
- 
+
+  const { flows, saveFlow,getNodeId,tabId  } = useContext(TabsContext);
+  let currentFlow = flows.find((flow) => flow.id === tabId);
+
   function handleClick() {
-    let savedFlow = flows.find((flow) => flow.id === flow_id);
-    let editedNode=savedFlow.data.nodes.find((node)=>node.id===node_id);
-    editedNode.data.node.template.note.value=editValue;
-    saveFlow(savedFlow);
+    // console.log("flow:",savedFlow);
+    if(node_id){
+      let savedFlow = flows.find((flow) => flow.id === flow_id);
+
+      let editedNode=savedFlow.data.nodes.find((node)=>node.id===node_id);
+      editedNode.data.node.template.note.value=editValue;
+      saveFlow(savedFlow);
+    }else{
+      // let newNode=data["notes"]["Note"];
+      let newData = { type: "Note",node:data["notes"]["Note"]};
+      
+      let { type } = newData;
+      let newId = getNodeId(type);
+
+      let newNode: NodeType;
+      // const reactflowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const position = reactFlowInstance.project({
+        x: 10 ,// - reactflowBounds.left,
+        y: 10, //  - reactflowBounds.top,
+      });
+      newData.node.template.note.value=editValue;
+      newNode = {
+        id: newId,
+        type: "genericNode",
+        position,
+        
+        data: {
+          ...newData,
+          id: newId,
+          value: null,
+        },
+      };
+
+      // setNodes((nds) => nds.concat(newNode));
+      // newNode.data.node.template.note.valu=editValue;
+      // let nodes=savedFlow.data.nodes;
+      // saveFlow(currentFlow);
+      let nodesList=currentFlow.data.nodes;
+      nodesList.push(newNode);
+      reactFlowInstance.setNodes(nodesList);
+      // updateFlow(savedFlow);
+      saveFlow(currentFlow);
+    }
     setSuccessData({ title: "Changes saved successfully" });
+    setEditValue("");
+    node_id=""
     setOpen(false);
   }
 
@@ -73,21 +116,20 @@ export default function WebEditorModal({
   }
   useEffect(() => {
     let savedFlow = flows.find((flow) => flow.id === flow_id);
-    
     if(savedFlow){
-      let editedNode=savedFlow.data.nodes.find((node)=>node.data.id===node_id);
-       setEditValue(editedNode.data.node.template.note.value);
+      if(node_id){
+        let editedNode=savedFlow.data.nodes.find((node)=>node.data.id===node_id);
+        setEditValue(editedNode.data.node.template.note.value);
+
+      }
     }
-    // let editedNode=savedFlow.data.nodes.find((node)=>node.id===node_id);
-    // setEditValue(editedNode.data.template.note.value);
-    // setValue(value);
   }, [flow_id,node_id]);
 
   return (
     <BaseModal open={open} setOpen={setOpen}>
       <BaseModal.Trigger>{children}</BaseModal.Trigger>
       <BaseModal.Header description="">
-        <span className="pr-2">Edit Note Content</span>
+        <span className="pr-2">{(node_id&&node_id!="")?"Edit":"New"} Note Content</span>
         <IconComponent
           name="FileText"
           className="h-6 w-6 pl-1 text-primary "

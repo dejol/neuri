@@ -37,7 +37,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
       type: "genericNode",
       position: {
         x: node.position.x ,
-        y:  node.position.y ,
+        y: node.position.y ,
       },
       data: {
         ..._.cloneDeep(node.data),
@@ -168,15 +168,16 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             <>
             <ShadTooltip content="Runnable" side="top">
                 <div
-                  className={classNames(
+                  className={
                     "relative -ml-px inline-flex items-center bg-background px-0 py-0 text-foreground shadow-md ring-1 ring-inset  ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
-                  )}
+                  }
                 >
                 <ToggleShadComponent
                   disabled={false}
                   enabled={runnabler}
                   setEnabled={setRunnabler}
                   size="small"
+                  
                 />
             </div>
           </ShadTooltip>

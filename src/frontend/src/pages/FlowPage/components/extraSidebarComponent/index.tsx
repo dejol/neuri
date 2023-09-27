@@ -81,72 +81,6 @@ const handleDrawer = () => {
     <div 
     className={menuopen?"side-bar-arrangement":"small-side-bar-arrangement"}
     >
-      {/* <div className="side-bar-buttons-arrangement">
-        <div className="side-bar-button">
-          <ShadTooltip content="Import" side="top">
-            <button
-              className="extra-side-bar-buttons"
-              onClick={() => {
-                uploadFlow();
-              }}
-            >
-              <IconComponent name="FileUp" className="side-bar-button-size " />
-            </button>
-          </ShadTooltip>
-        </div>
-        <div className="side-bar-button">
-          <ExportModal>
-            <ShadTooltip content="Export" side="top">
-              <div className={classNames("extra-side-bar-buttons")}>
-                <IconComponent
-                  name="FileDown"
-                  className="side-bar-button-size"
-                />
-              </div>
-            </ShadTooltip>
-          </ExportModal>
-        </div>
-        <ShadTooltip content={"Code"} side="top">
-          <div className="side-bar-button">
-            {flow && flow.data && (
-              <ApiModal flow={flow} disable={!isBuilt}>
-                <div className={classNames("extra-side-bar-buttons")}>
-                  <IconComponent
-                    name="Code2"
-                    className={
-                      "side-bar-button-size" +
-                      (isBuilt ? " " : " extra-side-bar-save-disable")
-                    }
-                  />
-                </div>
-              </ApiModal>
-            )}
-          </div>
-        </ShadTooltip>
-        <div className="side-bar-button">
-          <ShadTooltip content="Save" side="top">
-            <button
-              className={
-                "extra-side-bar-buttons " + (isPending ? "" : "button-disable")
-              }
-              onClick={(event) => {
-                saveFlow(flow);
-                setSuccessData({ title: "Changes saved successfully" });
-              }}
-            >
-              <IconComponent
-                name="Save"
-                className={
-                  "side-bar-button-size" +
-                  (isPending ? " " : " extra-side-bar-save-disable")
-                }
-              />
-            </button>
-          </ShadTooltip>
-        </div>
-      </div>
-      <Separator /> */}
-
 {/* 工具栏从这里开始 */}
 <div className={menuopen?"side-bar-search-div-placement":"flex justify-end mt-2"}>
       {menuopen &&(
@@ -201,7 +135,7 @@ const handleDrawer = () => {
             (!(SBSectionName=="custom_components"&&SBItemName=="CustomComponent"))&&(
               (!(SBSectionName=="prompts"&&SBItemName!="PromptTemplate"))&&(
             <ShadTooltip
-              content={data[SBSectionName][SBItemName].display_name}
+              content={data[SBSectionName][SBItemName].display_name=="PromptTemplate"?"全能指令":data[SBSectionName][SBItemName].display_name}
               side="left"
               key={index}
             >
@@ -235,7 +169,7 @@ const handleDrawer = () => {
                   <div className="side-bar-mini-components-div-form">
                   <IconComponent
                       name={nodeIconsLucide[SBItemName] ? SBItemName : SBSectionName }
-                      className="side-bar-components-icon w-6 h-4"
+                      className="side-bar-components-icon w-10 h-8"
                       iconColor={`${nodeColors[SBItemName]}`}
                     />
                   </div>

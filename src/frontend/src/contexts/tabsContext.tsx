@@ -732,7 +732,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const [isBuilt, setIsBuilt] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
-  const [openFolderList, setOpenFolderList] = useState(false);
+  const [openFolderList, setOpenFolderList] = useState(true);
   const [openWebEditor, setOpenWebEditor] = useState(false);
 
   return (

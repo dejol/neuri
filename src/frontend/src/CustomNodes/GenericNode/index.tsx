@@ -91,7 +91,7 @@ export default function GenericNode({
 
   return (
     <>
-      <NodeToolbar>
+      <NodeToolbar offset={-20}>
         <NodeToolbarComponent
           data={data}
           setData={setData}
@@ -132,7 +132,7 @@ export default function GenericNode({
             <div className="generic-node-tooltip-div">
               <ShadTooltip content={data.node.display_name}>
                 <div className="generic-node-tooltip-div text-primary">
-                  {data.node.display_name}
+                  {(data.node.display_name&&data.node.display_name=="PromptTemplate")?"全能指令":data.node.display_name}
                 </div>
               </ShadTooltip>
             </div>

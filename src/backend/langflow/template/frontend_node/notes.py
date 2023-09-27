@@ -5,6 +5,7 @@ from langchain.llms.base import BaseLLM
 
 class NoteFrontendNode(FrontendNode):
     name: str = "Note"
+    display_name: str = "笔记"
     runnable:bool = True
     template: Template = Template(
         type_name="Note",
@@ -31,6 +32,7 @@ class NoteFrontendNode(FrontendNode):
 
 class AINoteFrontendNode(FrontendNode):
     name: str = "AINote"
+    display_name: str = "智能笔记"
     runnable: bool = True
     template: Template = Template(
         type_name="Note",

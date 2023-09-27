@@ -73,10 +73,15 @@ export default function FolderPopover() {
     event.dataTransfer.setData("nodedata", JSON.stringify(data));
   }
   function webEdit(flow_id,node){
-    let cont=node.node.template.note.value;
+    // let cont=node.node.template.note.value;
       // setNoteContent(cont);
       setEditFlowId(flow_id);
-      setEditNodeId(node.id);
+      if(node){
+        setEditNodeId(node.id);
+      }else{
+        setEditNodeId("");
+      }
+      
       // console.log("vaaue:",node);
       setOpenWebEditor(true);
   }
@@ -109,19 +114,6 @@ export default function FolderPopover() {
               event.stopPropagation();
             }}
             >
-              <ShadTooltip content="New notebook" side="bottom">
-              <Button1
-                size="sm"
-                variant="link"
-                onClick={() => {
-                  setNewFolderId(folder.id);
-                  setPopoverState(false);
-                  setOpen(true)
-                }}
-                >
-                <IconComponent name="Plus" className="main-page-nav-button" />
-                </Button1>
-                </ShadTooltip>
             </div>
             <IconComponent name="Folder" className="main-page-nav-button" />
             {folder.name}
@@ -138,7 +130,7 @@ export default function FolderPopover() {
               <AccordionComponent
                       trigger={
                         <ShadTooltip content={flow.description} side="right">
-                          <div className="ml-3">
+                          <div className="ml-0">
                           <Button1
                           size="sm"
                           variant="link"
@@ -146,7 +138,7 @@ export default function FolderPopover() {
                             window.location.href="/flow/"+flow.id;
                           }}
                           >
-                          <IconComponent name="Book" className="main-page-nav-button" />
+                          <IconComponent name="FileText" className="main-page-nav-button" />
                            {flow.name}
                           </Button1>                          
                         </div>
@@ -176,7 +168,7 @@ export default function FolderPopover() {
                               );
                             }}
                           >
-                            <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-25 h-25 cursor-grab font-normal">
+                            <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-24 cursor-grab font-normal">
                             {filterHTML(node.data.node.template.note.value).substring(0,20)}
                             </div>
                             <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">
@@ -209,9 +201,9 @@ export default function FolderPopover() {
         openDisc={false}
         // className={"components-disclosure-top-arrangement"}
         button={{
-          title: "Others",
+          title: "Unclassified",
           Icon:
-          nodeIconsLucide["NoteBooks"] ?? nodeIconsLucide.unknown,
+          nodeIconsLucide.unknown,
         }}
       >
         
@@ -221,7 +213,7 @@ export default function FolderPopover() {
             <AccordionComponent
             trigger={
               <ShadTooltip content={flow.description} side="right">
-                <div className="ml-6">
+                <div className="ml-0">
                 <Button1
                 size="sm"
                 variant="link"
@@ -229,7 +221,7 @@ export default function FolderPopover() {
                   window.location.href="/flow/"+flow.id;
                 }}
                 >
-                  <IconComponent name="Book" className="main-page-nav-button" />
+                  <IconComponent name="FileText" className="main-page-nav-button" />
                  {flow.name}
                 </Button1>                          
               </div>
@@ -259,7 +251,7 @@ export default function FolderPopover() {
                     );
                   }}
                 >
-                  <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-25 h-25 cursor-grab font-normal">
+                  <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-30 h-25 cursor-grab font-normal">
                   {filterHTML(node.data.node.template.note.value).substring(0,20)}
                   </div>
                   <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">
@@ -286,53 +278,91 @@ export default function FolderPopover() {
   );
 
   return (
-    <div >
-    <div className="left-form-modal-iv-box mt-0">
-    <div className="eraser-column-arrangement">
-      <div className="eraser-size">
-        <div className="chat-message-div">
-          {list()}
-          <ShadTooltip content="New Folder" side="left">
-            <Button 
-            onClick={() => {
-              setPopoverState(false);
-              setOpenFolder(true);
-            }}
-            >
-            <IconComponent name="Plus" className="w-6" />
-            </Button>
-          </ShadTooltip>
-
+    <div className={"side-bar-arrangement"}>
+      <div className={"side-bar-search-div-placement"}>
+        <div className="header-end-display">
+            <ShadTooltip content="New note" side="bottom">
+              <button
+                className={"extra-side-bar-save-disable"}
+                onClick={(event) => {
+                  webEdit(flow.id,null);
+                }}
+              >
+                <IconComponent
+                  name="PlusSquare"
+                  className={
+                    "side-bar-button-size"
+                  }
+                />
+              </button>
+            </ShadTooltip>  
+            <ShadTooltip content="New notebook" side="bottom">
+              <button
+                className={"extra-side-bar-save-disable"}
+                onClick={(event) => {
+                  setNewFolderId('');
+                  setPopoverState(false);
+                  setOpen(true)                  
+                }}
+              >
+                <IconComponent
+                  name="FilePlus"
+                  className={
+                    "side-bar-button-size"
+                  }
+                />
+              </button>
+            </ShadTooltip>  
+            <ShadTooltip content="New folder" side="bottom">
+              <button
+                className={"extra-side-bar-save-disable"}
+                onClick={(event) => {
+                  setPopoverState(false);
+                  setOpenFolder(true);                  
+                }}
+              >
+                <IconComponent
+                  name="FolderPlus"
+                  className={
+                    "side-bar-button-size"
+                  }
+                />
+              </button>
+            </ShadTooltip>                          
+        </div>
+    </div>
+    <div className="side-bar-components-div-arrangement pb-0">
+      <div className="left-form-modal-iv-box mt-0">
+      <div className="eraser-column-arrangement">
+        <div className="eraser-size">
+          <div className="chat-message-div">
+            {list()}
+          </div>
         </div>
       </div>
     </div>
-    </div>
-
-
-      <FlowSettingsModal
-        open={open}
-        setOpen={setOpen}
-        isNew={true}
-        newFolderId={newFolderId}
-      ></FlowSettingsModal>
-
-      <FolderModal
-        open={openFolder}
-        setOpen={setOpenFolder}
-        isNew={true}
-        popoverStatus={popoverState}
-        setPopoverStatus={setPopoverState}
-        folders={folders}
-        folderId={newFolderId}
-      ></FolderModal>
-      <WebEditorModal
-        // value={noteContent}
-        // setValue={setNoteContent}
-        setOpen={setOpenWebEditor}
-        open={openWebEditor}
-        flow_id={editFlowId}
-        node_id={editNodeId}
-      ></WebEditorModal>
-  </div>  
+        <FlowSettingsModal
+          open={open}
+          setOpen={setOpen}
+          isNew={true}
+          newFolderId={newFolderId}
+        ></FlowSettingsModal>
+        <FolderModal
+          open={openFolder}
+          setOpen={setOpenFolder}
+          isNew={true}
+          popoverStatus={popoverState}
+          setPopoverStatus={setPopoverState}
+          folders={folders}
+          folderId={newFolderId}
+        ></FolderModal>
+        <WebEditorModal
+          setOpen={setOpenWebEditor}
+          open={openWebEditor}
+          flow_id={editFlowId}
+          node_id={editNodeId}
+        ></WebEditorModal>
+    </div>  
+  </div>
   );
 }

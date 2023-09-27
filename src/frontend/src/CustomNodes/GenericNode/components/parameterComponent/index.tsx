@@ -207,7 +207,7 @@ export default function ParameterComponent({
             (info !== "" ? " flex items-center" : "")
           }
         >
-          {title}
+          {(title&&title=="PromptTemplate")?"全能指令":title} 
           <span className="text-status-red">{required ? " *" : ""}</span>
           <div className="">
             {info !== "" && (
