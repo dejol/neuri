@@ -107,6 +107,7 @@ export default function FolderPopover() {
       <div className="file-component-accordion-div mr-2" key={idx}>
       <AccordionComponent
         trigger={
+          <ShadTooltip content={folder.description} side="right">
           <div className="file-component-badge-div justify-start h-4">
             <div
             // className="-mb-1 "
@@ -118,6 +119,7 @@ export default function FolderPopover() {
             <IconComponent name="Folder" className="main-page-nav-button" />
             {folder.name}
           </div>
+          </ShadTooltip>
         }
         key={idx}
         keyValue={folder.id}
@@ -199,6 +201,7 @@ export default function FolderPopover() {
 
       <AccordionComponent
         trigger={
+          <ShadTooltip content="所有没有归类到文件夹的都放在这里" side="right">
           <div className="file-component-badge-div justify-start h-4">
             <div
             // className="-mb-1 "
@@ -210,6 +213,7 @@ export default function FolderPopover() {
             <IconComponent name="Folder" className="main-page-nav-button" />
             Unclassified
           </div>
+          </ShadTooltip>
         }
         keyValue={"f000"}
         >
