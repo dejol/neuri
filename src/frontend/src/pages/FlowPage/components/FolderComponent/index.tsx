@@ -107,7 +107,7 @@ export default function FolderPopover() {
       <div className="file-component-accordion-div mr-2" key={idx}>
       <AccordionComponent
         trigger={
-          <div className="file-component-badge-div justify-start">
+          <div className="file-component-badge-div justify-start h-4">
             <div
             // className="-mb-1 "
             onClick={(event) => {
@@ -121,6 +121,7 @@ export default function FolderPopover() {
         }
         key={idx}
         keyValue={folder.id}
+        
         open={[(flow&&flow.folder_id)?flow.folder_id:""]}
       >
         <div className="file-component-tab-column">
@@ -130,13 +131,14 @@ export default function FolderPopover() {
               <AccordionComponent
                       trigger={
                         <ShadTooltip content={flow.description} side="right">
-                          <div className="ml-0">
+                          <div className="file-component-badge-div justify-start h-4 ml-1">
                           <Button1
                           size="sm"
                           variant="link"
                           onClick={() => {
                             window.location.href="/flow/"+flow.id;
                           }}
+                          
                           >
                           <IconComponent name="FileText" className="main-page-nav-button" />
                            {flow.name}
@@ -146,6 +148,7 @@ export default function FolderPopover() {
                       }
                       key={idx}
                       keyValue={flow.id}
+                      
                     >
                       <List component="div" disablePadding={true}>
                       {flow.data?.nodes.map((node, idx) => (
@@ -167,17 +170,12 @@ export default function FolderPopover() {
                                 )[0]
                               );
                             }}
+                            className="pr-0 py-2"
                           >
-                            <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-24 cursor-grab font-normal">
+                            <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
+                            onDoubleClick={()=>{webEdit(flow.id,node.data);}}>
                             {filterHTML(node.data.node.template.note.value).substring(0,20)}
                             </div>
-                            <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">
-                              <IconComponent
-                                name="ExternalLink"
-                                className="h-4 w-4 text-primary hover:text-gray-600"
-                                aria-hidden="true"
-                              />
-                            </button>
                           </ListItem>
                           </ShadTooltip>
                         )
@@ -197,23 +195,31 @@ export default function FolderPopover() {
       </AccordionComponent>
     </div>
     ))}
-      <DisclosureComponent
-        openDisc={false}
-        // className={"components-disclosure-top-arrangement"}
-        button={{
-          title: "Unclassified",
-          Icon:
-          nodeIconsLucide.unknown,
-        }}
-      >
-        
+    <div className="file-component-accordion-div mr-2">
+
+      <AccordionComponent
+        trigger={
+          <div className="file-component-badge-div justify-start h-4">
+            <div
+            // className="-mb-1 "
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
+            >
+            </div>
+            <IconComponent name="Folder" className="main-page-nav-button" />
+            Unclassified
+          </div>
+        }
+        keyValue={"f000"}
+        >
         <List component="div" disablePadding>
         {flows.map((flow, idx) => (
           !flow.folder_id&&(
             <AccordionComponent
             trigger={
               <ShadTooltip content={flow.description} side="right">
-                <div className="ml-0">
+                <div className="file-component-badge-div justify-start h-4 ml-1">
                 <Button1
                 size="sm"
                 variant="link"
@@ -223,7 +229,7 @@ export default function FolderPopover() {
                 >
                   <IconComponent name="FileText" className="main-page-nav-button" />
                  {flow.name}
-                </Button1>                          
+                 </Button1>
               </div>
               </ShadTooltip>
             }
@@ -250,17 +256,12 @@ export default function FolderPopover() {
                       )[0]
                     );
                   }}
+                  className="pr-0 py-2"
                 >
-                  <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-30 h-25 cursor-grab font-normal">
+                  <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
+                  onDoubleClick={()=>{webEdit(flow.id,node.data);}}>
                   {filterHTML(node.data.node.template.note.value).substring(0,20)}
-                  </div>
-                  <button onClick={()=>{webEdit(flow.id,node.data);}} className="ml-2">
-                    <IconComponent
-                      name="ExternalLink"
-                      className="h-4 w-4 text-primary hover:text-gray-600"
-                      aria-hidden="true"
-                    />
-                  </button>                  
+                  </div>               
                 </ListItem>
                 </ShadTooltip>
               )
@@ -273,7 +274,8 @@ export default function FolderPopover() {
           )
         ))}
         </List>
-      </DisclosureComponent>
+      </AccordionComponent>
+     </div> 
     </Box>
   );
 

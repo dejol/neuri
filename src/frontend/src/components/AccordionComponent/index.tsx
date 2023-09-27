@@ -42,12 +42,12 @@ export default function AccordionComponent({
         value={value}
         onValueChange={setValue}
       >
-        <AccordionItem value={keyValue} className="border-b">
+        <AccordionItem value={keyValue} className="border-0">
           <AccordionTrigger
             onClick={() => {
               handleClick();
             }}
-            className="ml-3"
+            className="ml-3 py-2"
             
           >
             {trigger}
