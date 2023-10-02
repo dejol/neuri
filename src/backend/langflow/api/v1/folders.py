@@ -42,10 +42,14 @@ def create_folder(folder: FolderModel, db: Session = Depends(get_session)):
     return db_folder
 
 
-@router.get("/", response_model=List[Folder])
-def read_folders(*, db: Session = Depends(get_session)):
+@router.get("/all/{user_id}", response_model=List[Folder])
+def read_folders(user_id:str, db: Session = Depends(get_session)):
+    """Get all folders"""
     try:
-        folders = db.exec(select(Folder)).all()
+        # folders = db.exec(select(Folder)).all()
+        # print("user_id:",user_id)
+        folders = db.query(Folder).filter(Folder.user_id ==user_id ).all()
+        # print("folders:",folders)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     return [jsonable_encoder(folder) for folder in folders]

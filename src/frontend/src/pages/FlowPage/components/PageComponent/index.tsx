@@ -54,6 +54,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     saveFlow,
     setTabsState,
     tabId,
+    loginUserId
   } = useContext(TabsContext);
   const { types, reactFlowInstance, setReactFlowInstance, templates } =
     useContext(typesContext);
@@ -396,7 +397,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           </div>
           )
           }         */}
-          {/* {openFolderList&&( */}
+          {flow&&(
             <Transition
             show={openFolderList}
             enter="transition-transform duration-500 ease-out"
@@ -410,7 +411,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           >
             <FolderPopover />
           </Transition>
-          {/* )} */}
+          )}
           
 
       {/* {openSearch && getSearchResult&&getSearchResult.length>0&&( */}
@@ -477,12 +478,14 @@ export default function Page({ flow }: { flow: FlowType }) {
                   maxZoom={8}
                 >
                   <Background className="" />
-                  <MiniMap pannable={true} 
-                  position="bottom-right" 
-                  zoomable={true} 
-                  ariaLabel="Zoom In/Out & Move" 
-                  className="dark:bg-muted"
-                  />
+                  {flow.id!=loginUserId&&(
+                    <MiniMap pannable={true} 
+                    position="bottom-right" 
+                    zoomable={true} 
+                    ariaLabel="Zoom In/Out & Move" 
+                    className="dark:bg-muted"
+                    />
+                  )}
                   <Controls
                     className="bg-muted fill-foreground stroke-foreground text-primary
                    [&>button]:border-b-border hover:[&>button]:bg-border"

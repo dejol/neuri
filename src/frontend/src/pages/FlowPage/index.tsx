@@ -5,25 +5,34 @@ import { getVersion } from "../../controllers/API";
 import Page from "./components/PageComponent";
 
 export default function FlowPage() {
-  const { flows, tabId, setTabId,isLogin } = useContext(TabsContext);
+  const { flows, tabId, setTabId,isLogin,setIsLogin,setLoginUserId,loginUserId } = useContext(TabsContext);
   const { id } = useParams();
   const navigate = useNavigate();
 
   // Set flow tab id
   useEffect(() => {
     setTabId(id);
+    if(localStorage.getItem('login')){
+      setIsLogin(true);
+      setLoginUserId(localStorage.getItem('login'));
+    }else{
+      navigate("/");
+    }
+    if(flows){
+      let flow=flows.find((flow) => flow.id === id);
+      if(flow&&flow.user_id!=loginUserId){
+        navigate("/");
+      }
+    }
   }, [id]);
 
   // Initialize state variable for the version
-  const [version, setVersion] = useState("");
-  useEffect(() => {
-    if(localStorage.getItem('login')!="true"){
-      navigate("/");
-    }
-    getVersion().then((data) => {
-      setVersion(data.version);
-    });
-  }, []);
+  // const [version, setVersion] = useState("");
+  // useEffect(() => {
+    // getVersion().then((data) => {
+    //   setVersion(data.version);
+    // });
+  // }, []);
 
   return (
     <div className="flow-page-positioning">

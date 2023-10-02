@@ -503,7 +503,7 @@ export const NOUNS: string[] = [
  * @constant
  *
  */
-export const USER_PROJECTS_HEADER = "My NoteBooks";
+export const USER_PROJECTS_HEADER = "Neuri NoteBooks";
 
 /**
  * URLs excluded from error retries.

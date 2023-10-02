@@ -9,6 +9,8 @@ import BaseModal from "../baseModal";
 import { DropdownMenu,DropdownMenuTrigger, DropdownMenuItem,DropdownMenuContent} from "../../components/ui/dropdown-menu";
 import { Label } from "../../components/ui/label";
 import { useNavigate } from "react-router-dom";
+import Dropdown from "../../components/dropdownComponent";
+import { flow } from "lodash";
 
 export default function FlowSettingsModal({
   open,
@@ -23,10 +25,10 @@ export default function FlowSettingsModal({
 }) {
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const ref = useRef();
-  const { flows, tabId, updateFlow, setTabsState, saveFlow,folders,addFlow } =
+  const { flows, tabId,loginUserId, updateFlow, setTabsState, saveFlow,folders,addFlow,removeFlow } =
     useContext(TabsContext);
   const maxLength = 50;
-
+  
   const [name, setName] = useState(
       isNew?"":(flows.find((flow) => flow.id === tabId).name)
   );
@@ -66,6 +68,11 @@ export default function FlowSettingsModal({
     setOpen(false);
   }
 
+  useEffect(()=>{
+    if(newFolderId!=""){
+      setFolderId(newFolderId);
+    }
+  },[newFolderId])
   return (
     <BaseModal open={open} setOpen={setOpen} size="medium">
       <BaseModal.Header description={SETTINGS_DIALOG_SUBTITLE}>
@@ -87,9 +94,9 @@ export default function FlowSettingsModal({
                 <Button asChild variant="primary" size="sm">
                   <div className="header-menu-bar-display">
                     <div className="header-menu-flow-name">
-                    {folders.map((folder) => (
-                      ((isNew&&folder.id==newFolderId)||(!isNew&&folder.id==folderId))&&(
-                        <>{folder.name}</>
+                    {folders&&folders.map((folder,idx) => (
+                      (folder.id==folderId)&&(
+                        <div key={idx}>{folder.name}</div>
                       )
                     ))}
                     </div>
@@ -104,6 +111,7 @@ export default function FlowSettingsModal({
                     setFolderId(folder.id);
                   }}
                   className="cursor-pointer"
+                  key={idx}
                   >
                 {folder.name}
                 </DropdownMenuItem>
@@ -126,9 +134,25 @@ export default function FlowSettingsModal({
       </BaseModal.Content>
 
       <BaseModal.Footer>
-        <Button disabled={invalidName} onClick={handleClick} type="submit">
+        <Button  onClick={handleClick} type="submit">
           Save
         </Button>
+        {(!isNew&&tabId!=loginUserId)&&(
+          <Button  onClick={()=>{
+              let flow=flows.find((flow) => flow.id === tabId);
+              removeFlow(flow.id);
+              setSuccessData({ title: "Delete Notebook successfully" });
+              setOpen(false);
+              setDescription("");
+              setName("");
+              let url="/flow/"+loginUserId;
+              navigate(url);
+            }} type="button" className="mx-2" variant={"secondary"}>
+              <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
+            Delete
+          </Button>  
+        )}
+       
       </BaseModal.Footer>
     </BaseModal>
   );

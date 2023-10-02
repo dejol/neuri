@@ -40,6 +40,8 @@ const TabsContextInitialValue: TabsContextType = {
   save: () => { },
   tabId: "",
   setTabId: (index: string) => { },
+  loginUserId: "",
+  setLoginUserId: (index: string) => { },
   flows: [],
   folders: [],
   removeFlow: (id: string) => { },
@@ -87,6 +89,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const { setErrorData, setNoticeData } = useContext(alertContext);
 
   const [tabId, setTabId] = useState("");
+  const [loginUserId, setLoginUserId] = useState("");
 
   const [flows, setFlows] = useState<Array<FlowType>>([]);
   
@@ -132,7 +135,6 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     getTabsDataFromDB().then((DbData) => {
       if (DbData && Object.keys(templates).length > 0) {
         try {
-          
           processDBData(DbData);
           updateStateWithDbData(DbData);
         } catch (e) {
@@ -142,41 +144,56 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     });
   }
   function refreshFolders() {
-    getFoldersDataFromDB().then((DbData) => {
-      setFolders(DbData);
-      // console.log("folders:",DbData)
-      // if (DbData && Object.keys(templates).length > 0) {
-      //   try {
-          
-      //     processDBData(DbData);
-          
-      //   } catch (e) {
-      //     console.error(e);
-      //   }
-      // }
-    });
+      getFoldersDataFromDB().then((DbData) => {
+        setFolders(DbData);
+        // console.log("folders:",DbData)
+        // if (DbData && Object.keys(templates).length > 0) {
+        //   try {
+            
+        //     processDBData(DbData);
+            
+        //   } catch (e) {
+        //     console.error(e);
+        //   }
+        // }
+      });
+    
+   
   }
 
   useEffect(() => {
     // get data from db
     //get tabs locally saved
     // let tabsData = getLocalStorageTabsData();
-    refreshFlows();
+    if(loginUserId){
+      refreshFlows();
+    }
   }, [templates]);
 
   useEffect(() => {
     // get data from db
     //get tabs locally saved
-    refreshFolders();
+    setLoginUserId(localStorage.getItem('login'));    
+
   }, []);
+  useEffect(() => {
+    if(loginUserId){
+      refreshFolders();
+      refreshFlows();
+    }
+  }, [loginUserId]);
 
   function getTabsDataFromDB() {
     //get tabs from db
-    return readFlowsFromDatabase();
+    return readFlowsFromDatabase(loginUserId);
   }
   function getFoldersDataFromDB() {
     //get tabs from db
-    return readFoldersFromDatabase();
+
+    // if(loginUserId){
+      return readFoldersFromDatabase(loginUserId);
+    // }
+    // return;
   }
   function processDBData(DbData) {
     DbData.forEach((flow) => {
@@ -527,6 +544,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       if(folder_id){
         newFlow.folder_id=folder_id;
       }
+      
     
       try {
         const { id } = await saveFlowToDatabase(newFlow);
@@ -556,6 +574,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       let newFolder = {
         description: "NOT DESC",
         name: getRandomName(),
+        user_id:folder?.user_id ?? loginUserId,
         id: "",
       }
       if(folder){
@@ -630,6 +649,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     name: flow?.name ?? getRandomName(),
     data: flowData.data,
     folder_id: flow?.folder_id ?? "",
+    user_id: flow?.user_id ?? loginUserId,
     id: "",
   });
 
@@ -651,6 +671,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         newFlows[index].description = newFlow.description ?? "";
         newFlows[index].data = newFlow.data;
         newFlows[index].name = newFlow.name;
+        newFlows[index].user_id = loginUserId;
       }
       return newFlows;
     });
@@ -659,6 +680,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   async function saveFlow(newFlow: FlowType) {
     try {
       // updates flow in db
+      newFlow.user_id=loginUserId;
       const updatedFlow = await updateFlowInDatabase(newFlow);
       if (updatedFlow) {
         // updates flow in state
@@ -670,6 +692,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
             newFlows[index].folder_id = newFlow.folder_id ?? "";
             newFlows[index].data = newFlow.data;
             newFlows[index].name = newFlow.name;
+            newFlows[index].user_id = loginUserId;
           }
           return newFlows;
         });
@@ -691,6 +714,9 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   async function saveFolder(newFolder: FolderType) {
     try {
       // updates folder in db
+      if(!newFolder.user_id){
+        newFolder.user_id=loginUserId;
+      }
       const updatedFolder = await updateFolderInDatabase(newFolder);
       if (updatedFolder) {
         // updates folder in state
@@ -721,12 +747,12 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const login = async (
     user: UserType
   ): Promise<String> => {
-    const resp = await loginUserFromDatabase(user);
+    let resp = await loginUserFromDatabase(user);
     // console.log("response return:",resp)
-    if(resp.password=="******"){
-      return "true";
-    }
-    return "false";
+    // if(resp.password=="******"){
+    //   return "true";
+    // }
+    return resp;
 
   }
 
@@ -775,6 +801,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setSearchResult,
         getSearchResult,
         login,
+        loginUserId,
+        setLoginUserId,
       }}
     >
       {children}

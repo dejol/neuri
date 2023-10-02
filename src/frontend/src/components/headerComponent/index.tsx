@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState,Fragment } from "react";
 // import { FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
 import { Link, useLocation, useNavigate} from "react-router-dom";
 import AlertDropdown from "../../alerts/alertDropDown";
@@ -23,13 +23,29 @@ import { Input } from "../ui/input";
 
 import { useStoreApi, useReactFlow } from 'reactflow';
 import { filterHTML } from "../../utils/utils";
+
+import {Button as Button1} from '@mui/material';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Avatar from '@mui/material/Avatar';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+
 export default function Header() {
-  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList } = useContext(TabsContext);
+  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList,folders,setLoginUserId } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter } = useContext(alertContext);
   const location = useLocation();
 
   let current_flow = flows.find((flow) => flow.id === tabId);
+  var current_folder;
+  if(current_flow){
+      current_folder = folders.find((folder) => folder.id === current_flow.folder_id);
+  }
+  
 
   // const [stars, setStars] = useState(null);
 
@@ -44,8 +60,10 @@ export default function Header() {
   const navigate = useNavigate();
 
   function logout(){
-    localStorage.setItem('login',"");
+    setLoginUserId("");
     setIsLogin(false);
+    localStorage.setItem('login',"");
+    localStorage.setItem('userName',"");
     navigate("/");
   }
 
@@ -79,58 +97,66 @@ export default function Header() {
     setSearchResult(results);
   };
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
 
   return (
     <div className="header-arrangement">
-      <div className="header-start-display">
+      
         {tabId === "" || !tabId ? (
-          <>
+          <div className="header-start-display">
           <Link to="/" className="m-3">
             <img src="/logo.svg" width="40px" alt="Neuri"/>
           </Link>
-            <a
-              href="https://www.neuri.ai/"
-              target="_blank"
-              rel="noreferrer"
-              className="header-waitlist-link-box"
-            >
-              <span>Join Us</span>
-            </a>
-          </>
+            
+          </div>
         ) : (
           <>
-          <Link to="/" className="m-3">
-            <img src="/logo.svg" width="40px" alt="Neuri"/>
-          </Link>
-          <Link to="/">
-          <Button
-            className="gap-2"
-            variant={location.pathname === "/" ? "primary" : "secondary"}
-            size="sm"
+          <div className="header-start-display">
+            <Link to="/" className="m-3">
+              <img src="/logo.svg" width="40px" alt="Neuri"/>
+            </Link>
+            <ShadTooltip content="Folder" side="bottom">
+          <button 
+          className="extra-side-bar-save-disable"
+          onClick={()=>{setOpenFolderList(!openFolderList);}}
           >
-          <IconComponent name="ChevronLeft" className="w-4" />
-          <div className="flex-1">Back</div>
-          </Button>
-          
-        </Link> 
-        <ShadTooltip content="Folder" side="bottom">
-        <button 
-        className="extra-side-bar-save-disable"
-         onClick={()=>{setOpenFolderList(!openFolderList);}}
-        >
-          <IconComponent name={openFolderList?"X":"Sidebar"} className="side-bar-button-size " />
-        </button>
-      </ShadTooltip>
+            <IconComponent name={openFolderList?"X":"Sidebar"} className="side-bar-button-size " />
+          </button>
+          </ShadTooltip>
+      </div>
+      <div className="flex justify-start w-64">
+          <div className="header-menu-bar">
+          <Link to="/" className="gap-2">          
+          <div className="flex-1">Home</div>
+          </Link>
+          <IconComponent name="ChevronRight" className="w-4" />
+            {current_flow&&current_folder&&(
+              <>
+                <div>{current_folder.name}</div>
+                <IconComponent name="ChevronRight" className="w-4" />
+              </>
+            )}
+            {(current_flow&&current_flow.name) &&(
+               <div>{current_flow.name}</div>
+            )}
+          </div>
+
+      </div>
+
         </>         
         )}
-      </div>
+     
       <div className="round-button-div">
           {(current_flow&&current_flow.name) ?(
             <>
-            <div className="header-menu-bar">
-              {current_flow.name}
-            </div>
           <div className="side-bar-search-div-placement">
           <div className="ml-1 ">
           <Input
@@ -169,16 +195,7 @@ export default function Header() {
         </div>       
         </>     
             ):(
-              <Link to="/">
-              <Button
-                className="gap-2"
-                variant={location.pathname === "/" ? "primary" : "secondary"}
-                size="sm"
-              >
-              <IconComponent name="Home" className="h-4 w-4" />
-              <div className="flex-1">{USER_PROJECTS_HEADER}</div>
-               </Button>
-             </Link>
+              <></>
           )}
 
         
@@ -227,32 +244,6 @@ export default function Header() {
           <MenuBar flows={flows} tabId={tabId} />
         )}
           <Separator orientation="vertical" />
-          <ShadTooltip content="Log Out" side="bottom">
-          <button
-            className="extra-side-bar-save-disable"
-            onClick={() => {
-              logout();      
-            }}
-          >
-            {(localStorage.getItem('login')=="true") ? (
-              <IconComponent name="LogOut" className="side-bar-button-size" />
-            ) : (
-              <IconComponent name="LogIn" className="side-bar-button-size" />
-            )}
-          </button>       
-          </ShadTooltip>   
-          <button
-            className="extra-side-bar-save-disable"
-            onClick={() => {
-              setDark(!dark);
-            }}
-          >
-            {dark ? (
-              <IconComponent name="SunIcon" className="side-bar-button-size" />
-            ) : (
-              <IconComponent name="MoonIcon" className="side-bar-button-size" />
-            )}
-          </button>
           <AlertDropdown>
             <div className="extra-side-bar-save-disable relative">
               {notificationCenter && (
@@ -265,6 +256,97 @@ export default function Header() {
               />
             </div>
           </AlertDropdown>
+
+            {(isLogin) ? (
+              <Fragment>
+                <ShadTooltip content="Account" side="bottom">
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLElement>) => {
+                    setAnchorEl(event.currentTarget);}}
+                  size="small"
+                  sx={{ ml: 0 }}
+                  aria-controls={open ? 'account-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                >
+                  <Avatar sx={{ width: 32, height: 32 }}>
+                  {localStorage.getItem('userName').charAt(0).toUpperCase()}
+                    </Avatar>
+                </IconButton>
+              </ShadTooltip>
+              <Menu         
+                anchorEl={anchorEl}
+                id="account-menu"
+                open={open}
+                onClose={()=>{setAnchorEl(null);}}
+                onClick={()=>{setAnchorEl(null);}}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                    '&:before': {
+                      content: '""',
+                      display: 'block',
+                      position: 'absolute',
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: 'background.paper',
+                      transform: 'translateY(-50%) rotate(45deg)',
+                      zIndex: 0,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                <MenuItem onClick={()=>{
+                  //
+                  }
+                }>
+                  <IconComponent name="User" className="side-bar-button-size mr-2" />
+                  {localStorage.getItem('userName')}
+                </MenuItem>
+                <MenuItem onClick={()=>{
+                    setDark(!dark);    
+                  }
+                }>
+                  {dark ? (
+                    <IconComponent name="SunIcon" className="side-bar-button-size mr-2" />
+                  ) : (
+                    <IconComponent name="MoonIcon" className="side-bar-button-size mr-2" />
+                  )}
+                    model
+                </MenuItem>
+                <MenuItem onClick={()=>{
+                    logout();    
+                  }
+                }>
+                  <IconComponent name="LogOut" className="side-bar-button-size mr-2" />Logout
+                </MenuItem>
+              </Menu>
+              </Fragment>
+            ) : (
+              <ShadTooltip content="Login" side="bottom"> 
+              <button
+              className="extra-side-bar-save-disable"
+              onClick={() => {
+                logout();      
+              }}
+            >
+              <IconComponent name="LogIn" className="side-bar-button-size" />
+              </button>       
+          </ShadTooltip>  
+            )}
         </div>
       </div>
     </div>

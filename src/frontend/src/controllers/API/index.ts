@@ -104,6 +104,7 @@ export async function saveFlowToDatabase(newFlow: {
   data: ReactFlowJsonObject;
   description: string;
   style?: FlowStyleType;
+  user_id:string;
 }): Promise<FlowType> {
   try {
     const response = await api.post("/api/v1/flows/", {
@@ -111,6 +112,7 @@ export async function saveFlowToDatabase(newFlow: {
       name: newFlow.name,
       data: newFlow.data,
       description: newFlow.description,
+      user_id:newFlow.user_id,
     });
 
     if (response.status !== 201) {
@@ -132,12 +134,14 @@ export async function saveFlowToDatabase(newFlow: {
 export async function updateFlowInDatabase(
   updatedFlow: FlowType
 ): Promise<FlowType> {
+  
   try {
     const response = await api.patch(`/api/v1/flows/${updatedFlow.id}`, {
       name: updatedFlow.name,
       data: updatedFlow.data,
       description: updatedFlow.description,
       folder_id: updatedFlow.folder_id,
+      user_id: updatedFlow.user_id,
     });
 
     if (response.status !== 200) {
@@ -156,10 +160,10 @@ export async function updateFlowInDatabase(
  * @returns {Promise<any>} The flows data.
  * @throws Will throw an error if reading fails.
  */
-export async function readFlowsFromDatabase() {
+export async function readFlowsFromDatabase(user_id:string) {
 
   try {
-    const response = await api.get("/api/v1/flows/");
+    const response = await api.get(`/api/v1/flows/all/${user_id}`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -358,9 +362,10 @@ export async function postCustomComponent(
  * @returns {Promise<any>} The folders data.
  * @throws Will throw an error if reading fails.
  */
-export async function readFoldersFromDatabase() {
+export async function readFoldersFromDatabase(user_id:string) {
   try {
-    const response = await api.get("/api/v1/folders/");
+    // console.log("user_id:",user_id)
+    const response = await api.get(`/api/v1/folders/all/${user_id}`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -382,11 +387,13 @@ export async function saveFolderToDatabase(newFolder: {
   name: string;
   id: string;
   description: string;
+  user_id:string;
 }): Promise<FolderType> {
   try {
     const response = await api.post("/api/v1/folders/", {
       name: newFolder.name,
       description: newFolder.description,
+      user_id:newFolder.user_id,
     });
 
     if (response.status !== 200) {
@@ -413,6 +420,7 @@ export async function updateFolderInDatabase(
     const response = await api.patch(`/api/v1/folders/${updatedFolder.id}`, {
       name: updatedFolder.name,
       description: updatedFolder.description,
+      user_id:updatedFolder.user_id,
     });
 
     if (response.status !== 200) {

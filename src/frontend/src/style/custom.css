@@ -4,4 +4,10 @@
     height: 100%;
     position: relative;
 }
-
+.w-e-bar-item {
+  display: flex;
+  height: 32px;
+  padding: 4px;
+  position: relative;
+  text-align: center;
+}

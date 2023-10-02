@@ -31,11 +31,12 @@ def create_flow(*, session: Session = Depends(get_session), flow: FlowCreate):
     return db_flow
 
 
-@router.get("/", response_model=list[FlowRead], status_code=200)
-def read_flows(*, session: Session = Depends(get_session)):
+@router.get("/all/{user_id}", response_model=list[FlowRead], status_code=200)
+def read_flows(user_id:str, session: Session = Depends(get_session)):
     """Read all flows."""
     try:
-        flows = session.exec(select(Flow)).all()
+        # flows = session.exec(select(Flow)).all()
+        flows = session.query(Flow).filter(Flow.user_id ==user_id ).all()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     return [jsonable_encoder(flow) for flow in flows]

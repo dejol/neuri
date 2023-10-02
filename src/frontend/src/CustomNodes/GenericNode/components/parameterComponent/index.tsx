@@ -96,14 +96,25 @@ export default function ParameterComponent({
     // Set state to pending
     //@ts-ignore
     setTabsState((prev: TabsState) => {
-      return {
-        ...prev,
-        [tabId]: {
-          ...prev[tabId],
-          isPending: true,
-          formKeysData: prev[tabId].formKeysData,
-        },
-      };
+      if (Object.keys(prev).length === 0) {
+        let newTabsState: TabsState 
+        newTabsState = { 
+          [tabId]: { 
+            isPending: true,
+            formKeysData: {},
+           }
+        };
+        return newTabsState;
+      }
+        return {
+          ...prev,
+          [tabId]: {
+            ...prev[tabId],
+            isPending: true,
+            formKeysData: prev[tabId].formKeysData,
+          },
+        };
+      
     });
     renderTooltips();
   };

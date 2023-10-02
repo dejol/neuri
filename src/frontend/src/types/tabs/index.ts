@@ -6,6 +6,8 @@ export type TabsContextType = {
   save: () => void;
   tabId: string;
   setTabId: (index: string) => void;
+  loginUserId: string,
+  setLoginUserId: (index: string) => void,
   flows: Array<FlowType>;
   folders:Array<FolderType>;
   removeFlow: (id: string) => void;

@@ -14,6 +14,7 @@ import '../../style/custom.css'
 import { Boot } from '@wangeditor/editor'
 import { typesContext } from "../../contexts/typesContext";
 import markdownModule from '@wangeditor/plugin-md'
+import { NodeToolbar } from "reactflow";
 
 
 // import ReactMarkdown from "react-markdown";
@@ -186,6 +187,15 @@ const handleMouseUp = () => {
 
 
   return (
+    <>
+    <NodeToolbar offset={3}>
+    <Toolbar
+        editor={editor}
+        defaultConfig={toolbarConfig}
+        mode={"simple"}
+        style={{ border: '1px solid #ccc' }}
+    />
+    </NodeToolbar>
     <div className="left-form-modal-iv-box ">
     <div className="eraser-column-arrangement">
         <div className="eraser-size-embedded">
@@ -226,15 +236,6 @@ const handleMouseUp = () => {
 
                                 
                  <div style={{ border: '0px solid #ccc',  zIndex: 100}}>
-                  {toolbarOn&&(
-                    <Toolbar
-                    editor={editor}
-                    defaultConfig={toolbarConfig}
-                    mode="simple"
-                    style={{ borderBottom: '1px solid #ccc' }}
-                    />
-                  )}
-
                 <Editor
                     defaultConfig={editorConfig}
                     value={contentValue}
@@ -323,5 +324,6 @@ const handleMouseUp = () => {
     </div>
 </div>                  
 </div>  
+</>
   );
 }

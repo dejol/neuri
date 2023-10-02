@@ -91,7 +91,7 @@ export default function GenericNode({
 
   return (
     <>
-      <NodeToolbar offset={-20}>
+      <NodeToolbar offset={(data.type=="Note" || data.type=="AINote")?10:-20}>
         <NodeToolbarComponent
           data={data}
           setData={setData}

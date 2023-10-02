@@ -59,6 +59,7 @@
     --status-green: #4ade80;
     --status-blue: #2563eb;
     --connection: #555;
+
   }
 
   .dark {
@@ -126,5 +127,9 @@
 
     --chat-bot-icon: #235d70;
     --chat-user-icon: #4f3d6e;
+    /* wangEditor*/
+    --w-e-toolbar-bg-color:hsl(var(--background));
+    --w-e-toolbar-color:hsl(var(--foreground));
+    --w-e-toolbar-active-color:hsl(var(--ring));
   }
 }

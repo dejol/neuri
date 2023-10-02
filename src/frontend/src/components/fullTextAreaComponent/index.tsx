@@ -12,23 +12,29 @@ import { typesContext } from "../../contexts/typesContext";
 import markdownModule from '@wangeditor/plugin-md'
 import {NodeDataType} from "../../types/flow/index"
 import { cloneDeep } from "lodash";
+import { Background, NodeToolbar } from "reactflow";
+import { red } from "@mui/material/colors";
 export default function FullTextAreaComponent({
   value,
   onChange,
   data,
   nodeSelected,
+  defualtToolbar=false,
 }: {
   onChange: (value: string[] | string) => void;
   value: string;
   data?:NodeDataType;
   nodeSelected:boolean;
+  defualtToolbar?:boolean;
 }) {
   const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
 
   // editor 实例
   const [editor, setEditor] = useState<IDomEditor | null>(null)
-  
+  // useEffect(()=>{
+  //   setToolbarOn(defualtToolbar);
+  // },[defualtToolbar]);
   // 编辑器内容
   // const [html, setHtml] = useState(value)
   
@@ -41,16 +47,18 @@ export default function FullTextAreaComponent({
   
   // 工具栏配置
   const toolbarConfig: Partial<IToolbarConfig> = { }
-  toolbarConfig.toolbarKeys=[    
-    'bold',
-    'italic',
-    'through',
-    'bulletedList',
-    'numberedList',
-    'insertLink',
-    'justifyCenter',
-    'insertImage',
-  ];
+  if(!defualtToolbar){
+    toolbarConfig.toolbarKeys=[    
+      'bold',
+      'italic',
+      'through',
+      'bulletedList',
+      'numberedList',
+      'insertLink',
+      'justifyCenter',
+      'insertImage',
+    ];
+  }
 //   toolbarConfig.excludeKeys = [
 //     'headerSelect',
 //     'italic',
@@ -104,10 +112,10 @@ export default function FullTextAreaComponent({
   }, [editor])
   
   // const node = useStoreState((state) => state.nodes[id]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const { reactFlowInstance } = useContext(typesContext);
+  // const [isDragging, setIsDragging] = useState(false);
+  // const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  // const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  // const { reactFlowInstance } = useContext(typesContext);
   const handleMouseDown = (event) => {
     event.stopPropagation();
     // setIsDragging(true);
@@ -134,30 +142,30 @@ export default function FullTextAreaComponent({
   // };
 
   return (
+    <>
+    {(defualtToolbar||toolbarOn) &&(
+      (defualtToolbar?(
+        <Toolbar
+        editor={editor}
+        defaultConfig={toolbarConfig}
+        mode={"default"}
+        // style={{ borderBottom: '1px solid #ccc' }}
+    />
+      ):(
+        <NodeToolbar offset={3}>
+        <Toolbar
+            editor={editor}
+            defaultConfig={toolbarConfig}
+            mode={"simple"}
+            style={{ border: '1px solid #ccc' }}
+        />
+        </NodeToolbar>
+      ))
+    )}
     <div className="w-full items-center input-full-node input-note dark:input-note-dark"
     style={{cursor: 'text'}}
     onMouseDownCapture={handleMouseDown}
-    // onMouseMove={handleMouseMove}
-    // onMouseUpCapture={handleMouseUp}
     >
-      {/* <Textarea
-        value={value}
-        // disabled={disabled}
-        // className={editNode ? "input-full-node input-note dark:input-note-dark" : ""}
-        placeholder={"Type something..."}
-        onChange={(event) => {
-          onChange(event.target.value);
-        }}
-      /> */}
-      {toolbarOn &&(
-                      <Toolbar
-                      editor={editor}
-                      defaultConfig={toolbarConfig}
-                      mode="simple"
-                      style={{ borderBottom: '1px solid #ccc' }}
-                  />
-      )}
-
       <Editor
                     defaultConfig={editorConfig}
                     value={value}
@@ -178,5 +186,6 @@ export default function FullTextAreaComponent({
                 />
                  
     </div>
+    </>
   );
 }

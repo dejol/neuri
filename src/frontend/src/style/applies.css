@@ -68,6 +68,9 @@
   .side-bar-arrangement {
     @apply flex h-full w-52 flex-col overflow-hidden border-r scrollbar-hide;
   }
+  .left-side-folder-arrangement {
+    @apply grid h-full w-52  overflow-hidden border-r scrollbar-hide;grid-template-rows: 7% 86% 7%;
+  }
   .small-side-bar-arrangement {
     @apply flex h-full w-16 flex-col overflow-hidden border-r scrollbar-hide;
   }
@@ -531,7 +534,7 @@
     @apply flex-max-width h-12 items-center justify-between border-border bg-muted;
   }
   .header-start-display {
-    @apply flex w-52 items-center justify-start gap-2;
+    @apply flex w-32 items-center justify-start gap-2;
   }
   .header-end-division {
     @apply flex w-96 justify-end px-2;

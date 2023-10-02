@@ -128,7 +128,7 @@ const handleDrawer = () => {
         .sort()
         .map((SBSectionName: keyof APIObjectType, index) =>
           ((SBSectionName=="notes"||SBSectionName=="custom_components"||SBSectionName=="prompts")&&Object.keys(dataFilter[SBSectionName]).length > 0) && (
-        <>
+        <div key={index}>
         {Object.keys(dataFilter[SBSectionName])
           .sort()
           .map((SBItemName: string, index) => (
@@ -179,7 +179,7 @@ const handleDrawer = () => {
               )
             )
           ))}
-        </>
+        </div>
           )
         )}
       </>

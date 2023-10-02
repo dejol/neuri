@@ -5,6 +5,7 @@ export type FlowType = {
   name: string;
   id: string;
   folder_id?:string;
+  user_id?:string;
   data: ReactFlowJsonObject;
   description: string;
   style?: FlowStyleType;
@@ -12,6 +13,7 @@ export type FlowType = {
 export type FolderType = {
   name: string;
   id: string;
+  user_id?:string;
   description?: string;
 };
 export type NodeType = {
@@ -44,6 +46,6 @@ export type TweaksType = Array<
 
 export type UserType = {
   name: string;
-  id: string;
+  id?: string;
   password?: string;
 };

@@ -14,6 +14,6 @@ class User(SQLModelSerializable, table=True):
 
 
 class UserModel(SQLModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    id: str = Field(default="")
     name: str = Field(default="")
     password: Optional[str] = None

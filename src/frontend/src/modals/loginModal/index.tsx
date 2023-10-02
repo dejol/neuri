@@ -6,21 +6,29 @@ import BaseModal from "../baseModal";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { alertContext } from "../../contexts/alertContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginModal = forwardRef((props: { children: ReactNode }, ref) => {
-  const {isLogin,setIsLogin,login  } =useContext(TabsContext);
+  const {isLogin,setIsLogin,login,setLoginUserId  } =useContext(TabsContext);
   const { setErrorData } = useContext(alertContext);
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate =useNavigate();
     const handleSubmit = async (event) => {
       event.preventDefault();
       try {
-        login({id:"", name:username, password:password }).then((response)=>{
-          // console.log("return response:",response);
-          setIsLogin(response=="true");
-          localStorage.setItem('login',response.toString());
-          if(response!="true"){
+        login({name:username, password:password }).then((response)=>{
+          console.log("return response:",response);
+          setIsLogin(response!="");
+          setLoginUserId(response['id']);
+          localStorage.setItem('login',response['id']);
+          localStorage.setItem('userName',response['name']);
+          if(response!=""){
+            let url="/flow/"+response['id'];
+            navigate(url);
+          }
+          if(response==""){
             setErrorData({
               title: "User Name or password is incorrect, please try again",
               
