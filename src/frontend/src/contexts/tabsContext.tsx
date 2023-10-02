@@ -78,7 +78,12 @@ const TabsContextInitialValue: TabsContextType = {
     selection: { nodes: any; edges: any; },
     position: { x: number; y: number; paneX?: number; paneY?: number; }
   ) => { },
-  login: async (user: UserType)=>""
+  login: async (user: UserType)=>"",
+  editNodeId:"",
+  editFlowId:"",
+  setEditFlowId: (editFlowId: string) => { },
+  setEditNodeId: (editNodeId: string) => { },
+
 };
 
 export const TabsContext = createContext<TabsContextType>(
@@ -101,7 +106,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const [tabsState, setTabsState] = useState<TabsState>({});
   const [getTweak, setTweak] = useState([]);
   const [getSearchResult, setSearchResult] = useState([]);
-
+  const [editFlowId, setEditFlowId] = useState("");//for webEditorModal
+  const [editNodeId, setEditNodeId] = useState("");//for webEditorModal
   const newNodeId = useRef(uid());
   function incrementNodeId() {
     newNodeId.current = uid();
@@ -803,6 +809,11 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         login,
         loginUserId,
         setLoginUserId,
+        editFlowId,
+        editNodeId,
+        setEditFlowId,
+        setEditNodeId
+
       }}
     >
       {children}

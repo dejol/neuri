@@ -8,7 +8,6 @@ import EditNodeModal from "../../../../modals/EditNodeModal";
 import { classNames } from "../../../../utils/utils";
 import { NodeType } from "../../../../types/flow";
 import ToggleShadComponent from "../../../../components/toggleShadComponent";
-import WebEditorModal from "../../../../modals/webEditorModal";
 
 export default function NodeToolbarComponent({ data, setData, deleteNode,runnabler,setRunnabler,miniSize,setMiniSize }) {
   const [nodeLength, setNodeLength] = useState(
@@ -27,7 +26,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
     ).length
   );
 
-  const { paste,openWebEditor,setOpenWebEditor,tabId } = useContext(TabsContext);
+  const { paste,openWebEditor,setOpenWebEditor,tabId,setEditFlowId,setEditNodeId } = useContext(TabsContext);
   const reactFlowInstance = useReactFlow();
   function changeAINoteToNote(node:NodeType){
     // console.info("type is :",node)
@@ -62,8 +61,6 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
         // console.info("after new :",newNode)
     return newNode;
   }
-  const [editFlowId, setEditFlowId] = useState("");
-  const [editNodeId, setEditNodeId] = useState("");
 
   function webEdit(){
       setEditFlowId(tabId);
@@ -240,20 +237,8 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
               </EditNodeModal>
             </div>
           </ShadTooltip>      
-      
-
-
-
         </span>
       </div>
-      <WebEditorModal
-        // value={noteContent}
-        // setValue={setNoteContent}
-        setOpen={setOpenWebEditor}
-        open={openWebEditor}
-        flow_id={editFlowId}
-        node_id={editNodeId}
-      ></WebEditorModal>
     </>
   );
 }

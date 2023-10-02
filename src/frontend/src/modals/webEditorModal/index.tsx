@@ -70,7 +70,7 @@ export default function WebEditorModal({
     detail: { error: string; traceback: string };
   }>(null);
 
-  const { flows, saveFlow,getNodeId,tabId  } = useContext(TabsContext);
+  const { flows, saveFlow,getNodeId,tabId,setEditFlowId,setEditNodeId  } = useContext(TabsContext);
   let currentFlow = flows.find((flow) => flow.id === tabId);
 
   function handleClick() {
@@ -140,15 +140,22 @@ export default function WebEditorModal({
     setEditValue(val);
   }
   useEffect(() => {
-    let savedFlow = flows.find((flow) => flow.id === flow_id);
-    if(savedFlow){
-      if(node_id){
-        let editedNode=savedFlow.data.nodes.find((node)=>node.data.id===node_id);
-        setEditValue(editedNode.data.node.template.note.value);
-
+    if(open){
+      let savedFlow = flows.find((flow) => flow.id === flow_id);
+      if(savedFlow){
+        if(node_id){
+          let editedNode=savedFlow.data.nodes.find((node)=>node.data.id===node_id);
+          setEditValue(editedNode.data.node.template.note.value);
+  
+        }
       }
+    }else{
+      setEditValue("");
+      setEditFlowId("");
+      setEditNodeId("");
     }
-  }, [flow_id,node_id, open]);
+
+  }, [open]);
 
   // useEffect(()=>{
   //   Boot.registerModule(markdownModule);

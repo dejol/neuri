@@ -48,6 +48,10 @@ export type TabsContextType = {
   setSearchResult: (node: Array<any>) => void;
   getSearchResult: any[];
   login:(user:UserType) => Promise<String>;
+  editFlowId:string;
+  setEditFlowId: (editFlowId: string) => void;//for webEditorModal
+  editNodeId:string;
+  setEditNodeId:(editNodeIdindex: string) => void;//for webEditorModal
 };
 
 export type TabsState = {

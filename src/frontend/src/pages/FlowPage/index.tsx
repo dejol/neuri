@@ -3,9 +3,10 @@ import { useParams,useNavigate } from "react-router-dom";
 import { TabsContext } from "../../contexts/tabsContext";
 import { getVersion } from "../../controllers/API";
 import Page from "./components/PageComponent";
+import WebEditorModal from "../../modals/webEditorModal";
 
 export default function FlowPage() {
-  const { flows, tabId, setTabId,isLogin,setIsLogin,setLoginUserId,loginUserId } = useContext(TabsContext);
+  const { flows, tabId, setTabId,isLogin,setIsLogin,setLoginUserId,loginUserId,setEditFlowId,setEditNodeId,editFlowId,editNodeId,openWebEditor,setOpenWebEditor } = useContext(TabsContext);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -39,6 +40,7 @@ export default function FlowPage() {
       {flows.length > 0 &&
         tabId !== "" &&
         flows.findIndex((flow) => flow.id === tabId) !== -1 && (
+
           <Page flow={flows.find((flow) => flow.id === tabId)} />
         )}
       {/* <a
@@ -49,6 +51,12 @@ export default function FlowPage() {
         {version && <div className="mt-1"> Neuri v{version}</div>}
         <div className={version ? "mt-2" : "mt-1"}>Created by King Yu</div>
       </a> */}
+      <WebEditorModal
+        setOpen={setOpenWebEditor}
+        open={openWebEditor}
+        flow_id={editFlowId}
+        node_id={editNodeId}
+      ></WebEditorModal>
     </div>
   );
 }

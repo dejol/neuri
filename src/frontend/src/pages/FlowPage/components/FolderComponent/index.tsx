@@ -45,12 +45,12 @@ import FolderModal from "../../../../modals/folderModal";
 import AccordionComponent from "../../../../components/AccordionComponent";
 import { transform } from "lodash";
 import { filterHTML } from "../../../../utils/utils";
-import WebEditorModal from "../../../../modals/webEditorModal";
 
 export default function FolderPopover() {
   const { data, templates } = useContext(typesContext);
   const { flows, tabId, tabsState, isBuilt,folders,
-    downloadFlows,uploadFlows,setOpenFolderList,setOpenWebEditor,openWebEditor
+    downloadFlows,uploadFlows,setOpenFolderList,setOpenWebEditor,openWebEditor,
+    setEditFlowId,setEditNodeId
    } =useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const flow = flows.find((flow) => flow.id === tabId);
@@ -87,11 +87,6 @@ export default function FolderPopover() {
   }
 
   const [newFolderId, setNewFolderId] = useState("");
-  // const [noteContent, setNoteContent] = useState("");
-  const [editFlowId, setEditFlowId] = useState("");
-  const [editNodeId, setEditNodeId] = useState("");
-
-
   // useEffect(()=>{
   //   console.log("noteContent:",noteContent);
   // },[noteContent]);
@@ -361,12 +356,6 @@ export default function FolderPopover() {
           folders={folders}
           folderId={newFolderId}
         ></FolderModal>
-        <WebEditorModal
-          setOpen={setOpenWebEditor}
-          open={openWebEditor}
-          flow_id={editFlowId}
-          node_id={editNodeId}
-        ></WebEditorModal>
     </div>  
     <div className={"side-bar-search-div-placement justify-end"}>
         <div className="header-end-display">
