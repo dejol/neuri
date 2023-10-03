@@ -11,3 +11,16 @@
   position: relative;
   text-align: center;
 }
+
+.w-e-bar-item-group .w-e-bar-item-menus-container {
+  background-color: var(--w-e-toolbar-bg-color);
+  border: 1px solid var(--w-e-toolbar-border-color);
+  border-radius: 3px;
+  box-shadow: 0 2px 10px #0000001f;
+  display: none;
+  left: 0;
+  margin-top: 25px;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}

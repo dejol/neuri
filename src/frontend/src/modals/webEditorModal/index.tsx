@@ -252,6 +252,7 @@ useEffect(() => {
                   minWidth:'300px',
                   minHeight:'300px',
                   width:'100%',
+                  fontSize:'20px',
                   //  overflowY: 'scroll' 
                   }} 
               />

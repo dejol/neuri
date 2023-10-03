@@ -180,7 +180,7 @@ export default function FullTextAreaComponent({
                     minWidth:'200px',
                     minHeight:'200px',
                     width:'100%',
-
+                    fontSize:'20px',
                     //  overflowY: 'scroll' 
                     }} 
                 />
