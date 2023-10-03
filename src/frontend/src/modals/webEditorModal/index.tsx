@@ -86,8 +86,8 @@ export default function WebEditorModal({
       let newNode: NodeType;
       // const reactflowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const position = reactFlowInstance.project({
-        x: 10 ,// - reactflowBounds.left,
-        y: 10, //  - reactflowBounds.top,
+        x: 100 ,// - reactflowBounds.left,
+        y: 100, //  - reactflowBounds.top,
       });
       newData.node.template.note.value=editValue;
       newNode = {

@@ -182,17 +182,17 @@ class YourComponent(CustomComponent):
     def build_config(self):
         return { "articleTemplate": { "required": True }, 
                  "content": { "required": True },
-                 "keyword1": { "required": False },
-                 "keyword2": { "required": False },
+                 "keyword": { "required": False },
+                #  "keyword2": { "required": False },
                  "code":{"show":False}
         }
 
-    def build(self, keyword1:Document,keyword2:Document,content:Document,articleTemplate:Document ) -> LLMChain:
+    def build(self, keyword:Document,content:Document,articleTemplate:Document ) -> LLMChain:
         # if content and isinstance(content, list):
         #     content = content[0]
         # page_content = content.page_content
-        prompt_template='请根据下面的文字材料来写出小视频广告脚本：\\n{keyword1}\\n{keyword2}\\n{content}\\n\\n脚本模版如下:\\n{articleTemplate}\\n\\n尽可能使用生动词语'
-        params={'keyword1':keyword1,'articleTemplate':articleTemplate,'keyword2':keyword2,'content':content}
+        prompt_template='请根据下面的文字材料来写出小视频广告脚本：\\n{keyword}\\n{content}\\n\\n脚本模版如下:\\n{articleTemplate}\\n\\n尽可能使用生动词语'
+        params={'keyword':keyword,'articleTemplate':articleTemplate,'content':content}
         llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
         prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables=params, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)
