@@ -221,7 +221,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       edge.className = "";
       edge.style = { 
         // stroke: "#555", 
-        strokeWidth:3 
+        strokeWidth:6 
       };
     });
   }

@@ -201,7 +201,7 @@ export default function Page({ flow }: { flow: FlowType }) {
             ...params,
             style: { 
               // stroke: "#555",
-              strokeWidth:3 
+              strokeWidth:6 
             },
             className:
               (params.targetHandle.split("|")[0] === "Text"
