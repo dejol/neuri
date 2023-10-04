@@ -76,7 +76,6 @@ export default function HtmlViewComponent({
 };
 */
 //below is wangEditor
-const [toolbarOn,setToolbarOn] = useState(false);
 Boot.registerModule(markdownModule)
 
 // editor 实例
@@ -112,11 +111,7 @@ useEffect(() => {
   focusEditorRef.current = focusEditor;
 }, [focusEditor]);
 
-useEffect(() => {
-  if(!nodeSelected &&toolbarOn){
-    setToolbarOn(false);
-  }
-}, [nodeSelected]);
+
 
 function handleChange(content){
   if(focusEditorRef.current){
@@ -131,11 +126,9 @@ const editorConfig: Partial<IEditorConfig> = {
     },
     onBlur:(editor:IDomEditor)=>{
       setFocusEditor(false);
-      setToolbarOn(false);
     },
     onFocus:(editor:IDomEditor)=>{
       setFocusEditor(true)
-      setToolbarOn(true);
     }    
 }
 
@@ -188,7 +181,7 @@ const handleMouseUp = () => {
 
   return (
     <>
-    <NodeToolbar offset={3}>
+    <NodeToolbar offset={2}>
     <Toolbar
         editor={editor}
         defaultConfig={toolbarConfig}

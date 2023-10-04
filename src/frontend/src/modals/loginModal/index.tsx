@@ -19,7 +19,7 @@ const LoginModal = forwardRef((props: { children: ReactNode }, ref) => {
       event.preventDefault();
       try {
         login({name:username, password:password }).then((response)=>{
-          console.log("return response:",response);
+          // console.log("return response:",response);
           setIsLogin(response!="");
           setLoginUserId(response['id']);
           localStorage.setItem('login',response['id']);

@@ -330,10 +330,10 @@
   }
 
   .generic-resize-node-desc {
-    @apply h-full w-full pt-0 pb-6 text-foreground grid;grid-template-rows: 92% 2px auto;
+    @apply h-full w-full pt-0 text-foreground grid;grid-template-rows: 100% 0px;
   }
   .generic-resize-2-node-desc {
-    @apply h-full w-full pt-0 pb-4 text-foreground grid;grid-template-rows: auto 90% 2px auto;
+    @apply h-full w-full pt-0  text-foreground grid;grid-template-rows: 0px 100% 0px;
   }
   .generic-node-desc-text {
     @apply w-full px-5 pb-3 text-sm text-muted-foreground;

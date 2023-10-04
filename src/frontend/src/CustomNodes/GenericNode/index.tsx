@@ -297,14 +297,19 @@ export default function GenericNode({
                   )}
                 </div>
               ))}
-            <div
-              className={classNames(
-                Object.keys(data.node.template).length < 1 ? "hidden" : "",
-                "flex-max-width justify-center"
+              {(data.type=="Note"||data.type=="AINote")?(
+                <></>
+              ):(
+                <div
+                  className={classNames(
+                    Object.keys(data.node.template).length < 1 ? "hidden" : "",
+                    "flex-max-width justify-center"
+                  )}
+                >
+                  {" "}
+                </div>
               )}
-            >
-              {" "}
-            </div>
+            
 
             <ParameterComponent
               key={[data.type, data.id, ...data.node.base_classes].join("|")}

@@ -32,6 +32,8 @@ export type TabsContextType = {
   setOpenFolderList: (state: boolean) => void;
   openWebEditor:boolean,
   setOpenWebEditor: (state: boolean) => void;
+  openMiniMap:boolean,
+  setOpenMiniMap: (state: boolean) => void;  
   uploadFlow: (newFlow?: boolean, file?: File) => void;
   hardReset: () => void;
   getNodeId: (nodeType: string) => string;

@@ -15,7 +15,6 @@ import { typesContext } from "../../contexts/typesContext";
 import { postCustomComponent, postValidateCode } from "../../controllers/API";
 import { APIClassType } from "../../types/api";
 import BaseModal from "../baseModal";
-import FullTextAreaComponent from "../../components/fullTextAreaComponent";
 import { NodeDataType, NodeType } from "../../types/flow";
 import { TabsContext } from "../../contexts/tabsContext";
 import {useNodesState,useReactFlow} from "reactflow";

@@ -107,24 +107,24 @@ class YourComponent(CustomComponent):
     description: str = "根据给定的关键字字和文书模版格式自动生成文章"
     beta:bool=False
     def build_config(self):
-        return { "articleTitle": { "required": True },
-                 "articleTemplate": { "required": True },
-                 "keyword1": { "required": True },
-                 "keyword2": { "required": True },
-                 "keyword3": { "required": False },
+        return { "articleTitle": { "required": True,"display_name":"文章题目" },
+                 "articleTemplate": { "required": True,"display_name":"文章模版" },
+                 "keyword": { "required": True ,"display_name":"关键字"},
+                #  "keyword2": { "required": True },
+                #  "keyword3": { "required": False },
                  "code":{"show":False}
         }
 
-    def build(self, articleTitle:Document,keyword1:Document,keyword2:Document,keyword3:Document,articleTemplate:Document ) -> LLMChain:
+    def build(self, articleTitle:Document,keyword:Document,articleTemplate:Document ) -> LLMChain:
         # if template and isinstance(template, list):
         #     template = template[0]
         # template = template.page_content
         # if studentInfo and isinstance(studentInfo, list):
         #     studentInfo = studentInfo[0]
         # studentInfo = studentInfo.page_content
-        prompt_template='请根据下面的关键字来写出以{articleTitle}为题的文章:\\n{keyword1}\\n{keyword2}\\n{keyword3}\\n文章模版如下:\\n{articleTemplate}\\n尽可能使用专业术语'
+        prompt_template='请根据下面的关键字来写出以{articleTitle}为题的文章:\\n{keyword}\\n文章模版如下:\\n{articleTemplate}\\n尽可能使用专业术语'
         # print(page_content)
-        params={'articleTitle': articleTitle,'keyword1':keyword1,'articleTemplate':articleTemplate,'keyword2':keyword2,'keyword3':keyword3}
+        params={'articleTitle': articleTitle,'keyword':keyword,'articleTemplate':articleTemplate}
         llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
         prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables=params, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)

@@ -491,6 +491,11 @@ export function tabsArray(codes: string[], method: number) {
 }
 
 export function filterHTML(content:string){
+  if(typeof content !== "string"){
+    return "Object";
+  }
+  // console.log("content:",content);
+
   content=content.replace(/(<([^>]+)>)/ig,"");
   content=content.replace(/&amp;/ig,"").replace(/&lt;/ig,"").replace( /&gt;/ig,"")
   .replace( /&quot;/ig,"").replace(/&#x27;/ig,"").replace(/&#x2F;/ig,"")

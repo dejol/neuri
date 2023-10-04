@@ -198,6 +198,7 @@ export default function ParameterComponent({
     <div
       ref={ref}
       className={
+        (data.type=="Note"&&!left)?"":
         (data.type=="AINote"&&!left)?"hidden ":""+
         ((data.node.mini_size==undefined||!data.node.mini_size)?"h-full ":"generic-node-merge-template h-10 ")+
         ((type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view))?"":"mt-1 ")+
@@ -210,31 +211,30 @@ export default function ParameterComponent({
       }
     >
       <>
-      {!(type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view)) && (
-        <div
-          className={
-            "w-full truncate text-sm" +
-            (left ? "" : " text-end") +
-            (info !== "" ? " flex items-center" : "")
-          }
-        >
-          {(title&&title=="PromptTemplate")?"全能指令":title} 
-          <span className="text-status-red">{required ? " *" : ""}</span>
-          <div className="">
-            {info !== "" && (
-              <ShadTooltip content={infoHtml.current}>
-                {/* put div to avoid bug that does not display tooltip */}
-                <div>
-                  <IconComponent
-                    name="Info"
-                    className="relative bottom-0.5 ml-2 h-3 w-4"
-                  />
-                </div>
-              </ShadTooltip>
-            )}
+     {!(type=="str" && (data.node?.template[name].fulline||data.node?.template[name].chat_view))&&left&&data.type!=="AINote" && (
+          <div className={
+              "w-full truncate text-sm" +
+              (left ? "" : " text-end") +
+              (info !== "" ? " flex items-center" : "")
+            }
+          >
+            {(title&&title=="PromptTemplate")?"全能指令":title}
+            <span className="text-status-red">{required ? " *" : ""}</span>
+            <div className="">
+              {info !== "" && (
+                <ShadTooltip content={infoHtml.current}>
+                  {/* put div to avoid bug that does not display tooltip */}
+                  <div>
+                    <IconComponent
+                      name="Info"
+                      className="relative bottom-0.5 ml-2 h-3 w-4"
+                    />
+                  </div>
+                </ShadTooltip>
+              )}
+            </div>
           </div>
-        </div>
-       )} 
+       )}
         
 
         {left &&

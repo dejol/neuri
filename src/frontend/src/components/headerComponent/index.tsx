@@ -35,7 +35,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 
 export default function Header() {
-  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList,folders,setLoginUserId } = useContext(TabsContext);
+  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList,folders,setLoginUserId,setOpenMiniMap,openMiniMap } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter } = useContext(alertContext);
   const location = useLocation();
@@ -326,6 +326,17 @@ export default function Header() {
                     <IconComponent name="MoonIcon" className="side-bar-button-size mr-2" />
                   )}
                     model
+                </MenuItem>
+                <MenuItem onClick={()=>{
+                    setOpenMiniMap(!openMiniMap);    
+                  }
+                }>
+                  {openMiniMap ? (
+                    <IconComponent name="Square" className="side-bar-button-size mr-2" />
+                  ) : (
+                    <IconComponent name="Move" className="side-bar-button-size mr-2" />
+                  )}
+                  Mini Map
                 </MenuItem>
                 <MenuItem onClick={()=>{
                     logout();    

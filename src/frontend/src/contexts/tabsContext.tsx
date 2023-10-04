@@ -63,6 +63,8 @@ const TabsContextInitialValue: TabsContextType = {
   setOpenFolderList: (state: boolean) => { },
   openWebEditor:false,
   setOpenWebEditor: (state: boolean) => { },
+  openMiniMap:false,
+  setOpenMiniMap: (state: boolean) => { },
   hardReset: () => { },
   saveFlow: async (flow: FlowType) => { },
   lastCopiedSelection: null,
@@ -766,6 +768,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const [isLogin, setIsLogin] = useState(false);
   const [openFolderList, setOpenFolderList] = useState(true);
   const [openWebEditor, setOpenWebEditor] = useState(false);
+  const [openMiniMap, setOpenMiniMap] = useState(false);
 
   return (
     <TabsContext.Provider
@@ -779,6 +782,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setOpenFolderList,    
         openWebEditor,
         setOpenWebEditor,   
+        openMiniMap,
+        setOpenMiniMap,           
         lastCopiedSelection,
         setLastCopiedSelection,
         hardReset,

@@ -56,7 +56,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     tabId,
     loginUserId
   } = useContext(TabsContext);
-  const { types, reactFlowInstance, setReactFlowInstance, templates } =
+  const { types, reactFlowInstance, setReactFlowInstance, templates,data } =
     useContext(typesContext);
   const reactFlowWrapper = useRef(null);
 
@@ -67,7 +67,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {isBuilt, setIsBuilt,getSearchResult,openFolderList } = useContext(TabsContext);
+  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap } = useContext(TabsContext);
   const [openSearch,setOpenSearch]=useState(false);
   useEffect(() => {
     if(getSearchResult&&getSearchResult.length>0){
@@ -90,7 +90,7 @@ export default function Page({ flow }: { flow: FlowType }) {
         }
         if (
           (event.ctrlKey || event.metaKey) &&
-          event.key === "v" &&
+          event.key === "d" &&
           lastCopiedSelection
         ) {
           event.preventDefault();
@@ -100,6 +100,20 @@ export default function Page({ flow }: { flow: FlowType }) {
             y: position.y - bounds.top,
           });
         }
+        if (
+          (event.ctrlKey || event.metaKey) &&
+          event.key === "v"
+        ) {
+          event.preventDefault();
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            navigator.clipboard.readText().then((value:string)=>{
+              createNewNote(value);
+              // console.log(value);
+            });
+          }
+        }
+
+
         if (
           (event.ctrlKey || event.metaKey) &&
           event.key === "g" &&
@@ -378,6 +392,32 @@ export default function Page({ flow }: { flow: FlowType }) {
   const onSelectionChange = useCallback((flow) => {
     setLastSelection(flow);
   }, []);
+function createNewNote(newValue){
+  let newData = { type: "Note",node:data["notes"]["Note"]};
+  let { type } = newData;
+  let newId = getNodeId(type);
+  let newNode: NodeType;
+  let bounds = reactFlowWrapper.current.getBoundingClientRect();
+  const newPosition = reactFlowInstance.project({
+    x: position.x - bounds.left,
+    y: position.y - bounds.top,    
+  });
+  newData.node.template.note.value=newValue;
+  newNode = {
+    id: newId,
+    type: "genericNode",
+    position:newPosition,
+    
+    data: {
+      ...newData,
+      id: newId,
+      value: null,
+    },
+  };
+  let nodesList=flow.data.nodes;
+  nodesList.push(newNode);
+  reactFlowInstance.setNodes(nodesList);
+}
 
   return (
     <div className="flex h-full overflow-hidden">
@@ -478,7 +518,7 @@ export default function Page({ flow }: { flow: FlowType }) {
                   maxZoom={8}
                 >
                   <Background className="" />
-                  {flow.id!=loginUserId&&(
+                  {openMiniMap&&(
                     <MiniMap pannable={true} 
                     position="bottom-right" 
                     zoomable={true} 
