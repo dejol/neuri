@@ -111,28 +111,31 @@ export default function Header() {
     <div className="header-arrangement">
       
         {tabId === "" || !tabId ? (
+          <>
           <div className="header-start-display">
-          <Link to="/" className="m-3">
+          <Link to="/" className="ml-2">
             <img src="/logo.svg" width="40px" alt="Neuri"/>
           </Link>
-            
           </div>
+          <div className="flex justify-start">
+          </div>
+          </>
         ) : (
           <>
           <div className="header-start-display">
-            <Link to="/" className="m-3">
+            <Link to="/" className="ml-2">
               <img src="/logo.svg" width="40px" alt="Neuri"/>
             </Link>
-            <ShadTooltip content="Folder" side="bottom">
+            {/* <ShadTooltip content="Folder" side="bottom">
           <button 
           className="extra-side-bar-save-disable"
           onClick={()=>{setOpenFolderList(!openFolderList);}}
           >
             <IconComponent name={openFolderList?"X":"Sidebar"} className="side-bar-button-size " />
           </button>
-          </ShadTooltip>
+          </ShadTooltip> */}
       </div>
-      <div className="flex justify-start w-64">
+      <div className="flex justify-start">
           <div className="header-menu-bar">
           <Link to="/" className="gap-2">          
           <div className="flex-1">Home</div>
@@ -164,7 +167,7 @@ export default function Header() {
           name="search"
           id="search-node"
           placeholder="Search note"
-          className="nopan nodrag noundo nocopy input-search w-60"
+          className="nopan nodrag noundo nocopy input-search"
           onKeyUp={(event)=>{
             // console.log("event.key:",event.key);
             // console.log("value:",event);

@@ -81,7 +81,7 @@
     @apply h-full w-52 overflow-hidden border-r scrollbar-hide;
   }
   .side-bar-search-div-placement {
-    @apply relative mx-auto mb-2 mt-2 flex items-center justify-between;
+    @apply relative mx-auto flex items-center justify-between;
   }
   .side-bar-components-icon {
     @apply h-6 w-4 text-ring;
@@ -531,13 +531,13 @@
   }
 
   .header-arrangement {
-    @apply flex-max-width h-12 items-center justify-between border-border bg-muted;
+    @apply grid h-12 items-center border-border bg-muted;grid-template-columns: 64px 30% 20% auto;
   }
   .header-start-display {
-    @apply flex w-32 items-center justify-start gap-2;
+    @apply flex w-[64px] items-center justify-start gap-2;
   }
   .header-end-division {
-    @apply flex w-96 justify-end px-2;
+    @apply flex justify-end pl-2;
   }
   .header-end-display {
     @apply ml-auto mr-2 flex items-center gap-5;

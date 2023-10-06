@@ -17,6 +17,7 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
   useReactFlow,
+  Panel,
 } from "reactflow";
 import GenericNode from "../../../../CustomNodes/GenericNode";
 import Chat from "../../../../components/chatComponent";
@@ -35,7 +36,23 @@ import LeftFormModal from "../../../../modals/leftFormModal";
 import SearchListModal from "../../../../modals/searchListModal";
 import FolderPopover from "../FolderComponent";
 import { Transition } from "@headlessui/react";
+import IconComponent from "../../../../components/genericIconComponent";
+import ShadTooltip from "../../../../components/ShadTooltipComponent";
 // import LeftFormModal from "../../../../modals/leftFormModal";
+
+export function ExtendButton(){
+  const { setOpenFolderList,openFolderList } = useContext(TabsContext);
+  return (
+    <Panel position="top-left" className="m-0 mt-6">
+      <ShadTooltip content="文件夹" side="right">
+        <button onClick={()=>{setOpenFolderList(!openFolderList);}}
+              className='mt-0'>
+          <IconComponent name={openFolderList?"ChevronsLeft":"ChevronsRight"} className="side-bar-button-size " />
+        </button>
+        </ShadTooltip>
+    </Panel>
+  );
+};
 
 const nodeTypes = {
   genericNode: GenericNode,
@@ -533,6 +550,7 @@ function createNewNote(newValue){
                    position="bottom-right"
                   >
                     </Controls>
+                  <ExtendButton/>
                 </ReactFlow>
                 <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
               </div>
