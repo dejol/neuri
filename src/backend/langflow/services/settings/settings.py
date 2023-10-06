@@ -46,7 +46,7 @@ class Settings(BaseSettings):
                 logger.debug("Using LANGFLOW_DATABASE_URL env variable.")
             else:
                 logger.debug("No DATABASE_URL env variable, using sqlite database")
-                value = "sqlite:///./langflow.db"
+                value = "sqlite:///./neuri.db"
 
         return value
 

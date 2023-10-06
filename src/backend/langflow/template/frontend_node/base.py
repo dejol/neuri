@@ -12,6 +12,7 @@ from langflow.template.frontend_node.constants import (
 from langflow.template.field.base import TemplateField
 from langflow.template.template.base import Template
 from langflow.utils import constants
+from langflow.utils.logger import logger
 
 
 class FieldFormatters(BaseModel):
@@ -77,6 +78,8 @@ class FrontendNode(BaseModel):
 
     def to_dict(self) -> dict:
         """Returns a dict representation of the frontend node."""
+        # if(self.name=="AINote"):
+        #     logger.debug(f"selt.template:{self.template}")# show的值正常
         self.process_base_classes()
         return {
             self.name: {

@@ -104,7 +104,7 @@ export default function GenericNode({
         ></NodeToolbarComponent>
       </NodeToolbar>
       {(data.type=="Note" || data.type=="AINote") &&(
-        <NodeResizer  isVisible={selected} minWidth={255} minHeight={290}/>
+        <NodeResizer  isVisible={selected} minWidth={255} minHeight={290} handleClassName="w-5 h-5"/>
       )}
       <div
         className={classNames(

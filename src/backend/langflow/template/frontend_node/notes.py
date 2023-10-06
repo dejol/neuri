@@ -53,16 +53,18 @@ class AINoteFrontendNode(FrontendNode):
             TemplateField(
                 name="source",
                 field_type="Document",
-                required=True,
-                is_list=False,
+                required=False,
+                # is_list=False,
+                value="",
                 show=True,
-                multiline=True,
-                advanced=False,
+                # multiline=True,
+                # advanced=False,
             ),
         ],
     )
     description: str = ""
-    base_classes: list[str] = ["BaseLLM"]
+    # base_classes: list[str] = ["BaseLLM"]
+    base_classes: list[str] = ["Document"]
     
     def to_dict(self):
         return super().to_dict()    

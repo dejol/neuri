@@ -6,7 +6,7 @@ import os
 if "JCLOUD_WORKSPACE" in os.environ:
     os.environ[
         "LANGFLOW_DATABASE_URL"
-    ] = f"sqlite:///{os.environ['JCLOUD_WORKSPACE']}/langflow.db"
+    ] = f"sqlite:///{os.environ['JCLOUD_WORKSPACE']}/neuri.db"
 
 from langflow.main import setup_app
 from langflow.utils.logger import configure

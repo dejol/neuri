@@ -66,8 +66,13 @@ class LangChainTypeCreator(BaseModel, ABC):
             # {name: {template: {fields}, description: str}}
             # so we should update the result dict
             node = self.frontend_node(name)
+            # if(name=="AINote"):
+            #     logger.debug(f"node1:{node}")           #show的值是正常 
+            # logger.debug(f"name:{name}")
             if node is not None:
                 node = node.to_dict()  # type: ignore
+                # if(name=="AINote"):
+                #     logger.debug(f"node:{node}")  #show的值是不正常
                 result[self.type_name].update(node)
 
         return result

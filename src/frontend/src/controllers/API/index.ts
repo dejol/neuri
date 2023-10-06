@@ -174,9 +174,9 @@ export async function readFlowsFromDatabase(user_id:string) {
   }
 }
 
-export async function downloadFlowsFromDatabase() {
+export async function downloadFlowsFromDatabase(user_id:string) {
   try {
-    const response = await api.get("/api/v1/flows/download/");
+    const response = await api.get(`/api/v1/flows/download/${user_id}`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

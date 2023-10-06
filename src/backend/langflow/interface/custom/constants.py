@@ -109,7 +109,7 @@ class YourComponent(CustomComponent):
     def build_config(self):
         return { "articleTitle": { "required": True,"display_name":"文章题目" },
                  "articleTemplate": { "required": True,"display_name":"文章模版" },
-                 "keyword": { "required": True ,"display_name":"关键字"},
+                 "keyword": { "required": False ,"display_name":"关键字","value":""},
                 #  "keyword2": { "required": True },
                 #  "keyword3": { "required": False },
                  "code":{"show":False}

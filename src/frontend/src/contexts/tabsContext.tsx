@@ -328,7 +328,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   }
 
   function downloadFlows() {
-    downloadFlowsFromDatabase().then((flows) => {
+    downloadFlowsFromDatabase(loginUserId).then((flows) => {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
         JSON.stringify(flows)
       )}`;

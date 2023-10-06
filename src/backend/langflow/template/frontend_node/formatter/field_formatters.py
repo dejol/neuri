@@ -99,9 +99,11 @@ class SpecialFieldFormatter(FieldFormatter):
 class ShowFieldFormatter(FieldFormatter):
     def format(self, field: TemplateField, name: Optional[str] = None) -> None:
         key = field.name
-        required = field.required
+        # required = field.required
         field.show = (
-            (required and key not in ["input_variables"])
+            (
+                # required and    #不理解这里为什么要将show的值与required的值相关联?
+            key not in ["input_variables"])
             or key in FORCE_SHOW_FIELDS
             or "api" in key
             or ("key" in key and "input" not in key and "output" not in key)

@@ -30,6 +30,7 @@ class NotesCreator(LangChainTypeCreator):
                 "AINote": AINote,
                 # "CustomPrompt":PromptTemplate,
             }
+
         return self.type_dict
     
 
@@ -41,7 +42,7 @@ class NotesCreator(LangChainTypeCreator):
             if name in custom_nodes.keys():
                 # logger.debug("return 1:"+name)
                 return custom_nodes[name]
-            # logger.debug("return 2:"+name)
+            
             return build_template_from_class(name, self.type_to_loader_dict)
         except ValueError as exc:
             raise ValueError(f"Note {name} not found") from exc

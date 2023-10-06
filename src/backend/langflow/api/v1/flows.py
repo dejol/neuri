@@ -114,8 +114,8 @@ async def upload_file(
     return create_flows(session=session, flow_list=flow_list)
 
 
-@router.get("/download/", response_model=FlowListRead, status_code=200)
-async def download_file(*, session: Session = Depends(get_session)):
+@router.get("/download/{user_id}", response_model=FlowListRead, status_code=200)
+async def download_file(user_id:str, session: Session = Depends(get_session)):
     """Download all flows as a file."""
-    flows = read_flows(session=session)
+    flows = read_flows(user_id,session=session)
     return FlowListRead(flows=flows)
