@@ -99,10 +99,11 @@ class SpecialFieldFormatter(FieldFormatter):
 class ShowFieldFormatter(FieldFormatter):
     def format(self, field: TemplateField, name: Optional[str] = None) -> None:
         key = field.name
-        # required = field.required
+        required = field.required
         field.show = (
             (
-                # required and    #不理解这里为什么要将show的值与required的值相关联?
+                required and    #不理解这里为什么要将show的值与required的值相关联? 如果这里注释后，langchain的对象会在前台显示所有template
+
             key not in ["input_variables"])
             or key in FORCE_SHOW_FIELDS
             or "api" in key

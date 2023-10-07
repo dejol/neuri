@@ -53,7 +53,7 @@ class AINoteFrontendNode(FrontendNode):
             TemplateField(
                 name="source",
                 field_type="Document",
-                required=False,
+                required=True,
                 # is_list=False,
                 value="",
                 show=True,
