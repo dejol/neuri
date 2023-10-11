@@ -125,6 +125,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       Saveflows.forEach((flow) => {
         if (flow.data && flow.data?.nodes)
           flow.data?.nodes.forEach((node) => {
+            if(node.type!="noteNode"){
             //looking for file fields to prevent saving the content and breaking the flow for exceeding the the data limite for local storage
             Object.keys(node.data.node.template).forEach((key) => {
               if (node.data.node.template[key].type === "file") {
@@ -132,6 +133,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
                 node.data.node.template[key].value = "";
               }
             });
+           }
           });
       });
       window.localStorage.setItem(
