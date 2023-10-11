@@ -18,6 +18,7 @@ import ReactFlow, {
   useNodesState,
   useReactFlow,
   Panel,
+  MarkerType,
 } from "reactflow";
 import GenericNode from "../../../../CustomNodes/GenericNode";
 import Chat from "../../../../components/chatComponent";
@@ -29,7 +30,7 @@ import { undoRedoContext } from "../../../../contexts/undoRedoContext";
 import { APIClassType } from "../../../../types/api";
 import { FlowType, NodeType } from "../../../../types/flow";
 import { isValidConnection } from "../../../../utils/reactflowUtils";
-import { isWrappedWithClass } from "../../../../utils/utils";
+import { isWrappedWithClass ,isValidImageUrl} from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
 import LeftFormModal from "../../../../modals/leftFormModal";
@@ -38,11 +39,15 @@ import FolderPopover from "../FolderComponent";
 import { Transition } from "@headlessui/react";
 import IconComponent from "../../../../components/genericIconComponent";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
+import NoteNode from "../../../../CustomNodes/NoteNode";
+import FloatingEdge from "../FloatingEdgeComponent";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
   const { setOpenFolderList,openFolderList } = useContext(TabsContext);
+  const { setOpenModelList,openModelList } = useContext(TabsContext);
   return (
+    <>
     <Panel position="top-left" className="m-0 mt-6">
       <ShadTooltip content="文件夹" side="right">
         <button onClick={()=>{setOpenFolderList(!openFolderList);}}
@@ -51,11 +56,22 @@ export function ExtendButton(){
         </button>
         </ShadTooltip>
     </Panel>
+
+    <Panel position="top-right" className="m-0 mt-6">
+    <ShadTooltip content="模块" side="left">
+      <button onClick={()=>{setOpenModelList(!openModelList);}}
+            className='mt-0'>
+        <IconComponent name={openModelList?"ChevronsRight":"ChevronsLeft"} className="side-bar-button-size " />
+      </button>
+      </ShadTooltip>
+  </Panel>
+  </>
   );
 };
 
 const nodeTypes = {
   genericNode: GenericNode,
+  noteNode:NoteNode,
 };
 
 export default function Page({ flow }: { flow: FlowType }) {
@@ -84,13 +100,13 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap } = useContext(TabsContext);
+  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList } = useContext(TabsContext);
   const [openSearch,setOpenSearch]=useState(false);
-  useEffect(() => {
-    if(getSearchResult&&getSearchResult.length>0){
-      setOpenSearch(true);
-    }
-  },[getSearchResult]);
+  // useEffect(() => {
+  //   if(getSearchResult&&getSearchResult.length>0){
+  //     setOpenSearch(true);
+  //   }
+  // },[getSearchResult]);
 
   useEffect(() => {
     // this effect is used to attach the global event handlers
@@ -124,7 +140,8 @@ export default function Page({ flow }: { flow: FlowType }) {
           event.preventDefault();
           if (navigator.clipboard && navigator.clipboard.readText) {
             navigator.clipboard.readText().then((value:string)=>{
-              createNewNote(value);
+              // createNewNote(value);
+              createNoteNode(value);
               // console.log(value);
             });
           }
@@ -225,21 +242,30 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const onConnect = useCallback(
     (params: Connection) => {
+      // console.log("source:%s, target:%s",params.sourceHandle,params.targetHandle);
       takeSnapshot();
+      let newEdeg={
+        ...params,
+        style: { 
+          // stroke: "#555",
+          strokeWidth:6 
+        },
+        className:
+          (params.targetHandle.split("|")[0] === "Text"
+            ? "stroke-foreground "
+            : "stroke-foreground ") + " stroke-connection",
+        animated: params.targetHandle.split("|")[0] === "Text",
+      };
+      if(params.target.indexOf("noteNode")>=0){
+        newEdeg["markerEnd"]={
+          type: MarkerType.ArrowClosed,
+          // color: 'black',
+        };
+        newEdeg["type"]='floating';
+      }
       setEdges((eds) =>
         addEdge(
-          {
-            ...params,
-            style: { 
-              // stroke: "#555",
-              strokeWidth:6 
-            },
-            className:
-              (params.targetHandle.split("|")[0] === "Text"
-                ? "stroke-foreground "
-                : "stroke-foreground ") + " stroke-connection",
-            animated: params.targetHandle.split("|")[0] === "Text",
-          },
+          newEdeg,
           eds
         )
       );
@@ -290,6 +316,7 @@ export default function Page({ flow }: { flow: FlowType }) {
         let data: { type: string; node?: APIClassType } = JSON.parse(
           event.dataTransfer.getData("nodedata")
         );
+        // console.log("data:",data);
 
         // If data type is not "chatInput" or if there are no "chatInputNode" nodes present in the ReactFlow instance, create a new node
         // Calculate the position where the node should be created
@@ -302,41 +329,60 @@ export default function Page({ flow }: { flow: FlowType }) {
         let { type } = data;
         let newId = getNodeId(type);
         let newNode: NodeType;
-
-        if (data.type !== "groupNode") {
-          // Create a new node object
-          //console.info("create a new node object here1");//鼠标拖拉生成node
-
+        if(data.type=="noteNode"){
           newNode = {
             id: newId,
-            type: "genericNode",
+            type: "noteNode",
             position,
             data: {
-              ...data,
-              id: newId,
-              value: null,
+              type:"noteNode",
+              value: data.node?data.node.value:"",
+              id:newId
             },
           };
-        } else {
-          // Create a new node object
-          newNode = {
-            id: newId,
-            type: "genericNode",
-            position,
-            data: {
-              ...data,
+            let nodesList=flow.data.nodes;
+            nodesList.push(newNode);
+            reactFlowInstance.setNodes(nodesList);
+
+        }else{
+          if (data.type !== "groupNode") {
+            // Create a new node object
+            //console.info("create a new node object here1");//鼠标拖拉生成node
+  
+            newNode = {
               id: newId,
-              value: null,
-            },
-          };
-          // console.info("create a new node object here");
-          // Add the new node to the list of nodes in state
+              type: "genericNode",
+              position,
+              data: {
+                ...data,
+                id: newId,
+                value: null,
+              },
+            };
+          }else{
+            // Create a new node object
+            newNode = {
+              id: newId,
+              type: "genericNode",
+              position,
+              data: {
+                ...data,
+                id: newId,
+                value: null,
+              },
+            };
+            // console.info("create a new node object here");
+            // Add the new node to the list of nodes in state
+          }
+          setNodes((nds) => nds.concat(newNode));
         }
-        setNodes((nds) => nds.concat(newNode));
+
+        
       } else if (event.dataTransfer.types.some((types) => types === "Files")) {
         takeSnapshot();
         uploadFlow(false, event.dataTransfer.files.item(0));
       }
+
     },
     // Specify dependencies for useCallback
     [getNodeId, reactFlowInstance, setNodes, takeSnapshot]
@@ -409,6 +455,7 @@ export default function Page({ flow }: { flow: FlowType }) {
   const onSelectionChange = useCallback((flow) => {
     setLastSelection(flow);
   }, []);
+
 function createNewNote(newValue){
   let newData = { type: "Note",node:data["notes"]["Note"]};
   let { type } = newData;
@@ -435,6 +482,38 @@ function createNewNote(newValue){
   nodesList.push(newNode);
   reactFlowInstance.setNodes(nodesList);
 }
+function createNoteNode(newValue){
+  if(newValue&&isValidImageUrl(newValue)){
+    newValue="<img src='"+newValue+"'/>";
+  }
+  let newId = getNodeId("noteNode");
+  let bounds = reactFlowWrapper.current.getBoundingClientRect();
+  const newPosition = reactFlowInstance.project({
+    x: position.x - bounds.left,
+    y: position.y - bounds.top,    
+  });
+  let newNode = {
+    id: newId,
+    type: "noteNode",
+    position:newPosition,
+    data: {
+      id:newId,
+      type:"noteNode",
+      value:newValue,
+    },
+    selected:true,
+  };
+  // console.log("nodeNode:",newNode);
+  let nodesList=flow.data.nodes;
+  
+  nodesList.push(newNode);
+
+  reactFlowInstance.setNodes(nodesList);
+}
+
+const edgeTypes = {
+  floating: FloatingEdge,
+};
 
   return (
     <div className="flex h-full overflow-hidden">
@@ -472,6 +551,7 @@ function createNewNote(newValue){
           
 
       {/* {openSearch && getSearchResult&&getSearchResult.length>0&&( */}
+{/*       
       <Transition
             show={openSearch && getSearchResult&&getSearchResult.length>0}
             enter="transition-transform duration-500 ease-out"
@@ -490,7 +570,7 @@ function createNewNote(newValue){
             results={getSearchResult}
           />
           </div>
-        </Transition>
+        </Transition> */}
         {/* )}                   */}
       {/* Main area */}
       <main className="flex flex-1">
@@ -511,12 +591,13 @@ function createNewNote(newValue){
                   }}
                   edges={edges}
                   onNodesChange={onNodesChangeMod}
-                  onEdgesChange={onEdgesChangeMod}
-                  onConnect={onConnect}
+                  onEdgesChange={onEdgesChangeMod} 
+                  onConnect={onConnect} //链接线 连接成功后执行
                   disableKeyboardA11y={true}
                   onLoad={setReactFlowInstance}
                   onInit={setReactFlowInstance}
                   nodeTypes={nodeTypes}
+                  edgeTypes={edgeTypes}
                   onEdgeUpdate={onEdgeUpdate}
                   onEdgeUpdateStart={onEdgeUpdateStart}
                   onEdgeUpdateEnd={onEdgeUpdateEnd}
@@ -525,7 +606,7 @@ function createNewNote(newValue){
                   onSelectionEnd={onSelectionEnd}
                   onSelectionStart={onSelectionStart}
                   onEdgesDelete={onEdgesDelete}
-                  connectionLineComponent={ConnectionLineComponent}
+                  connectionLineComponent={ConnectionLineComponent} //定义链接线(连接成功前)的样式
                   onDragOver={onDragOver}
                   onDrop={onDrop}
                   onNodesDelete={onDelete}
@@ -561,7 +642,20 @@ function createNewNote(newValue){
           </div>
         </div>
       </main>
-      <ExtraSidebar />
+      {flow&&(
+            <Transition
+            show={openModelList}
+            enter="transition-transform duration-500 ease-out"
+            enterFrom={"transform translate-x-[100%]"}
+            enterTo={"transform translate-x-0"}
+            leave="transition-transform duration-500 ease-in"
+            leaveFrom={"transform translate-x-0"}
+            leaveTo={"transform translate-x-[100%]"}
+            className={"chat-message-modal-thought-cursor"}
+          >
+            <ExtraSidebar />
+          </Transition>
+          )}
      </div>
   );
 }

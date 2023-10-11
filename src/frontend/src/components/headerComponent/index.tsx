@@ -33,6 +33,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
+import { cloneDeep } from "lodash";
 
 export default function Header() {
   const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList,folders,setLoginUserId,setOpenMiniMap,openMiniMap } = useContext(TabsContext);
@@ -69,32 +70,54 @@ export default function Header() {
 
   const store = useStoreApi();
   const [searchKeyword,setSearchKeyword] =useState('');
+  const { setCenter } = useReactFlow();
 
   const searchNode = () => {
-    const { nodeInternals } = store.getState();
-    const nodes = Array.from(nodeInternals).map(([, node]) => node);
+    // const { nodeInternals } = store.getState();
+    // const nodes = Array.from(nodeInternals).map(([, node]) => node);
     let results=[];
-    if (nodes.length > 0) {
-      nodes.forEach((node) => {
-        if(node.data.type=="Note"||node.data.type=="AINote"){
-          let content=node.data.node.template.note.value;
-          content=filterHTML(content)
-          if(content&&content.indexOf(searchKeyword)>=0){
-            const x = node.position.x + node.width / 2;
-            const y = node.position.y + node.height / 2;
-            // const zoom = 1.1;
-            let begin=content.indexOf(searchKeyword);
-            begin=(begin-10)>0?begin-10:0;
-            content=content.substring(begin,begin+20+searchKeyword.length);
-            content=(begin==0?"":"...")+content+"...";
-            results.push({"id":node.id,"x":x,"y":y,"content":content})
-            // setCenter(x, y, { zoom, duration: 1000 });
-          }
+    if (flows.length > 0) {
+      flows.forEach((flow) => {
+        let nodes=flow.data.nodes;
+        let tempNodes=[];
+        if (nodes.length > 0) {
+          nodes.forEach((node) => {
+            let content="";
+            if(node.type=="noteNode"){
+              content=node.data.value;
+            }else{
+              if(node.data.type=="Note"||node.data.type=="AINote"){
+                content=node.data.node.template.note.value;
+              }
+            }
+            if(content){
+              content=filterHTML(content)
+              if(content&&content.indexOf(searchKeyword)>=0){
+                const x = node.position.x + node.width / 2;
+                const y = node.position.y + node.height / 2;
+                // const zoom = 1.1;
+                let begin=content.indexOf(searchKeyword);
+                begin=(begin-10)>0?begin-10:0;
+                content=content.substring(begin,begin+20+searchKeyword.length);
+                content=(begin==0?"":"...")+content+"...";
+                // tempNodes.push({"id":node.id,"x":x,"y":y,"content":content})
+                tempNodes.push(node);
+              }
+            }
+          });
+    
         }
+        let tempFlow=cloneDeep(flow);
+        tempFlow.data.nodes=tempNodes;
+        results.push(tempFlow);
       });
-
     }
-    setSearchResult(results);
+
+    if(results.length==1){
+      setCenter(results[0].x, results[0].y, { zoom:0.8, duration: 1000 });
+    }else{
+      setSearchResult(results);
+    }
   };
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -158,7 +181,7 @@ export default function Header() {
         )}
      
       <div className="round-button-div">
-          {(current_flow&&current_flow.name) ?(
+          {/* {(current_flow&&current_flow.name) ?(
             <>
           <div className="side-bar-search-div-placement">
           <div className="ml-1 ">
@@ -199,7 +222,7 @@ export default function Header() {
         </>     
             ):(
               <></>
-          )}
+          )} */}
 
         
         {/* <Link to="/community">

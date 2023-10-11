@@ -43,7 +43,7 @@ import Collapse from '@mui/material/Collapse';
 import FlowSettingsModal from "../../../../modals/flowSettingsModal";
 import FolderModal from "../../../../modals/folderModal";
 import AccordionComponent from "../../../../components/AccordionComponent";
-import { transform } from "lodash";
+import { cloneDeep, transform } from "lodash";
 import { filterHTML } from "../../../../utils/utils";
 
 export default function FolderPopover() {
@@ -58,6 +58,18 @@ export default function FolderPopover() {
   const [open, setOpen] = useState(false);
   const [isNewFolder, setIsNewFoler] = useState(true);
   const [openFolder, setOpenFolder] = useState(false);
+  const [search, setSearch] = useState(flows);
+  const [searchKeyword,setSearchKeyword] =useState('');
+
+  // let resultFlows=cloneDeep(flows);
+  useEffect(()=>{
+    if(searchKeyword.length>0&&search.length>0){
+      // setSearch(search);
+    }else{
+      setSearch(flows);
+    }
+    // console.log("length of flows:",getSearchResult.length)
+  },[search])
 
   function onDragStart(
     event: React.DragEvent<any>,
@@ -87,6 +99,54 @@ export default function FolderPopover() {
   }
 
   const [newFolderId, setNewFolderId] = useState("");
+
+  const searchNode = () => {
+    // const { nodeInternals } = store.getState();
+    // const nodes = Array.from(nodeInternals).map(([, node]) => node);
+    let results=[];
+    if (flows.length > 0) {
+      flows.forEach((flow) => {
+        let nodes=flow.data.nodes;
+        let tempNodes=[];
+        if (nodes.length > 0) {
+          nodes.forEach((node) => {
+            let content="";
+            if(node.type=="noteNode"){
+              content=node.data.value;
+            }else{
+              if(node.data.type=="Note"||node.data.type=="AINote"){
+                content=node.data.node.template.note.value;
+              }
+            }
+            if(content){
+              content=filterHTML(content)
+              if(content&&content.indexOf(searchKeyword)>=0){
+                const x = node.position.x + node.width / 2;
+                const y = node.position.y + node.height / 2;
+                // const zoom = 1.1;
+                let begin=content.indexOf(searchKeyword);
+                begin=(begin-10)>0?begin-10:0;
+                content=content.substring(begin,begin+20+searchKeyword.length);
+                content=(begin==0?"":"...")+content+"...";
+                // tempNodes.push({"id":node.id,"x":x,"y":y,"content":content})
+                tempNodes.push(node);
+              }
+            }
+          });
+    
+        }
+        let tempFlow=cloneDeep(flow);
+        tempFlow.data.nodes=tempNodes;
+        results.push(tempFlow);
+      });
+    }
+
+    // if(results.length==1){
+    //   setCenter(results[0].x, results[0].y, { zoom:0.8, duration: 1000 });
+    // }else{
+      setSearch(results);
+    // }
+  };  
   // useEffect(()=>{
   //   console.log("noteContent:",noteContent);
   // },[noteContent]);
@@ -123,8 +183,8 @@ export default function FolderPopover() {
       >
         <div className="file-component-tab-column">
         <List component="div" disablePadding={true}>
-      {flows.map((flow, idx) => (
-          (flow.folder_id && flow.folder_id==folder.id)&&(
+      {search.map((flow, idx) => (
+          ((search.length>0?flow.data.nodes.length>0:true)&&flow.folder_id && flow.folder_id==folder.id)&&(
               <AccordionComponent
                       trigger={
                         <ShadTooltip content={flow.description} side="right">
@@ -145,19 +205,20 @@ export default function FolderPopover() {
                       }
                       key={idx}
                       keyValue={flow.id}
-                      
+                      open={[searchKeyword.length>0?flow.id:""]}
                     >
                       <List component="div" disablePadding={true}>
-                      {flow.data?.nodes.map((node, idx) => (
-                        (node.data.type=="Note"||node.data.type=="AINote")&&(
-                          <ShadTooltip content={filterHTML(node.data.node.template.note.value)} side="right" key={idx}>
+                      {
+                      flow.data?.nodes.map((node, idx) => (
+                        (node.type=="noteNode")?(
+                          <ShadTooltip content={filterHTML(node.data.value)} side="right" key={idx}>
                           <ListItem  
                             sx={{ pl: 2 }}
                             draggable={true}
                             onDragStart={(event) =>
                               onDragStart(event, {
-                                type: node.data.type,
-                                node: node.data.node,
+                                type: node.type,
+                                node: node.data,
                               })
                             }
                             onDragEnd={() => {
@@ -169,16 +230,46 @@ export default function FolderPopover() {
                             }}
                             className="pr-0 py-2"
                           >
-                            <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
+                            <div className="ml-5 items-center border border-dashed border-ring rounded-lg p-3 w-40 cursor-grab font-normal"
                             onDoubleClick={(event)=>{
                               event.preventDefault();
                               webEdit(flow.id,node.data);
                               }}>
-                            {filterHTML(node.data.node.template.note.value).substring(0,20)}
+                            {filterHTML(node.data.value).substring(0,20)}
                             </div>
                           </ListItem>
-                          </ShadTooltip>
-                        )
+                          </ShadTooltip>                        ):(
+                          (node.data.type=="Note"||node.data.type=="AINote")&&(
+                            <ShadTooltip content={filterHTML(node.data.node.template.note.value)} side="right" key={idx}>
+                            <ListItem  
+                              sx={{ pl: 2 }}
+                              draggable={true}
+                              onDragStart={(event) =>
+                                onDragStart(event, {
+                                  type: node.data.type,
+                                  node: node.data.node,
+                                })
+                              }
+                              onDragEnd={() => {
+                                document.body.removeChild(
+                                  document.getElementsByClassName(
+                                    "cursor-grabbing"
+                                  )[0]
+                                );
+                              }}
+                              className="pr-0 py-2"
+                            >
+                              <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
+                              onDoubleClick={(event)=>{
+                                event.preventDefault();
+                                webEdit(flow.id,node.data);
+                                }}>
+                              {filterHTML(node.data.node.template.note.value).substring(0,20)}
+                              </div>
+                            </ListItem>
+                            </ShadTooltip>
+                          )
+                        )  
                       ))
                       }
 
@@ -210,8 +301,8 @@ export default function FolderPopover() {
         keyValue={"f000"}
         >
         <List component="div" disablePadding>
-        {flows.map((flow, idx) => (
-          !flow.folder_id&&(
+        {search.map((flow, idx) => (
+          (search.length>0?flow.data.nodes.length>0:true)&&!flow.folder_id&&(
             <AccordionComponent
             trigger={
               <ShadTooltip content={flow.description} side="right">
@@ -334,6 +425,36 @@ export default function FolderPopover() {
     <div className="left-form-modal-iv-box mt-0">
       <div className="eraser-column-arrangement">
         <div className="eraser-size">
+        <div className="side-bar-search-div-placement">
+          <div className="ml-1 ">
+          <Input
+          type="text"
+          name="search"
+          id="search-node"
+          placeholder="Search note"
+          className="nopan nodrag noundo nocopy input-search"
+          onKeyUp={(event)=>{
+            // console.log("event.key:",event.key);
+            // console.log("value:",event);
+            if(event.key=="Enter"){
+              searchNode();
+            }
+            
+          }}
+          onChange={(event) => {
+              setSearchKeyword(event.target.value);
+          }}
+        />
+        <div className="search-icon right-5">
+          <IconComponent
+            name="Search"
+            className={"h-5 w-5 stroke-[1.5] text-primary"}
+            aria-hidden="true"
+          
+          />
+        </div>
+        </div>
+        </div>    
           <div className="chat-message-div">
             {list()}
           </div>

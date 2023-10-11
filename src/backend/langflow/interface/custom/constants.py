@@ -65,7 +65,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
 from langchain.chat_models import ChatOpenAI
-
+import os
 import requests
 
 class YourComponent(CustomComponent):
@@ -84,7 +84,7 @@ class YourComponent(CustomComponent):
         # page_content = content.page_content
         prompt_template='请翻译如下内容成为英文\\n{content}'
         # print(page_content)
-        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
         prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables={'content': content}, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)
         chain({'content': content})
@@ -99,7 +99,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
 from langchain.chat_models import ChatOpenAI
-
+import os
 import requests
 
 class YourComponent(CustomComponent):
@@ -125,7 +125,7 @@ class YourComponent(CustomComponent):
         prompt_template='请根据下面的关键字来写出以{articleTitle}为题的文章:\\n{keyword}\\n文章模版如下:\\n{articleTemplate}\\n尽可能使用专业术语'
         # print(page_content)
         params={'articleTitle': articleTitle,'keyword':keyword,'articleTemplate':articleTemplate}
-        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
         prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables=params, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)
         chain(params)
@@ -140,7 +140,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
 from langchain.chat_models import ChatOpenAI
-
+import os
 import requests
 
 class YourComponent(CustomComponent):
@@ -158,7 +158,7 @@ class YourComponent(CustomComponent):
         # page_content = content.page_content
         prompt_template='将如下文章内容架构生成一个模版\\n{content}'
         # print(page_content)
-        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
         prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables={'content': content}, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)
         chain({'content': content})
@@ -172,7 +172,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
 from langchain.chat_models import ChatOpenAI
-
+import os
 import requests
 
 class YourComponent(CustomComponent):
@@ -193,7 +193,7 @@ class YourComponent(CustomComponent):
         # page_content = content.page_content
         prompt_template='请根据下面的文字材料来写出小视频广告脚本：\\n{keyword}\\n{content}\\n\\n脚本模版如下:\\n{articleTemplate}\\n\\n尽可能使用生动词语'
         params={'keyword':keyword,'articleTemplate':articleTemplate,'content':content}
-        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
         prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables=params, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)
         chain(params)
@@ -211,7 +211,7 @@ from langchain.prompts import PromptTemplate
 from langchain.prompts import Prompt
 from langchain.schema import Document
 from langchain.chat_models import ChatOpenAI
-
+import os
 import requests
 
 class YourComponent(CustomComponent):
@@ -225,7 +225,7 @@ class YourComponent(CustomComponent):
 
     def build(self, prompt:PromptTemplate ) -> LLMChain:
         # params={'keyword1':keyword1,'articleTemplate':articleTemplate,'keyword2':keyword2,'content':content}
-        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base="https://api.chatanywhere.com.cn/v1",openai_api_key="sk-K1tkfGAv3q8CjUK7XjRyugfYxRGKYSaflMCFEWhwolB7YxgW")
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
         # prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables=params, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)
         chain(prompt.partial_variables)

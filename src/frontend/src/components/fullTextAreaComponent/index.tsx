@@ -57,9 +57,7 @@ export default function FullTextAreaComponent({
     focusEditorRef.current = focusEditor;
   }, [focusEditor]);
   useEffect(() => {
-    if(!nodeSelected &&toolbarOn){
       setToolbarOn(false);
-    }
   }, [nodeSelected]);
 
 
@@ -99,7 +97,7 @@ export default function FullTextAreaComponent({
   };
   return (
     <>
-      <NodeToolbar offset={2}>
+      <NodeToolbar offset={2} isVisible={toolbarOn}>
       <Toolbar
           editor={editor}
           defaultConfig={toolbarConfig}

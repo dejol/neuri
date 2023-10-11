@@ -76,6 +76,7 @@ export default function HtmlViewComponent({
 };
 */
 //below is wangEditor
+const [toolbarOn,setToolbarOn] = useState(false);
 Boot.registerModule(markdownModule)
 
 // editor 实例
@@ -122,12 +123,15 @@ const editorConfig: Partial<IEditorConfig> = {
     placeholder: 'Type something...',
     autoFocus:false,
     onChange :(editor:IDomEditor)=>{
+      setToolbarOn(true);
       handleChange(editor.getHtml());
     },
     onBlur:(editor:IDomEditor)=>{
+      setToolbarOn(false);
       setFocusEditor(false);
     },
     onFocus:(editor:IDomEditor)=>{
+      setToolbarOn(true);
       setFocusEditor(true)
     }    
 }
@@ -177,11 +181,13 @@ const handleMouseUp = () => {
   setIsDragging(false);
   setDragOffset({ x: 0, y: 0 });
 };
-
+useEffect(() => {
+    setToolbarOn(nodeSelected);
+}, [nodeSelected]);
 
   return (
     <>
-    <NodeToolbar offset={2}>
+    <NodeToolbar offset={2} isVisible={toolbarOn}>
     <Toolbar
         editor={editor}
         defaultConfig={toolbarConfig}
@@ -195,9 +201,9 @@ const handleMouseUp = () => {
             <div className="chat-message-div">
                 <div >
                     <div className="form-modal-chat-text-position">
-                        <div className="form-modal-chat-text">
+                        <div>
                             <div className="w-full">
-                                <div className="w-full dark:text-white">
+                                <div className="w-full">
                                     <div className="w-full" 
                                     style={{cursor: 'text',}}
                                     onMouseDownCapture={handleMouseDown}

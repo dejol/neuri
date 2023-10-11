@@ -10,11 +10,12 @@ from langflow.interface.utils import setup_llm_caching
 from langflow.services.database.utils import initialize_database
 from langflow.services.manager import initialize_services
 from langflow.utils.logger import configure
+from dotenv import load_dotenv
 
 
 def create_app():
     """Create the FastAPI app and include the router."""
-
+    load_dotenv()
     configure()
 
     app = FastAPI()

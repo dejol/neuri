@@ -14,6 +14,9 @@ export function cleanEdges({
     // check if the source and target node still exists
     const sourceNode = nodes.find((node) => node.id === edge.source);
     const targetNode = nodes.find((node) => node.id === edge.target);
+    if(sourceNode.type!="genericNode"||targetNode.type!="genericNode"){
+      return;
+    }
     if (!sourceNode || !targetNode) {
       newEdges = newEdges.filter((edg) => edg.id !== edge.id);
     }
@@ -53,6 +56,7 @@ export function isValidConnection(
   { source, target, sourceHandle, targetHandle }: Connection,
   reactFlowInstance: ReactFlowInstance
 ) {
+  
   if (
     targetHandle
       .split("|")[0]
@@ -172,6 +176,7 @@ export function validateNode(
   node: NodeType,
   reactFlowInstance: ReactFlowInstance
 ): Array<string> {
+  if(node.type=="noteNode") return [];
   if (!node.data?.node?.template || !Object.keys(node.data.node.template)) {
     return [
       "We've noticed a potential issue with a node in the flow. Please review it and, if necessary, submit a bug report with your exported flow file. Thank you for your help!",

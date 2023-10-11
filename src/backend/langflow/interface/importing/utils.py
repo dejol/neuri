@@ -80,6 +80,8 @@ def import_output_parser(output_parser: str) -> Any:
 
 def import_chat_llm(llm: str) -> BaseChatModel:
     """Import chat llm from llm name"""
+    if(llm=="ZPChatGLM"):
+        return import_class(f"langflow.interface.initialize.zpchatglm.ZPChatGLM")
     return import_class(f"langchain.chat_models.{llm}")
 
 

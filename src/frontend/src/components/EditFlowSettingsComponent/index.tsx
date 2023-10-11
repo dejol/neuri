@@ -1,8 +1,9 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Textarea } from "../../components/ui/textarea";
 import { readFlowsFromDatabase } from "../../controllers/API";
+import { TabsContext } from "../../contexts/tabsContext";
 
 type InputProps = {
   name: string | null;
@@ -30,9 +31,11 @@ export const EditFlowSettings: React.FC<InputProps> = ({
   updateFlow,
 }) => {
   const [isMaxLength, setIsMaxLength] = useState(false);
+  const {loginUserId } = useContext(TabsContext);
+
   const nameLists = useRef([]);
   useEffect(() => {
-    readFlowsFromDatabase().then((flows) => {
+    readFlowsFromDatabase(loginUserId).then((flows) => {
       flows.forEach((flow) => {
         nameLists.current.push(flow.name);
       });

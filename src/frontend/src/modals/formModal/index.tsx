@@ -253,7 +253,7 @@ export default function FormModal({
       };
       newWs.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("Received data:", data);
+        // console.log("Received data:", data);
         handleWsMessage(data);
         //get chat history
       };

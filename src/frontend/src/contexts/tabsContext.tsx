@@ -61,6 +61,8 @@ const TabsContextInitialValue: TabsContextType = {
   setIsLogin: (state: boolean) => { },
   openFolderList:false,
   setOpenFolderList: (state: boolean) => { },
+  openModelList:false,
+  setOpenModelList: (state: boolean) => { },
   openWebEditor:false,
   setOpenWebEditor: (state: boolean) => { },
   openMiniMap:false,
@@ -239,6 +241,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   function processFlowNodes(flow) {
     if (!flow.data || !flow.data.nodes) return;
     flow.data.nodes.forEach((node: NodeType) => {
+      if(node.type=="noteNode") return;
       const template = templates[node.data.type];
       if (!template) {
         setErrorData({ title: `Unknown node type: ${node.data.type}` });
@@ -627,6 +630,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const updateNodes = (nodes, edges) => {
     nodes.forEach((node) => {
+      if(node.type=="noteNode") return;
       const template = templates[node.data.type];
       if (!template) {
         setErrorData({ title: `Unknown node type: ${node.data.type}` });
@@ -766,7 +770,9 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const [isBuilt, setIsBuilt] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
-  const [openFolderList, setOpenFolderList] = useState(true);
+  const [openFolderList, setOpenFolderList] = useState(false);
+
+  const [openModelList, setOpenModelList] = useState(false);
   const [openWebEditor, setOpenWebEditor] = useState(false);
   const [openMiniMap, setOpenMiniMap] = useState(false);
 
@@ -780,6 +786,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setIsLogin, 
         openFolderList,
         setOpenFolderList,    
+        openModelList,
+        setOpenModelList,
         openWebEditor,
         setOpenWebEditor,   
         openMiniMap,

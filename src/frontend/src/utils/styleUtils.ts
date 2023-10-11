@@ -88,6 +88,7 @@ import {
   PlusSquare,
   Square,
   Move,
+  BookMarked,
 } from "lucide-react";
 // all icon here : https://www.figma.com/file/dyJRSFTIajik4cdkcXN8yA3K/Feather-Component-Library?type=design&node-id=0-1&mode=design
 import { AirbyteIcon } from "../icons/Airbyte";
@@ -342,4 +343,5 @@ export const nodeIconsLucide = {
   PlusSquare,
   Square,
   Move,
+  BookMarked,
 };

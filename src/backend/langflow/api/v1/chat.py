@@ -47,17 +47,21 @@ async def init_build(graph_data: dict, flow_id: str):
     newNodes=[]
     notRunnable=[] #only node id
     while i< len(graph_data['data']['nodes']):
-        if('runnable' in graph_data['data']['nodes'][i]['data']['node']):
-            logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],graph_data['data']['nodes'][i]['data']['node']['runnable'])
-            if(graph_data['data']['nodes'][i]['data']['node']['runnable']):
-                # del graph_data['data']['nodes'][i]
-                newNodes.append(graph_data['data']['nodes'][i])
-            else:
-                notRunnable.append(graph_data['data']['nodes'][i]['data']['id'])    
+        # logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['type'],"NODE_TYPE")
+        if(graph_data['data']['nodes'][i]['type']!="genericNode"):
+            notRunnable.append(graph_data['data']['nodes'][i]['id']) 
+        else:    
+            if( 'runnable' in graph_data['data']['nodes'][i]['data']['node']):
+                logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],graph_data['data']['nodes'][i]['data']['node']['runnable'])
+                if(graph_data['data']['nodes'][i]['data']['node']['runnable']):
+                    # del graph_data['data']['nodes'][i]
+                    newNodes.append(graph_data['data']['nodes'][i])
+                else:
+                    notRunnable.append(graph_data['data']['nodes'][i]['data']['id'])    
 
-        else:
-            logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],"UN")
-            newNodes.append(graph_data['data']['nodes'][i])
+            else:
+                # logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],"UN")
+                newNodes.append(graph_data['data']['nodes'][i])
         i+=1
     
     graph_data['data']['nodes']=newNodes      

@@ -16,7 +16,7 @@ from langchain.chat_models import (
     ChatVertexAI,
     ChatAnthropic,
 )
-
+from langflow.interface.initialize.zpchatglm import ZPChatGLM
 from langflow.interface.importing.utils import import_class
 from langflow.interface.agents.custom import CUSTOM_AGENTS
 from langflow.interface.chains.custom import CUSTOM_CHAINS
@@ -27,6 +27,7 @@ llm_type_to_cls_dict["anthropic-chat"] = ChatAnthropic  # type: ignore
 llm_type_to_cls_dict["azure-chat"] = AzureChatOpenAI  # type: ignore
 llm_type_to_cls_dict["openai-chat"] = ChatOpenAI  # type: ignore
 llm_type_to_cls_dict["vertexai-chat"] = ChatVertexAI  # type: ignore
+llm_type_to_cls_dict["chat_glm"] = ZPChatGLM  # type: ignore
 
 
 # Toolkits

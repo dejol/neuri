@@ -69,7 +69,7 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
   useEffect(() => {
     const prevNodes = prevNodesRef.current;
     const currentNodes = nodes.map((node: NodeType) =>
-      _.cloneDeep(node.data.node.template)
+      _.cloneDeep(node.data.node?.template)
     );
     if (
       tabsState &&

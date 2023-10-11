@@ -30,6 +30,8 @@ export type TabsContextType = {
   setIsLogin: (state: boolean) => void;
   openFolderList:boolean;
   setOpenFolderList: (state: boolean) => void;
+  openModelList:boolean;
+  setOpenModelList: (state: boolean) => void;  
   openWebEditor:boolean,
   setOpenWebEditor: (state: boolean) => void;
   openMiniMap:boolean,

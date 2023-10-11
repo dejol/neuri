@@ -122,7 +122,8 @@ export default function BuildTrigger({
     // Step 3: Wait for the stream to finish
     let lengthOfRunnable=0;
     flow.data.nodes.forEach(node => {
-      if(node.data.node.runnable==undefined||node.data.node.runnable){
+      if((node.type=="genericNode")&&
+         (node.data.node.runnable==undefined||node.data.node.runnable)){
         lengthOfRunnable+=1;
       }
     });

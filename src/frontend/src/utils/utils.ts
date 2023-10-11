@@ -114,12 +114,13 @@ export function groupByFamily(data, baseClasses, left, flow?: NodeType[]) {
 
   if (flow) {
     for (const node of flow) {
+      if (node.type=="noteNode") continue;
       const nodeData = node.data;
       const foundNode = checkedNodes.get(nodeData.type);
       checkedNodes.set(nodeData.type, {
         hasBaseClassInTemplate:
           foundNode?.hasBaseClassInTemplate ||
-          Object.values(nodeData.node.template).some(checkBaseClass),
+          Object.values(nodeData.node?.template).some(checkBaseClass),
         hasBaseClassInBaseClasses:
           foundNode?.hasBaseClassInBaseClasses ||
           nodeData.node.base_classes.some((baseClass) =>
@@ -501,4 +502,12 @@ export function filterHTML(content:string){
   .replace( /&quot;/ig,"").replace(/&#x27;/ig,"").replace(/&#x2F;/ig,"")
   .replace(/&nbsp;/ig,"");
   return content;  
+}
+
+export function isValidImageUrl(url: string): boolean { 
+   if (url.startsWith('http://') || url.startsWith('https://')) { 
+      const fileExtension = /\.(jpg|jpeg|png|gif|webp|svg|tif|tiff)$/; 
+       return fileExtension.test(url); 
+    } 
+    return false;
 }

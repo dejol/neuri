@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { useContext, useEffect, useState } from "react";
-import { NodeResizer,NodeToolbar, useUpdateNodeInternals } from "reactflow";
+import { NodeResizer,NodeToolbar, useReactFlow, useUpdateNodeInternals } from "reactflow";
 import ShadTooltip from "../../components/ShadTooltipComponent";
 import Tooltip from "../../components/TooltipComponent";
 import IconComponent from "../../components/genericIconComponent";
@@ -89,6 +89,16 @@ export default function GenericNode({
     setData(newData);
   },[runnabler]);
 
+  const { setCenter } = useReactFlow();
+  function focusNode() {
+    let flow = flows.find((flow) => flow.id === tabId);
+    let node=flow.data?.nodes.find((node)=>node.id===data.id);
+    if (!node) return;
+    const x = node.position.x + node.width / 2;
+    const y = node.position.y + node.height / 2;
+    setCenter(x, y, { zoom:0.8, duration: 1000 });
+  }
+    
   return (
     <>
       <NodeToolbar offset={(data.type=="Note" || data.type=="AINote")?30:-5}>
@@ -113,7 +123,10 @@ export default function GenericNode({
           :data.type =="AINote"?" generic-resize-node-div"
           :" generic-node-div"
         )}
-        
+        onDoubleClick={(event)=>{
+          event.stopPropagation();
+          focusNode();
+        }}
       >
         {!(data.type=="Note" || data.type=="AINote") &&(
           <>

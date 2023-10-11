@@ -70,12 +70,13 @@ export default function ExtraSidebar() {
       setErrorData({ title: " Components with errors: ", list: errors });
   }, []);
 
-const [menuopen, setMenuOpen] = useState(false);
+  const [menuopen, setMenuOpen] = useState(false);
 
-const handleDrawer = () => {
-  setSearch("");
-  setMenuOpen(!menuopen);
-};
+  const handleDrawer = () => {
+    setSearch("");
+    setMenuOpen(!menuopen);
+  };
+  // const newNoteNode={type:"noteNode",node:{}};
 
   return (
     <div 
@@ -182,6 +183,44 @@ const handleDrawer = () => {
         </div>
           )
         )}
+
+            <ShadTooltip
+              content={"常规笔记"}
+              side="left"
+              key={"002"}
+            >
+              <div key={"002"} data-tooltip-id={"常规笔记"} className="m-1">
+                <div
+                  draggable={true}
+                  className={"side-bar-mini-components-border bg-background"}
+                  style={{
+                    borderLeftColor:
+                      nodeColors["Note"] ?? nodeColors.unknown,
+                  }}
+                  onDragStart={(event) =>
+                    onDragStart(event, {
+                      type: "noteNode"
+                    })
+                  }
+                  onDragEnd={() => {
+                    document.body.removeChild(
+                      document.getElementsByClassName(
+                        "cursor-grabbing"
+                      )[0]
+                    );
+                  }}
+                >
+                  <div className="side-bar-mini-components-div-form">
+                  <IconComponent
+                      name="BookMarked"
+                      className="side-bar-components-icon w-10 h-8"
+                      iconColor={`${nodeColors["Note"]}`}
+                    />
+                  </div>
+                </div>
+              </div>
+            </ShadTooltip>
+
       </>
     ):(
       <div className="side-bar-components-div-arrangement">
