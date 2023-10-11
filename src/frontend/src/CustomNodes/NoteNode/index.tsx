@@ -125,7 +125,7 @@ export default function NoteNode({
         }}
         style={{position:"relative"}}
     >
-      <NodeResizer  isVisible={selected} minWidth={100} minHeight={100} handleClassName="w-5 h-5"/>
+      <NodeResizer  isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"/>
 
 
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
