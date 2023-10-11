@@ -126,8 +126,6 @@ export default function NoteNode({
         style={{position:"relative"}}
     >
       <NodeResizer  isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"/>
-
-
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
         <NodeToolbar offset={2} isVisible={toolbarOn}>
           <Toolbar
@@ -166,13 +164,6 @@ export default function NoteNode({
           />
         )}
       <Handle type="target" position={Position.Top} id="a" className="customHandle"/>
-      {/* <Handle type="source" position={Position.Right} id="b" />
-      <Handle type="source" position={Position.Bottom} id="c" />
-      <Handle type="source" position={Position.Bottom} id="c1" style={{left:0}} />
-      <Handle type="source" position={Position.Right} id="b1" style={{top:0}} />
-      <Handle type="source" position={Position.Top} id="a1" style={{left:0}} />
-
-      <Handle type="source" position={Position.Left} id="d" /> */}
     </div>
   );
 }
