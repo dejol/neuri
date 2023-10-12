@@ -93,7 +93,7 @@ class ZPChatGLM(LLM):
         # headers = {"Content-Type": "application/json"}
 
         payload = {
-            "model":"chatglm_lite",
+            "model":"chatglm_pro",
             "prompt": prompt,
             "temperature": self.temperature,
             "history": self.history,
