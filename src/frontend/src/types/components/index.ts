@@ -173,3 +173,6 @@ export type IconComponentProps = {
 export interface languageMap {
   [key: string]: string | undefined;
 }
+
+// for wangEditor upload image
+// export type InsertFnType = (url: string, alt: string, href: string) => void

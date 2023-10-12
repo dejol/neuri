@@ -18,13 +18,14 @@ export default function NoteNode({
   yPos,
 }: {
   id:string,
-  data: {id:string,value:string,type:string};
+  data: {id:string,value:string,type:string}; 
   selected: boolean;
   xPos:number;
   yPos:number;
 }) {
   // const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
+  const { flows, tabId } =useContext(TabsContext);
 
   // editor 实例
   const [editor, setEditor] = useState<IDomEditor | null>(null)  
@@ -38,7 +39,12 @@ export default function NoteNode({
       'numberedList',
       'insertLink',
       'justifyCenter',
-      'insertImage',
+      {
+        key: "image",
+        title: "Image",
+        iconSvg:'<svg viewBox="0 0 1024 1024"><path d="M959.877 128l0.123 0.123v767.775l-0.123 0.122H64.102l-0.122-0.122V128.123l0.122-0.123h895.775zM960 64H64C28.795 64 0 92.795 0 128v768c0 35.205 28.795 64 64 64h896c35.205 0 64-28.795 64-64V128c0-35.205-28.795-64-64-64zM832 288.01c0 53.023-42.988 96.01-96.01 96.01s-96.01-42.987-96.01-96.01S682.967 192 735.99 192 832 234.988 832 288.01zM896 832H128V704l224.01-384 256 320h64l224.01-192z"></path></svg>',
+        menuKeys:['insertImage','uploadImage',]
+      },
     ];
 
   // 编辑器配置
@@ -64,7 +70,7 @@ export default function NoteNode({
   const editorConfig: Partial<IEditorConfig> = {   
       placeholder: 'Type something...',
       autoFocus:false,
-      
+      MENU_CONF: {},
       onChange :(editor:IDomEditor)=>{
           handleChange(editor.getHtml());
           setToolbarOn(true);
@@ -80,6 +86,57 @@ export default function NoteNode({
         setToolbarOn(true);
       }
   }
+  editorConfig.MENU_CONF['uploadImage'] = {
+    server: '/api/v1/upload/'+tabId,
+    fieldName: 'file',
+    // customInsert(res: any, insertFn:InsertFnType) { 
+    //       // res 即服务端的返回结果
+    //     // console.log("res:",res);
+    //       // 从 res 中找到 url alt href ，然后插入图片
+    //       insertFn(res.data.url, res.data.alt, res.data.href)
+    //   },
+  
+     // 单个文件的最大体积限制，默认为 2M
+     maxFileSize: 1 * 1024 * 1024, // 1M
+
+     // 最多可上传几个文件，默认为 100
+     maxNumberOfFiles: 10,
+ 
+     // 选择文件时的类型限制，默认为 ['image/*'] 。如不想限制，则设置为 []
+     allowedFileTypes: ['image/*'],
+ 
+     // 自定义上传参数，例如传递验证的 token 等。参数会被添加到 formData 中，一起上传到服务端。
+    //  meta: {
+    //      token: 'xxx',
+    //      otherKey: 'yyy'
+    //  },
+ 
+     // 将 meta 拼接到 url 参数中，默认 false
+    //  metaWithUrl: false,
+ 
+     // 自定义增加 http  header
+    //  headers: {
+    //      Accept: 'text/x-json',
+    //      otherKey: 'xxx'
+    //  },
+ 
+     // 跨域是否传递 cookie ，默认为 false
+    //  withCredentials: true,
+ 
+     // 超时时间，默认为 10 秒
+    //  timeout: 5 * 1000, // 5 秒 
+        // 单个文件上传失败
+    onFailed(file: File, res: any) {   
+      // onFailed(file, res) {           
+          console.log(`${file.name} 上传失败`, res)
+      },
+  
+      // 上传错误，或者触发 timeout 超时
+      onError(file: File, err: any, res: any) {  
+      // onError(file, err, res) {              
+          console.log(`${file.name} 上传出错`, err, res)
+      },
+  }
 
   // 及时销毁 editor ，重要！
   useEffect(() => {
@@ -93,7 +150,6 @@ export default function NoteNode({
   const handleMouseDown = (event) => {
     event.stopPropagation();
   };
-  const { flows, tabId } =useContext(TabsContext);
   const connectionNodeId = useStore(connectionNodeIdSelector);
   // console.log("connectionNodeId:%s,id:%s",connectionNodeId,id);
   const isConnecting = !!connectionNodeId;

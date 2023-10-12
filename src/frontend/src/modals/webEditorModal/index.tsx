@@ -46,7 +46,6 @@ import markdownModule from '@wangeditor/plugin-md'
 //   }
 // }
 
-
 export default function WebEditorModal({
   flow_id,
   node_id,
@@ -179,6 +178,7 @@ export default function WebEditorModal({
   // },[])
 
   // editor 实例
+  Boot.registerModule(markdownModule);
   const [editor, setEditor] = useState<IDomEditor | null>(null)
   const toolbarConfig: Partial<IToolbarConfig> = { }
   //   toolbarConfig.toolbarKeys=[    
@@ -203,7 +203,7 @@ export default function WebEditorModal({
   const editorConfig: Partial<IEditorConfig> = {   
     placeholder: 'Type something...',
     autoFocus:false,
-    
+    MENU_CONF: {},
     onChange :(editor:IDomEditor)=>{
       setValue(editor.getHtml());
     },
@@ -212,7 +212,47 @@ export default function WebEditorModal({
     onFocus:(editor:IDomEditor)=>{
     }
     
-}
+};
+editorConfig.MENU_CONF['uploadImage'] = {
+  server: '/api/v1/upload/'+tabId,
+  fieldName: 'file',
+  
+//   customInsert(res: any, insertFn:InsertFnType) {  
+//     // res 即服务端的返回结果
+//   // console.log("res:",res);
+//     // 从 res 中找到 url alt href ，然后插入图片
+//     insertFn(res.data.url, res.data.alt, res.data.href)
+// },  
+   // 单个文件的最大体积限制，默认为 2M
+   maxFileSize: 1 * 1024 * 1024, // 1M
+
+   // 最多可上传几个文件，默认为 100
+   maxNumberOfFiles: 10,
+
+   // 选择文件时的类型限制，默认为 ['image/*'] 。如不想限制，则设置为 []
+   allowedFileTypes: ['image/*'],
+
+   // 自定义上传参数，例如传递验证的 token 等。参数会被添加到 formData 中，一起上传到服务端。
+  //  meta: {
+  //      token: 'xxx',
+  //      otherKey: 'yyy'
+  //  },
+
+   // 将 meta 拼接到 url 参数中，默认 false
+  //  metaWithUrl: false,
+
+   // 自定义增加 http  header
+  //  headers: {
+  //      Accept: 'text/x-json',
+  //      otherKey: 'xxx'
+  //  },
+
+   // 跨域是否传递 cookie ，默认为 false
+  //  withCredentials: true,
+
+   // 超时时间，默认为 10 秒
+  //  timeout: 5 * 1000, // 5 秒 
+};
 
 // 及时销毁 editor ，重要！
 useEffect(() => {

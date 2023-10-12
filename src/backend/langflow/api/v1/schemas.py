@@ -108,7 +108,8 @@ class UploadFileResponse(BaseModel):
 
     flowId: str
     file_path: Path
-
+    errno:int
+    data:dict
 
 class StreamData(BaseModel):
     event: str

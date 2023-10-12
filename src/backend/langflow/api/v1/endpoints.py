@@ -1,4 +1,6 @@
 from http import HTTPStatus
+import os
+import shutil
 from typing import Annotated, Optional
 
 from langflow.services.cache.utils import save_uploaded_file
@@ -112,11 +114,32 @@ async def process_flow(
 async def create_upload_file(file: UploadFile, flow_id: str):
     # Cache file
     try:
+        
         file_path = save_uploaded_file(file.file, folder_name=flow_id)
+        image_extensions = ['.jpg', '.jpeg', '.png', '.gif','.svg','.webp']
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        file_name = os.path.basename(file_path)
+        if file_extension in image_extensions:
+            save_directory="public/img/"+flow_id+"/"
+            if(os.getenv("LANGFLOW_FRONTEND_PATH")):
+                save_directory=os.getenv("LANGFLOW_FRONTEND_PATH")+"/"+save_directory
+            
+            if(not os.path.exists(save_directory)):
+                os.makedirs(save_directory)            
+            
+            save_path = os.path.join(save_directory, file_name+file_extension)
+            shutil.copyfile(file_path, save_path)        
+            os.remove(file_path)
 
         return UploadFileResponse(
             flowId=flow_id,
             file_path=file_path,
+            errno=0,
+            data={
+                "url":"/img/"+flow_id+"/"+file_name+file_extension,
+                "alt":file.filename,
+                "href":"",
+                },
         )
     except Exception as exc:
         logger.error(f"Error saving file: {exc}")

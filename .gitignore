@@ -253,3 +253,4 @@ neuri.db
 .docusaurus/
 
 /tmp/*
+src/frontend/public/img/

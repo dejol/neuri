@@ -15,14 +15,7 @@ import { Boot } from '@wangeditor/editor'
 import { typesContext } from "../../contexts/typesContext";
 import markdownModule from '@wangeditor/plugin-md'
 import { NodeToolbar } from "reactflow";
-
-
-// import ReactMarkdown from "react-markdown";
-// import rehypeMathjax from "rehype-mathjax";
-// import remarkGfm from "remark-gfm";
-// import remarkMath from "remark-math";
-// import CodeTabsComponent from "../../components/codeTabsComponent";
-// import {CKEditor} from "@ckeditor/ckeditor5-react";
+import { TabsContext } from "../../contexts/tabsContext";
 
 export default function HtmlViewComponent({
   contentValue,
@@ -75,6 +68,7 @@ export default function HtmlViewComponent({
     // }
 };
 */
+const { tabId } =useContext(TabsContext);
 //below is wangEditor
 const [toolbarOn,setToolbarOn] = useState(false);
 Boot.registerModule(markdownModule)
@@ -102,7 +96,12 @@ toolbarConfig.toolbarKeys=[
   'numberedList',
   'insertLink',
   'justifyCenter',
-  'insertImage',
+  {
+    key: "image",
+    title: "Image",
+    iconSvg:'<svg viewBox="0 0 1024 1024"><path d="M959.877 128l0.123 0.123v767.775l-0.123 0.122H64.102l-0.122-0.122V128.123l0.122-0.123h895.775zM960 64H64C28.795 64 0 92.795 0 128v768c0 35.205 28.795 64 64 64h896c35.205 0 64-28.795 64-64V128c0-35.205-28.795-64-64-64zM832 288.01c0 53.023-42.988 96.01-96.01 96.01s-96.01-42.987-96.01-96.01S682.967 192 735.99 192 832 234.988 832 288.01zM896 832H128V704l224.01-384 256 320h64l224.01-192z"></path></svg>',
+    menuKeys:['insertImage','uploadImage',]
+  },
 ];
 // 编辑器配置
 // const [focus,setFocus] =useState(false);
@@ -122,6 +121,7 @@ function handleChange(content){
 const editorConfig: Partial<IEditorConfig> = {   
     placeholder: 'Type something...',
     autoFocus:false,
+    MENU_CONF:{},
     onChange :(editor:IDomEditor)=>{
       setToolbarOn(true);
       handleChange(editor.getHtml());
@@ -135,7 +135,32 @@ const editorConfig: Partial<IEditorConfig> = {
       setFocusEditor(true)
     }    
 }
+editorConfig.MENU_CONF['uploadImage'] = {
+  server: '/api/v1/upload/'+tabId,
+  fieldName: 'file',
+  // customInsert(res: any, insertFn:InsertFnType) {  
+  //       insertFn(res.data.url, res.data.alt, res.data.href)
+  //   },
 
+   // 单个文件的最大体积限制，默认为 2M
+   maxFileSize: 1 * 1024 * 1024, // 1M
+
+   // 最多可上传几个文件，默认为 100
+   maxNumberOfFiles: 10,
+
+   // 选择文件时的类型限制，默认为 ['image/*'] 。如不想限制，则设置为 []
+   allowedFileTypes: ['image/*'],
+
+      // 单个文件上传失败
+  onFailed(file: File, res: any) {   
+        console.log(`${file.name} 上传失败`, res)
+    },
+
+    // 上传错误，或者触发 timeout 超时
+    onError(file: File, err: any, res: any) {  
+        console.log(`${file.name} 上传出错`, err, res)
+    },
+}
 // 及时销毁 editor ，重要！
 useEffect(() => {
     return () => {

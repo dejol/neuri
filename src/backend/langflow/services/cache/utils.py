@@ -12,7 +12,7 @@ from appdirs import user_cache_dir
 
 CACHE: Dict[str, Any] = {}
 
-CACHE_DIR = user_cache_dir("langflow", "langflow")
+CACHE_DIR = user_cache_dir("neuri", "neuri")
 
 
 def create_cache_folder(func):
@@ -55,7 +55,7 @@ def memoize_dict(maxsize=128):
     return decorator
 
 
-PREFIX = "langflow_cache"
+PREFIX = "neuri_cache"
 
 
 @create_cache_folder
