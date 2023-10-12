@@ -6,6 +6,8 @@ import { Handle, NodeResizer, NodeToolbar, Position, useReactFlow, useStore, use
 import markdownModule from '@wangeditor/plugin-md'
 import { TabsContext } from "../../contexts/tabsContext";
 import zIndex from "@mui/material/styles/zIndex";
+import ShadTooltip from "../../components/ShadTooltipComponent";
+import IconComponent from "../../components/genericIconComponent";
 
 const connectionNodeIdSelector = (state) => state.connectionNodeId;
 const sourceStyle = { zIndex: 1 };
@@ -170,6 +172,29 @@ export default function NoteNode({
     setToolbarOn(selected);
 
   },[selected])
+
+  function focusNextNode(){
+    let flow = flows.find((flow) => flow.id === tabId);
+    let ed=flow.data?.edges.find((edge)=>(edge.source===id&&edge.source!=edge.target));
+    // console.log("edge:",ed);
+    if(ed){
+      let node=flow.data?.nodes.find((node)=>node.id===ed.target);
+      const x = node.position.x + node.width / 2;
+      const y = node.position.y + node.height / 2;
+      setCenter(x, y, { zoom:0.8, duration: 1000 });    
+    }
+  }
+  function focusPrevNode(){
+    let flow = flows.find((flow) => flow.id === tabId);
+    let edge=flow.data?.edges.find((edge)=>(edge.target===id&&edge.source!=edge.target));
+    // console.log("prev-edge:",edge);
+    if(edge){
+      let node=flow.data?.nodes.find((node)=>node.id===edge.source);
+      const x = node.position.x + node.width / 2;
+      const y = node.position.y + node.height / 2;
+      setCenter(x, y, { zoom:0.8, duration: 1000 });   
+    } 
+  }
   return (
     <div className={"h-full p-1 "+
         (isTarget ? "bg-status-green":"bg-background")+
@@ -184,6 +209,29 @@ export default function NoteNode({
       <NodeResizer  isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"/>
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
         <NodeToolbar offset={2} isVisible={toolbarOn}>
+        <div className="flex justify-between w-full">
+        <div>
+          <ShadTooltip content="Prev Node" side="bottom">
+          <button
+            className="extra-side-bar-buttons"
+            onClick={focusPrevNode}
+          >
+            <IconComponent name="SkipBack" className="side-bar-button-size " />
+          </button>
+        </ShadTooltip>            
+          </div>          
+          <div>
+          <ShadTooltip content="Next Node" side="bottom">
+          <button
+            className="extra-side-bar-buttons"
+            onClick={focusNextNode}
+          >
+            <IconComponent name="SkipForward" className="side-bar-button-size " />
+          </button>
+        </ShadTooltip>
+          </div>
+
+        </div>          
           <Toolbar
               editor={editor}
               defaultConfig={toolbarConfig}
@@ -191,6 +239,7 @@ export default function NoteNode({
               style={{ border: '1px solid #ccc' }}
           />
         </NodeToolbar>
+
           <Editor
             defaultConfig={editorConfig}
             value={data.value}
