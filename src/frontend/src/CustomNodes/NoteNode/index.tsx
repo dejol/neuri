@@ -158,14 +158,15 @@ export default function NoteNode({
   const isTarget = connectionNodeId && connectionNodeId !== id;
   // const label = isTarget ? 'Drop here' : 'Drag to connect';
 
-  const { setCenter } = useReactFlow();
+  const { setCenter,fitView } = useReactFlow();
   function focusNode() {
     let flow = flows.find((flow) => flow.id === tabId);
     let node=flow.data?.nodes.find((node)=>node.id===id);
     if (!node) return;
     const x = node.position.x + node.width / 2;
     const y = node.position.y + node.height / 2;
-    setCenter(x, y, { zoom:0.8, duration: 1000 });
+    fitView({nodes:[node],duration:1000,padding:0.1})
+    // setCenter(x, y, { zoom:0.8, duration: 1000 });
   }
   const [toolbarOn,setToolbarOn] =useState(false);
   useEffect(()=>{
@@ -181,7 +182,8 @@ export default function NoteNode({
       let node=flow.data?.nodes.find((node)=>node.id===ed.target);
       const x = node.position.x + node.width / 2;
       const y = node.position.y + node.height / 2;
-      setCenter(x, y, { zoom:0.8, duration: 1000 });    
+      // setCenter(x, y, { zoom:0.8, duration: 1000 });    
+      fitView({nodes:[node],duration:1000,padding:0.1})
     }
   }
   function focusPrevNode(){
@@ -192,7 +194,8 @@ export default function NoteNode({
       let node=flow.data?.nodes.find((node)=>node.id===edge.source);
       const x = node.position.x + node.width / 2;
       const y = node.position.y + node.height / 2;
-      setCenter(x, y, { zoom:0.8, duration: 1000 });   
+      // setCenter(x, y, { zoom:0.8, duration: 1000 });   
+      fitView({nodes:[node],duration:1000,padding:0.1})
     } 
   }
   return (
@@ -209,35 +212,35 @@ export default function NoteNode({
       <NodeResizer  isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"/>
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
         <NodeToolbar offset={2} isVisible={toolbarOn}>
-        <div className="flex justify-between w-full">
-        <div>
+        <div className="flex justify-between w-full m-0">
+        <div className="m-0 mt-2">
           <ShadTooltip content="Prev Node" side="bottom">
           <button
-            className="extra-side-bar-buttons"
             onClick={focusPrevNode}
           >
-            <IconComponent name="SkipBack" className="side-bar-button-size " />
+            <IconComponent name="SkipBack" className="side-bar-button-size" />
           </button>
         </ShadTooltip>            
-          </div>          
-          <div>
-          <ShadTooltip content="Next Node" side="bottom">
-          <button
-            className="extra-side-bar-buttons"
-            onClick={focusNextNode}
-          >
-            <IconComponent name="SkipForward" className="side-bar-button-size " />
-          </button>
-        </ShadTooltip>
-          </div>
-
-        </div>          
+          </div>    
+          <div className="m-0">    
           <Toolbar
               editor={editor}
               defaultConfig={toolbarConfig}
               mode={"simple"}
               style={{ border: '1px solid #ccc' }}
-          />
+          /> 
+          </div> 
+          <div className="m-0 mt-2">
+          <ShadTooltip content="Next Node" side="bottom">
+          <button
+            onClick={focusNextNode}
+          >
+            <IconComponent name="SkipForward" className="side-bar-button-size" />
+          </button>
+        </ShadTooltip>
+          </div>
+        </div>          
+
         </NodeToolbar>
 
           <Editor
