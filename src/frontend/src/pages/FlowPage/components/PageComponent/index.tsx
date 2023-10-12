@@ -195,7 +195,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     setEdges(flow?.data?.edges ?? []);
     if (reactFlowInstance) {
       setViewport(flow?.data?.viewport ?? { x: 1, y: 0, zoom: 0.5 });
-      reactFlowInstance.fitView();
+      // reactFlowInstance.fitView();
     }
   }, [flow, reactFlowInstance, setEdges, setNodes, setViewport]);
   //set extra sidebar
@@ -581,6 +581,7 @@ const edgeTypes = {
             Object.keys(types).length > 0 ? (
               <div className="h-full w-full">
                 <ReactFlow
+                  snapToGrid={true}
                   nodes={nodes}
                   onMove={() => {
                     if (reactFlowInstance)
