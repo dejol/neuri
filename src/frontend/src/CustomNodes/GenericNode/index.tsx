@@ -89,14 +89,15 @@ export default function GenericNode({
     setData(newData);
   },[runnabler]);
 
-  const { setCenter } = useReactFlow();
+  const { setCenter,fitView } = useReactFlow();
   function focusNode() {
     let flow = flows.find((flow) => flow.id === tabId);
     let node=flow.data?.nodes.find((node)=>node.id===data.id);
     if (!node) return;
-    const x = node.position.x + node.width / 2;
-    const y = node.position.y + node.height / 2;
-    setCenter(x, y, { zoom:0.8, duration: 1000 });
+    // const x = node.position.x + node.width / 2;
+    // const y = node.position.y + node.height / 2;
+    // setCenter(x, y, { zoom:0.8, duration: 1000 });
+    fitView({nodes:[node],duration:1000,padding:0.6})
   }
     
   return (

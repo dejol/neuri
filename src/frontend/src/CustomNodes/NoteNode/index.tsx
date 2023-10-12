@@ -163,8 +163,8 @@ export default function NoteNode({
     let flow = flows.find((flow) => flow.id === tabId);
     let node=flow.data?.nodes.find((node)=>node.id===id);
     if (!node) return;
-    const x = node.position.x + node.width / 2;
-    const y = node.position.y + node.height / 2;
+    // const x = node.position.x + node.width / 2;
+    // const y = node.position.y + node.height / 2;
     fitView({nodes:[node],duration:1000,padding:0.1})
     // setCenter(x, y, { zoom:0.8, duration: 1000 });
   }
@@ -180,8 +180,8 @@ export default function NoteNode({
     // console.log("edge:",ed);
     if(ed){
       let node=flow.data?.nodes.find((node)=>node.id===ed.target);
-      const x = node.position.x + node.width / 2;
-      const y = node.position.y + node.height / 2;
+      // const x = node.position.x + node.width / 2;
+      // const y = node.position.y + node.height / 2;
       // setCenter(x, y, { zoom:0.8, duration: 1000 });    
       fitView({nodes:[node],duration:1000,padding:0.1})
     }
@@ -192,8 +192,8 @@ export default function NoteNode({
     // console.log("prev-edge:",edge);
     if(edge){
       let node=flow.data?.nodes.find((node)=>node.id===edge.source);
-      const x = node.position.x + node.width / 2;
-      const y = node.position.y + node.height / 2;
+      // const x = node.position.x + node.width / 2;
+      // const y = node.position.y + node.height / 2;
       // setCenter(x, y, { zoom:0.8, duration: 1000 });   
       fitView({nodes:[node],duration:1000,padding:0.1})
     } 
@@ -213,9 +213,10 @@ export default function NoteNode({
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
         <NodeToolbar offset={2} isVisible={toolbarOn}>
         <div className="flex justify-between w-full m-0">
-        <div className="m-0 mt-2">
-          <ShadTooltip content="Prev Node" side="bottom">
+        <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
+          <ShadTooltip content="Prev Node" side="left" >
           <button
+            
             onClick={focusPrevNode}
           >
             <IconComponent name="SkipBack" className="side-bar-button-size" />
@@ -230,8 +231,8 @@ export default function NoteNode({
               style={{ border: '1px solid #ccc' }}
           /> 
           </div> 
-          <div className="m-0 mt-2">
-          <ShadTooltip content="Next Node" side="bottom">
+          <div className="m-0 mt-2  bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
+          <ShadTooltip content="Next Node" side="right">
           <button
             onClick={focusNextNode}
           >

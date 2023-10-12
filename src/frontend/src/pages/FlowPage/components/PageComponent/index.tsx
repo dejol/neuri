@@ -19,6 +19,7 @@ import ReactFlow, {
   useReactFlow,
   Panel,
   MarkerType,
+  BackgroundVariant,
 } from "reactflow";
 import GenericNode from "../../../../CustomNodes/GenericNode";
 import Chat from "../../../../components/chatComponent";
@@ -582,6 +583,7 @@ const edgeTypes = {
               <div className="h-full w-full">
                 <ReactFlow
                   snapToGrid={true}
+                  snapGrid={[50,50]}
                   nodes={nodes}
                   onMove={() => {
                     if (reactFlowInstance)
@@ -616,7 +618,6 @@ const edgeTypes = {
                   minZoom={0.01}
                   maxZoom={8}
                 >
-                  <Background className="" />
                   {openMiniMap&&(
                     <MiniMap pannable={true} 
                     position="bottom-right" 
@@ -633,6 +634,9 @@ const edgeTypes = {
                   >
                     </Controls>
                   <ExtendButton/>
+                  <Background 
+                  // color="#ccc" 
+                  variant={BackgroundVariant.Lines} />
                 </ReactFlow>
                 <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
               </div>
