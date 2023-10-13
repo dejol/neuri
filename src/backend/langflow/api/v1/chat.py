@@ -262,7 +262,7 @@ async def assistant(graph_data: dict, flow_id: str):
     try:
         if flow_id is None:
             raise ValueError("No ID provided")
-        prompt_template='将如下内容猜测我做这个笔记的意图\\n{contents}'
+        prompt_template='将如下内容猜测我做这个笔记的意图,并为这个笔记白板起一个合适的标题\\n{contents}'
         llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
         prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables={'contents': contents}, template=prompt_template, template_format='f-string', validate_template=True)
         chain = LLMChain(llm=llm,prompt=prompt)
