@@ -42,6 +42,7 @@ import IconComponent from "../../../../components/genericIconComponent";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
 import NoteNode from "../../../../CustomNodes/NoteNode";
 import FloatingEdge from "../FloatingEdgeComponent";
+import { postNotesAssistant } from "../../../../controllers/API";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
@@ -88,11 +89,12 @@ export default function Page({ flow }: { flow: FlowType }) {
     saveFlow,
     setTabsState,
     tabId,
-    loginUserId
+    loginUserId,
   } = useContext(TabsContext);
   const { types, reactFlowInstance, setReactFlowInstance, templates,data } =
     useContext(typesContext);
   const reactFlowWrapper = useRef(null);
+  const {setNoticeData } = useContext(alertContext);
 
   const { takeSnapshot } = useContext(undoRedoContext);
 
@@ -101,8 +103,9 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList } = useContext(TabsContext);
+  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList,openAssistant } = useContext(TabsContext);
   const [openSearch,setOpenSearch]=useState(false);
+  const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
   // useEffect(() => {
   //   if(getSearchResult&&getSearchResult.length>0){
   //     setOpenSearch(true);
@@ -227,6 +230,7 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const onNodesChangeMod = useCallback(
     (change: NodeChange[]) => {
+      setConChanged(true);
       onNodesChange(change);
       setTabsState((prev) => {
         return {
@@ -331,20 +335,20 @@ export default function Page({ flow }: { flow: FlowType }) {
         let newId = getNodeId(type);
         let newNode: NodeType;
         if(data.type=="noteNode"){
-          newNode = {
-            id: newId,
-            type: "noteNode",
-            position,
-            data: {
-              type:"noteNode",
-              value: data.node?data.node.value:"",
-              id:newId
-            },
-          };
-            let nodesList=flow.data.nodes;
-            nodesList.push(newNode);
-            reactFlowInstance.setNodes(nodesList);
-
+          // newNode = {
+          //   id: newId,
+          //   type: "noteNode",
+          //   position,
+          //   data: {
+          //     type:"noteNode",
+          //     value: data.node?data.node.value:"",
+          //     id:newId
+          //   },
+          // };
+          //   let nodesList=flow.data.nodes;
+          //   nodesList.push(newNode);
+          //   reactFlowInstance.setNodes(nodesList);
+          createNoteNode("");
         }else{
           if (data.type !== "groupNode") {
             // Create a new node object
@@ -443,9 +447,9 @@ export default function Page({ flow }: { flow: FlowType }) {
     event.preventDefault();
     setSelectionEnded(false);
   }, []);
-
   // Workaround to show the menu only after the selection has ended.
   useEffect(() => {
+    
     if (selectionEnded && lastSelection && lastSelection.nodes.length > 1) {
       setSelectionMenuVisible(true);
     } else {
@@ -454,35 +458,36 @@ export default function Page({ flow }: { flow: FlowType }) {
   }, [selectionEnded, lastSelection]);
 
   const onSelectionChange = useCallback((flow) => {
+    
     setLastSelection(flow);
   }, []);
 
-function createNewNote(newValue){
-  let newData = { type: "Note",node:data["notes"]["Note"]};
-  let { type } = newData;
-  let newId = getNodeId(type);
-  let newNode: NodeType;
-  let bounds = reactFlowWrapper.current.getBoundingClientRect();
-  const newPosition = reactFlowInstance.project({
-    x: position.x - bounds.left,
-    y: position.y - bounds.top,    
-  });
-  newData.node.template.note.value=newValue;
-  newNode = {
-    id: newId,
-    type: "genericNode",
-    position:newPosition,
+// function createNewNote(newValue){
+//   let newData = { type: "Note",node:data["notes"]["Note"]};
+//   let { type } = newData;
+//   let newId = getNodeId(type);
+//   let newNode: NodeType;
+//   let bounds = reactFlowWrapper.current.getBoundingClientRect();
+//   const newPosition = reactFlowInstance.project({
+//     x: position.x - bounds.left,
+//     y: position.y - bounds.top,    
+//   });
+//   newData.node.template.note.value=newValue;
+//   newNode = {
+//     id: newId,
+//     type: "genericNode",
+//     position:newPosition,
     
-    data: {
-      ...newData,
-      id: newId,
-      value: null,
-    },
-  };
-  let nodesList=flow.data.nodes;
-  nodesList.push(newNode);
-  reactFlowInstance.setNodes(nodesList);
-}
+//     data: {
+//       ...newData,
+//       id: newId,
+//       value: null,
+//     },
+//   };
+//   let nodesList=flow.data.nodes;
+//   nodesList.push(newNode);
+//   reactFlowInstance.setNodes(nodesList);
+// }
 function createNoteNode(newValue){
   if(newValue&&isValidImageUrl(newValue)){
     newValue="<img src='"+newValue+"'/>";
@@ -512,10 +517,41 @@ function createNoteNode(newValue){
   reactFlowInstance.setNodes(nodesList);
 }
 
-const edgeTypes = {
-  floating: FloatingEdge,
-};
+  const edgeTypes = {
+    floating: FloatingEdge,
+  };
+  
+  const assistantOn = useRef(false);
+  const changedContent = useRef(false);
+  useEffect(()=>{
+    assistantOn.current=openAssistant;
+    let delay=1000*10; //one minute
+    let intervalId = null;
+    if(assistantOn.current){
+      intervalId = setInterval(callAssistant, delay);
+    }else{
+      clearInterval(intervalId);
+    }
+    return () => {
+      clearInterval(intervalId);
+    };
+  },[openAssistant]);
 
+  useEffect(()=>{
+    changedContent.current=conChanged;
+  },[conChanged]);  
+  function callAssistant(){
+    if(assistantOn.current&&flow&&changedContent.current){
+      // console.log("call assistant")
+      postNotesAssistant(flow).then((resp)=>{
+        // console.log("call assistant:",resp)
+        if(resp){
+          setNoticeData({title:resp.data.result.msg})
+        }
+      });
+    }
+    setConChanged(false);
+  };
   return (
     <div className="flex h-full overflow-hidden">
       

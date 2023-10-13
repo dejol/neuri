@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { ReactFlowJsonObject } from "reactflow";
 import { api } from "../../controllers/API/api";
-import { APIObjectType, sendAllProps } from "../../types/api/index";
+import { APIObjectType, AssistantTypeAPI, sendAllProps } from "../../types/api/index";
 import { FlowStyleType, FlowType, FolderType, UserType } from "../../types/flow";
 import {
   APIClassType,
@@ -469,4 +469,34 @@ export async function loginUserFromDatabase(user:UserType) {
     console.error(error);
     throw error;
   }
+}
+
+/**
+ * Posts the notes of a flow.
+ * @param {FlowType} flow -  The flow to post to assistant .
+ * @returns {Promise<AssistantTypeAPI>} A promise that resolves to an AxiosResponse containing the build status.
+ *
+ */
+export async function postNotesAssistant(
+  flow: FlowType
+): Promise<AxiosResponse<AssistantTypeAPI>> {
+  let nodes=flow.data.nodes;
+  let content="";
+  if (nodes.length > 0) {
+    nodes.forEach((node) => {
+      if(node.type=="noteNode"){
+        content+=node.data.value;
+      }else{
+        if(node.data.type=="Note"||node.data.type=="AINote"){
+          content+=node.data.node.template.note.value;
+        }
+      }
+
+    })
+  }
+  if(content.length>3){
+    return await api.post(`/api/v1/assistant/${flow.id}`, flow);
+  }
+  return null;
+  // ("result"={flowId:flow.id,msg:""});
 }

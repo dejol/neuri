@@ -34,11 +34,12 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import { cloneDeep } from "lodash";
+import { postNotesAssistant } from "../../controllers/API";
 
 export default function Header() {
-  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList,folders,setLoginUserId,setOpenMiniMap,openMiniMap } = useContext(TabsContext);
+  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList,folders,setLoginUserId,setOpenMiniMap,openMiniMap,openAssistant,setOpenAssistant } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
-  const { notificationCenter } = useContext(alertContext);
+  const { notificationCenter,setNoticeData } = useContext(alertContext);
   const location = useLocation();
 
   let current_flow = flows.find((flow) => flow.id === tabId);
@@ -128,7 +129,13 @@ export default function Header() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  // function callAssistant(){
+  //  postNotesAssistant(current_flow).then((resp)=>{
+  //     // console.log("resp:",resp);
+  //     setNoticeData({title:resp.data.result.msg})
+  //   });
 
+  // }
 
   return (
     <div className="header-arrangement">
@@ -353,6 +360,18 @@ export default function Header() {
                   )}
                     model
                 </MenuItem>
+                <MenuItem onClick={()=>{
+                    
+                    setOpenAssistant(!openAssistant);  
+                  }
+                }>
+                  {openAssistant ? (
+                    <IconComponent name="MicOff" className="side-bar-button-size mr-2" />
+                  ) : (
+                    <IconComponent name="Mic" className="side-bar-button-size mr-2" />
+                  )}
+                  AI Assistant
+                </MenuItem>                
                 <MenuItem onClick={()=>{
                     setOpenMiniMap(!openMiniMap);    
                   }

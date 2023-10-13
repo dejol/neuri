@@ -67,6 +67,8 @@ const TabsContextInitialValue: TabsContextType = {
   setOpenWebEditor: (state: boolean) => { },
   openMiniMap:false,
   setOpenMiniMap: (state: boolean) => { },
+  openAssistant:false,
+  setOpenAssistant: (state: boolean) => { },  
   hardReset: () => { },
   saveFlow: async (flow: FlowType) => { },
   lastCopiedSelection: null,
@@ -777,6 +779,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const [openModelList, setOpenModelList] = useState(false);
   const [openWebEditor, setOpenWebEditor] = useState(false);
   const [openMiniMap, setOpenMiniMap] = useState(false);
+  const [openAssistant, setOpenAssistant] = useState(false);
 
   return (
     <TabsContext.Provider
@@ -794,6 +797,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setOpenWebEditor,   
         openMiniMap,
         setOpenMiniMap,           
+        openAssistant,
+        setOpenAssistant,
         lastCopiedSelection,
         setLastCopiedSelection,
         hardReset,

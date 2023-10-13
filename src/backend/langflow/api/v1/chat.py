@@ -1,12 +1,19 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketException, status
 from fastapi.responses import StreamingResponse
 from langflow.api.utils import build_input_keys_response
-from langflow.api.v1.schemas import BuildStatus, BuiltResponse, InitResponse, StreamData
+from langflow.api.v1.schemas import BuildStatus, BuiltResponse, InitResponse, StreamData,ProcessResponse
 
 from langflow.services import service_manager, ServiceType
 from langflow.graph.graph.base import Graph
 from langflow.utils.logger import logger
 from cachetools import LRUCache
+
+from langchain.llms.base import BaseLLM
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.schema import Document
+from langchain.chat_models import ChatOpenAI
+import os
 
 router = APIRouter(tags=["Chat"])
 
@@ -237,3 +244,35 @@ async def stream_build(flow_id: str):
     except Exception as exc:
         logger.error(f"Error streaming build: {exc}")
         raise HTTPException(status_code=500, detail=str(exc))
+
+@router.post("/assistant/{flow_id}", response_model=ProcessResponse, status_code=201)
+async def assistant(graph_data: dict, flow_id: str):
+    logger.debug("total number_of_nodes:%s",len(graph_data['data']['nodes']))
+    contents=""
+    i=0
+    while i< len(graph_data['data']['nodes']):
+        if(graph_data['data']['nodes'][i]['type']=="noteNode"):
+            # contents.append(graph_data['data']['nodes'][i]['data']['value']) 
+            contents+='\n'+graph_data['data']['nodes'][i]['data']['value']
+        else:
+            if(graph_data['data']['nodes'][i]['data']['type']=="Note" or graph_data['data']['nodes'][i]['data']['type']=="AINote"):
+                contents+='\n'+graph_data['data']['nodes'][i]['data']['node']['template']['note']['value']
+
+        i+=1
+    try:
+        if flow_id is None:
+            raise ValueError("No ID provided")
+        prompt_template='将如下内容猜测我做这个笔记的意图\\n{contents}'
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
+        prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables={'contents': contents}, template=prompt_template, template_format='f-string', validate_template=True)
+        chain = LLMChain(llm=llm,prompt=prompt)
+        # logger.debug("contents:",contents)
+        
+        response = chain.run(prompt=prompt_template)
+        resultDict={"flowId":flow_id,"msg":response}
+        # logger.debug("result:",resultDict)
+        return ProcessResponse(result=resultDict)
+    except Exception as exc:
+        logger.error(f"Error when call AI LLM: {exc}")
+        return HTTPException(status_code=500, detail=str(exc))
+

@@ -60,6 +60,10 @@ export type InitTypeAPI = {
   flowId: string;
 };
 
+export type AssistantTypeAPI = {
+  result:{flowId:string,msg:string};
+};
+
 export type UploadFileTypeAPI = {
   file_path: string;
   flowId: string;
