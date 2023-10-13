@@ -43,6 +43,7 @@ import ShadTooltip from "../../../../components/ShadTooltipComponent";
 import NoteNode from "../../../../CustomNodes/NoteNode";
 import FloatingEdge from "../FloatingEdgeComponent";
 import { postNotesAssistant } from "../../../../controllers/API";
+import LoadingComponent from "../../../../components/loadingComponent";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
@@ -178,6 +179,8 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const { setExtraComponent, setExtraNavigation } = useContext(locationContext);
   const { setErrorData } = useContext(alertContext);
+  const [loading,setLoading] = useState(false);
+  
   const [nodes, setNodes, onNodesChange] = useNodesState(
     flow.data?.nodes ?? []
   );
@@ -198,6 +201,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     setNodes(flow?.data?.nodes ?? []);
     setEdges(flow?.data?.edges ?? []);
     if (reactFlowInstance) {
+      setLoading(false);
       setViewport(flow?.data?.viewport ?? { x: 1, y: 0, zoom: 0.5 });
       // reactFlowInstance.fitView();
     }
@@ -394,6 +398,7 @@ export default function Page({ flow }: { flow: FlowType }) {
   );
 
   useEffect(() => {
+    setLoading(true);
     return () => {
       if (tabsState && tabsState[flow.id]?.isPending) {
         saveFlow(flow);
@@ -554,7 +559,6 @@ function createNoteNode(newValue){
   };
   return (
     <div className="flex h-full overflow-hidden">
-      
       {/* {
         open && isBuilt && tabsState[flow.id] &&
           tabsState[flow.id].formKeysData 
@@ -613,6 +617,11 @@ function createNoteNode(newValue){
       <main className="flex flex-1">
         {/* Primary column */}
         <div className="h-full w-full">
+          {loading ? (
+            <div className="loading-component-div h-full">
+              <LoadingComponent remSize={30} />
+            </div>
+          ):(
           <div className="h-full w-full" ref={reactFlowWrapper}>
             {Object.keys(templates).length > 0 &&
             Object.keys(types).length > 0 ? (
@@ -681,6 +690,7 @@ function createNoteNode(newValue){
             )
             }
           </div>
+          )}
         </div>
       </main>
       {flow&&(
@@ -696,7 +706,7 @@ function createNoteNode(newValue){
           >
             <ExtraSidebar />
           </Transition>
-          )}
+        )}
      </div>
   );
 }
