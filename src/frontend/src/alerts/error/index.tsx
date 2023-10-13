@@ -27,7 +27,7 @@ export default function ErrorAlert({
       show={show}
       appear={true}
       enter="transition-transform duration-500 ease-out"
-      enterFrom={"transform translate-x-[-100%]"}
+      enterFrom={"transform translate-x-[100%]"}
       enterTo={"transform translate-x-0"}
       leave="transition-transform duration-500 ease-in"
       leaveFrom={"transform translate-x-0"}
