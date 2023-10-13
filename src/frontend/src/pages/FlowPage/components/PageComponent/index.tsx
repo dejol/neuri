@@ -525,7 +525,7 @@ function createNoteNode(newValue){
   const changedContent = useRef(false);
   useEffect(()=>{
     assistantOn.current=openAssistant;
-    let delay=1000*10; //one minute
+    let delay=1000*60; //one minute
     let intervalId = null;
     if(assistantOn.current){
       intervalId = setInterval(callAssistant, delay);
