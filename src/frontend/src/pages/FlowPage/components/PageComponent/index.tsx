@@ -146,7 +146,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           if (navigator.clipboard && navigator.clipboard.readText) {
             navigator.clipboard.readText().then((value:string)=>{
               // createNewNote(value);
-              createNoteNode(value);
+              createNoteNode(value,null);
               // console.log(value);
             });
           }
@@ -352,7 +352,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           //   let nodesList=flow.data.nodes;
           //   nodesList.push(newNode);
           //   reactFlowInstance.setNodes(nodesList);
-          createNoteNode("");
+          createNoteNode("",position);
         }else{
           if (data.type !== "groupNode") {
             // Create a new node object
@@ -493,16 +493,19 @@ export default function Page({ flow }: { flow: FlowType }) {
 //   nodesList.push(newNode);
 //   reactFlowInstance.setNodes(nodesList);
 // }
-function createNoteNode(newValue){
+function createNoteNode(newValue,newPosition){
   if(newValue&&isValidImageUrl(newValue)){
     newValue="<img src='"+newValue+"'/>";
   }
   let newId = getNodeId("noteNode");
-  let bounds = reactFlowWrapper.current.getBoundingClientRect();
-  const newPosition = reactFlowInstance.project({
-    x: position.x - bounds.left,
-    y: position.y - bounds.top,    
-  });
+  if(!newPosition){
+    let bounds = reactFlowWrapper.current.getBoundingClientRect();
+    newPosition = reactFlowInstance.project({
+      x: position.x - bounds.left,
+      y: position.y - bounds.top,    
+    });
+  }
+
   let newNode = {
     id: newId,
     type: "noteNode",

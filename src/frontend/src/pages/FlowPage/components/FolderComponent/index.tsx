@@ -184,7 +184,7 @@ export default function FolderPopover() {
         <div className="file-component-tab-column">
         <List component="div" disablePadding={true}>
       {search.map((flow, idx) => (
-          ((search.length>0?flow.data.nodes.length>0:true)&&flow.folder_id && flow.folder_id==folder.id)&&(
+          (flow.folder_id && flow.folder_id==folder.id)&&(
               <AccordionComponent
                       trigger={
                         <ShadTooltip content={flow.description} side="right">
@@ -302,7 +302,7 @@ export default function FolderPopover() {
         >
         <List component="div" disablePadding>
         {search.map((flow, idx) => (
-          (search.length>0?flow.data.nodes.length>0:true)&&!flow.folder_id&&(
+          !flow.folder_id&&(
             <AccordionComponent
             trigger={
               <ShadTooltip content={flow.description} side="right">
