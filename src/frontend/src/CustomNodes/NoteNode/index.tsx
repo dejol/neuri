@@ -2,12 +2,13 @@ import { IDomEditor, IEditorConfig, IToolbarConfig } from "@wangeditor/core";
 import { Boot } from "@wangeditor/editor";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Handle, NodeResizer, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from "reactflow";
+import { Handle, NodeResizer, NodeToolbar, Position, useReactFlow, useStore, useStoreApi, useUpdateNodeInternals } from "reactflow";
 import markdownModule from '@wangeditor/plugin-md'
 import { TabsContext } from "../../contexts/tabsContext";
-import zIndex from "@mui/material/styles/zIndex";
 import ShadTooltip from "../../components/ShadTooltipComponent";
 import IconComponent from "../../components/genericIconComponent";
+import { cloneDeep } from "lodash";
+import { typesContext } from "../../contexts/typesContext";
 
 const connectionNodeIdSelector = (state) => state.connectionNodeId;
 const sourceStyle = { zIndex: 1 };
@@ -27,7 +28,10 @@ export default function NoteNode({
 }) {
   // const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
-  const { flows, tabId } =useContext(TabsContext);
+  const { flows, tabId,updateFlow } =useContext(TabsContext);
+  const {  reactFlowInstance } = useContext(typesContext);
+
+  const updateNodeInternals = useUpdateNodeInternals();
 
   // editor 实例
   const [editor, setEditor] = useState<IDomEditor | null>(null)  
@@ -198,6 +202,15 @@ export default function NoteNode({
       fitView({nodes:[node],duration:1000,padding:0.1})
     } 
   }
+  function refreshCurrentFlow(){
+    let myFlow = flows.find((flow) => flow.id === tabId);
+    if (reactFlowInstance && myFlow) {
+      let flow = cloneDeep(myFlow);
+      flow.data = reactFlowInstance.toObject();
+      reactFlowInstance.setNodes(flow.data.nodes);
+      updateFlow(flow);
+    }
+  }
   return (
     <div className={"h-full p-1 "+
         (isTarget ? "bg-status-green":"bg-background")+
@@ -209,7 +222,8 @@ export default function NoteNode({
         }}
         style={{position:"relative"}}
     >
-      <NodeResizer  isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"/>
+      <NodeResizer isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"
+                   onResizeEnd={refreshCurrentFlow}/>
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
         <NodeToolbar offset={2} isVisible={toolbarOn}>
         <div className="flex justify-between w-full m-0">

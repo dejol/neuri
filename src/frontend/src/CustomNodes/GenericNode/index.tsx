@@ -99,7 +99,15 @@ export default function GenericNode({
     // setCenter(x, y, { zoom:0.8, duration: 1000 });
     fitView({nodes:[node],duration:1000,padding:0.6})
   }
-    
+  function refreshCurrentFlow(){
+    let myFlow = flows.find((flow) => flow.id === tabId);
+    if (reactFlowInstance && myFlow) {
+      let flow = cloneDeep(myFlow);
+      flow.data = reactFlowInstance.toObject();
+      reactFlowInstance.setNodes(flow.data.nodes);
+      updateFlow(flow);
+    }
+  }    
   return (
     <>
       <NodeToolbar offset={(data.type=="Note" || data.type=="AINote")?30:-5}>
@@ -111,11 +119,13 @@ export default function GenericNode({
           setRunnabler={setRunnabler}
           miniSize={miniSize}
           setMiniSize={setMiniSize}
-
         ></NodeToolbarComponent>
       </NodeToolbar>
       {(data.type=="Note" || data.type=="AINote") &&(
-        <NodeResizer  isVisible={selected} minWidth={255} minHeight={290} handleClassName="w-5 h-5"/>
+        <NodeResizer isVisible={selected} minWidth={255} minHeight={290} handleClassName="w-5 h-5"
+                    onResizeEnd={(event)=>{
+                      refreshCurrentFlow();
+                    }}/>
       )}
       <div
         className={classNames(

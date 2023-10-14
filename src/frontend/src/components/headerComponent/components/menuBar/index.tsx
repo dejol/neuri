@@ -66,8 +66,10 @@ export const MenuBar = ({ flows, tabId }) => {
               "extra-side-bar-buttons " + (isPending ? "" : "button-disable")
             }
             onClick={(event) => {
-              saveFlow(flow);
-              setSuccessData({ title: "Changes saved successfully" });
+              saveFlow(flow).then(()=>{
+                setSuccessData({ title: "Changes saved successfully" });
+
+              });
             }}
           >
             <IconComponent

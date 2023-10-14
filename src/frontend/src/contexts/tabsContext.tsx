@@ -774,13 +774,21 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const [isBuilt, setIsBuilt] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
-  const [openFolderList, setOpenFolderList] = useState(false);
+  const [openFolderList, setOpenFolderList] = useState(JSON.parse(window.localStorage.getItem("openFolder")) ?? false);
 
-  const [openModelList, setOpenModelList] = useState(false);
+  const [openModelList, setOpenModelList] = useState(JSON.parse(window.localStorage.getItem("openModel")) ?? false);
   const [openWebEditor, setOpenWebEditor] = useState(false);
-  const [openMiniMap, setOpenMiniMap] = useState(false);
+  const [openMiniMap, setOpenMiniMap] = useState(JSON.parse(window.localStorage.getItem("openMiniMap")) ?? false);
   const [openAssistant, setOpenAssistant] = useState(false);
-
+  useEffect(() => {
+    window.localStorage.setItem("openFolder", openFolderList.toString());
+  }, [openFolderList]);
+  useEffect(() => {
+    window.localStorage.setItem("openModel", openModelList.toString());
+  }, [openModelList]);
+  useEffect(() => {
+    window.localStorage.setItem("openMiniMap", openMiniMap.toString());
+  }, [openMiniMap]);
   return (
     <TabsContext.Provider
       value={{

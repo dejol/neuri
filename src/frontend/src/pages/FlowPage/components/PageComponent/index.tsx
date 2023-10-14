@@ -31,7 +31,7 @@ import { undoRedoContext } from "../../../../contexts/undoRedoContext";
 import { APIClassType } from "../../../../types/api";
 import { FlowType, NodeType } from "../../../../types/flow";
 import { isValidConnection } from "../../../../utils/reactflowUtils";
-import { isWrappedWithClass ,isValidImageUrl} from "../../../../utils/utils";
+import { isWrappedWithClass ,isValidImageUrl, classNames} from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
 import LeftFormModal from "../../../../modals/leftFormModal";
@@ -44,6 +44,7 @@ import NoteNode from "../../../../CustomNodes/NoteNode";
 import FloatingEdge from "../FloatingEdgeComponent";
 import { postNotesAssistant } from "../../../../controllers/API";
 import LoadingComponent from "../../../../components/loadingComponent";
+import { darkContext } from "../../../../contexts/darkContext";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
@@ -94,6 +95,8 @@ export default function Page({ flow }: { flow: FlowType }) {
   } = useContext(TabsContext);
   const { types, reactFlowInstance, setReactFlowInstance, templates,data } =
     useContext(typesContext);
+    const { dark } = useContext(darkContext);
+
   const reactFlowWrapper = useRef(null);
   const {setNoticeData } = useContext(alertContext);
 
@@ -515,7 +518,9 @@ function createNoteNode(newValue,newPosition){
       type:"noteNode",
       value:newValue,
     },
-    selected:true,
+    width:220,
+    height:220,
+    selected:false,
   };
   // console.log("nodeNode:",newNode);
   let nodesList=flow.data.nodes;
@@ -683,8 +688,9 @@ function createNoteNode(newValue,newPosition){
                     </Controls>
                   <ExtendButton/>
                   <Background 
-                  // color="#ccc" 
-                  variant={BackgroundVariant.Lines} />
+                  //  color="#ccc" 
+                  variant={dark?BackgroundVariant.Dots:BackgroundVariant.Lines}
+                  />
                 </ReactFlow>
                 <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
               </div>

@@ -58,18 +58,18 @@ export default function FolderPopover() {
   const [open, setOpen] = useState(false);
   const [isNewFolder, setIsNewFoler] = useState(true);
   const [openFolder, setOpenFolder] = useState(false);
-  const [search, setSearch] = useState(flows);
+  const [search, setSearch] = useState([]);
   const [searchKeyword,setSearchKeyword] =useState('');
 
   // let resultFlows=cloneDeep(flows);
-  useEffect(()=>{
-    if(searchKeyword.length>0&&search.length>0){
-      // setSearch(search);
-    }else{
-      setSearch(flows);
-    }
-    // console.log("length of flows:",getSearchResult.length)
-  },[search])
+  // useEffect(()=>{
+  //   if(searchKeyword.length>0&&search.length>0){
+  //     // setSearch(search);
+  //   }else{
+  //     setSearch(flows);
+  //   }
+  //   // console.log("length of flows:",getSearchResult.length)
+  // },[search])
 
   function onDragStart(
     event: React.DragEvent<any>,
@@ -104,8 +104,13 @@ export default function FolderPopover() {
     // const { nodeInternals } = store.getState();
     // const nodes = Array.from(nodeInternals).map(([, node]) => node);
     let results=[];
+    if(!searchKeyword||searchKeyword.length==0){
+      setSearch([]);
+      return;
+    }
     if (flows.length > 0) {
       flows.forEach((flow) => {
+        if(!flow.data){return;}
         let nodes=flow.data.nodes;
         let tempNodes=[];
         if (nodes.length > 0) {
@@ -144,7 +149,7 @@ export default function FolderPopover() {
     // if(results.length==1){
     //   setCenter(results[0].x, results[0].y, { zoom:0.8, duration: 1000 });
     // }else{
-      setSearch(results);
+    setSearch(results);
     // }
   };  
   // useEffect(()=>{
@@ -183,8 +188,8 @@ export default function FolderPopover() {
       >
         <div className="file-component-tab-column">
         <List component="div" disablePadding={true}>
-      {search.map((flow, idx) => (
-          (flow.folder_id && flow.folder_id==folder.id)&&(
+      {(search.length>0?search:flows).map((flow, idx) => (
+          (flow.folder_id && flow.folder_id==folder.id&&(search.length>0?flow.data.nodes.length>0:true))&&(
               <AccordionComponent
                       trigger={
                         <ShadTooltip content={flow.description} side="right">
@@ -301,8 +306,8 @@ export default function FolderPopover() {
         keyValue={"f000"}
         >
         <List component="div" disablePadding>
-        {search.map((flow, idx) => (
-          !flow.folder_id&&(
+        {(search.length>0?search:flows).map((flow, idx) => (
+          (search.length>0?flow.data.nodes.length>0:true)&&!flow.folder_id&&(
             <AccordionComponent
             trigger={
               <ShadTooltip content={flow.description} side="right">
