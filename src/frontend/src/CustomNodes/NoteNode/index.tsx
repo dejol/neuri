@@ -225,18 +225,8 @@ export default function NoteNode({
       <NodeResizer isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"
                    onResizeEnd={refreshCurrentFlow}/>
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
-        <NodeToolbar offset={2} isVisible={toolbarOn}>
-        <div className="flex justify-between w-full m-0">
-        <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
-          <ShadTooltip content="Prev Node" side="left" >
-          <button
-            
-            onClick={focusPrevNode}
-          >
-            <IconComponent name="SkipBack" className="side-bar-button-size" />
-          </button>
-        </ShadTooltip>            
-          </div>    
+        <NodeToolbar offset={2} isVisible={toolbarOn} >
+        <div className="flex justify-between w-full m-0">  
           <div className="m-0">    
           <Toolbar
               editor={editor}
@@ -245,19 +235,26 @@ export default function NoteNode({
               style={{ border: '1px solid #ccc' }}
           /> 
           </div> 
-          <div className="m-0 mt-2  bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
-          <ShadTooltip content="Next Node" side="right">
-          <button
-            onClick={focusNextNode}
-          >
-            <IconComponent name="SkipForward" className="side-bar-button-size" />
-          </button>
-        </ShadTooltip>
-          </div>
         </div>          
-
         </NodeToolbar>
-
+          <NodeToolbar offset={2} isVisible={toolbarOn} position={Position.Left}>
+          <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
+            <ShadTooltip content="Prev Node" side="left" >
+              <button onClick={focusPrevNode}>
+                <IconComponent name="SkipBack" className="side-bar-button-size" />
+              </button>
+            </ShadTooltip>            
+          </div>  
+          </NodeToolbar>
+          <NodeToolbar offset={2} isVisible={toolbarOn} position={Position.Right}>
+          <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
+            <ShadTooltip content="Next Node" side="right" >
+              <button onClick={focusNextNode}>
+                <IconComponent name="SkipForward" className="side-bar-button-size" />
+              </button>
+            </ShadTooltip>            
+          </div>  
+          </NodeToolbar>          
           <Editor
             defaultConfig={editorConfig}
             value={data.value}
