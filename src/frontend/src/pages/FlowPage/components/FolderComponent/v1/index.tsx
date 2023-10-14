@@ -68,7 +68,7 @@ export default function FolderPopover() {
 
       setPopoverState(status);
     };
-    const darkTheme = ()=>{
+    const muiTheme = ()=>{
       if(dark){
         return createTheme({
           palette: {
@@ -179,7 +179,7 @@ export default function FolderPopover() {
 
   return (
     <div>
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={muiTheme}>
       <Fragment key={'right'}>
       <ShadTooltip content="Folder" side="bottom">
         <button 

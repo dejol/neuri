@@ -11,11 +11,59 @@ import IconComponent from "../../../genericIconComponent";
 // import { Button } from "../../../ui/button";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
 // import FolderPopover from "../../../../pages/FlowPage/components/FolderComponent";
+import { styled, alpha } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { darkContext } from "../../../../contexts/darkContext";
+
+const StyledMenu = styled((props: MenuProps) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 110,
+    color:
+      theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    '& .MuiMenu-list': {
+      padding: '4px 0',
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      '&:active': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity,
+        ),
+      },
+    },
+  },
+}));
 
 export const MenuBar = ({ flows, tabId }) => {
   const { addFlow,saveFlow,uploadFlow,tabsState } = useContext(TabsContext);
   const { setSuccessData, setErrorData } = useContext(alertContext);
-
+  const { dark, setDark } = useContext(darkContext);
   const { undo, redo } = useContext(undoRedoContext);
   const [openSettings, setOpenSettings] = useState(false);
   const isPending = tabsState[tabId]?.isPending;
@@ -34,6 +82,29 @@ export const MenuBar = ({ flows, tabId }) => {
   //   }
   // }
   // let current_flow = flows.find((flow) => flow.id === tabId);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const muiTheme = ()=>{
+    if(dark){
+      return createTheme({
+        palette: {
+          mode: 'dark',
+        },
+      });
+    }
+    return createTheme({
+      palette: {
+         mode: 'light',
+      },
+    });
+
+  };
 
   return (
     <div className="round-button-div">
@@ -58,68 +129,7 @@ export const MenuBar = ({ flows, tabId }) => {
               }
             />
           </button>
-        </ShadTooltip>  */}
-
-        <ShadTooltip content="Save" side="bottom">
-          <button
-            className={
-              "extra-side-bar-buttons " + (isPending ? "" : "button-disable")
-            }
-            onClick={(event) => {
-              saveFlow(flow).then(()=>{
-                setSuccessData({ title: "Changes saved successfully" });
-
-              });
-            }}
-          >
-            <IconComponent
-              name="Save"
-              className={
-                "side-bar-button-size" +
-                (isPending ? " " : " extra-side-bar-save-disable")
-              }
-            />
-          </button>
-        </ShadTooltip>      
-        <ShadTooltip content="Import" side="bottom">
-          <button
-            className="extra-side-bar-buttons"
-            onClick={() => {
-              uploadFlow();
-            }}
-          >
-            <IconComponent name="FileUp" className="side-bar-button-size " />
-          </button>
-        </ShadTooltip>
-        <ExportModal>
-          <ShadTooltip content="Export" side="bottom">
-            <div className={classNames("extra-side-bar-buttons")}>
-              <IconComponent
-                name="FileDown"
-                className="side-bar-button-size"
-              />
-            </div>
-          </ShadTooltip>
-        </ExportModal>
-
-        <ShadTooltip content="Settings" side="bottom">
-          <button
-            className={
-              "extra-side-bar-buttons " 
-            }
-            onClick={() => {
-              setOpenSettings(true);
-
-            }}
-          >
-            <IconComponent
-              name="Settings2"
-              className={
-                "side-bar-button-size" 
-              }
-            />
-          </button>
-        </ShadTooltip>
+        </ShadTooltip>  */}   
         <ShadTooltip content="Undo" side="bottom">
           <button
             className={
@@ -155,6 +165,67 @@ export const MenuBar = ({ flows, tabId }) => {
             />
           </button>
         </ShadTooltip>
+
+      <div className="mt-1">
+          <button
+            className={
+              "extra-side-bar-save-disable relative" 
+            }
+            onClick={handleClick}
+          >
+            <IconComponent name="Menu" className={ "side-bar-button-size" } aria-hidden="true" />
+          </button>
+        <ThemeProvider theme={muiTheme}>
+          <StyledMenu
+              id="flow-menu"
+              MenuListProps={{
+                'aria-labelledby': 'demo-customized-button',
+              }}
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              
+          >
+          <MenuItem 
+          
+            disabled={!isPending}
+            onClick={(event) => {
+              handleClose();
+              saveFlow(flow).then(()=>{
+                setSuccessData({ title: "Changes saved successfully" });
+
+              });
+            }} disableRipple>
+          <IconComponent name="Save" className={"side-bar-button-size mr-2" }/>
+          Save
+          </MenuItem>
+          <MenuItem onClick={() => {
+                uploadFlow();
+                handleClose();
+              }}
+          disableRipple>
+          <IconComponent name="FileUp" className={ "side-bar-button-size mr-2" } />
+          Import
+          </MenuItem>
+          <ExportModal>
+            <MenuItem disableRipple>
+              
+            <IconComponent name="FileDown" className={ "side-bar-button-size mr-2" } />
+            Export
+            </MenuItem>
+          </ExportModal>
+          <Divider sx={{ my: 0.5 }} />        
+          <MenuItem onClick={() => {
+                setOpenSettings(true);
+                handleClose();
+              }}
+          disableRipple>
+          <IconComponent name="Settings2" className={ "side-bar-button-size mr-2" } />
+          Settings
+          </MenuItem>
+          </StyledMenu>
+        </ThemeProvider>
+      </div>
         <FlowSettingsModal
           open={openSettings}
           setOpen={setOpenSettings}

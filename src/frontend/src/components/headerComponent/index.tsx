@@ -24,7 +24,7 @@ import { Input } from "../ui/input";
 import { useStoreApi, useReactFlow } from 'reactflow';
 import { filterHTML } from "../../utils/utils";
 
-import {Button as Button1} from '@mui/material';
+import {Button as Button1, ThemeProvider, createTheme} from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
@@ -136,7 +136,21 @@ export default function Header() {
   //   });
 
   // }
+  const muiTheme = ()=>{
+    if(dark){
+      return createTheme({
+        palette: {
+          mode: 'dark',
+        },
+      });
+    }
+    return createTheme({
+      palette: {
+         mode: 'light',
+      },
+    });
 
+};
   return (
     <div className="header-arrangement">
       
@@ -291,6 +305,7 @@ export default function Header() {
           </AlertDropdown>
 
             {(isLogin) ? (
+              <ThemeProvider theme={muiTheme}>
               <Fragment>
                 <ShadTooltip content="Account" side="bottom">
                 <IconButton
@@ -307,6 +322,7 @@ export default function Header() {
                     </Avatar>
                 </IconButton>
               </ShadTooltip>
+
               <Menu         
                 anchorEl={anchorEl}
                 id="account-menu"
@@ -383,6 +399,7 @@ export default function Header() {
                   )}
                   Mini Map
                 </MenuItem>
+                <Divider sx={{ my: 0.5 }} />  
                 <MenuItem onClick={()=>{
                     logout();    
                   }
@@ -391,6 +408,7 @@ export default function Header() {
                 </MenuItem>
               </Menu>
               </Fragment>
+              </ThemeProvider>
             ) : (
               <ShadTooltip content="Login" side="bottom"> 
               <button
