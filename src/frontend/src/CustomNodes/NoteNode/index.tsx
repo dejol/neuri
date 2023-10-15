@@ -221,7 +221,7 @@ export default function NoteNode({
             focusNode();
         }}
         style={{position:"relative"}}
-        onMouseOver={(event)=>{
+        onMouseEnter={(event)=>{
           setToolbarOn(true);
         }}
         onMouseOut={(event)=>{
