@@ -225,7 +225,7 @@ export default function NoteNode({
           setToolbarOn(true);
         }}
         onMouseOut={(event)=>{
-          let timer=setTimeout(() => { setToolbarOn(false);}, 5000);
+          let timer=setTimeout(() => { setToolbarOn(false);}, 15000);
           timer=null;
           // setToolbarOn(false);
         }}
