@@ -20,7 +20,7 @@ export default function FullTextAreaComponent({
   nodeSelected:boolean;
 }) {
   const { tabId } =useContext(TabsContext);
-  const [toolbarOn,setToolbarOn] = useState(false);
+  // const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
 
   // editor 实例
@@ -63,9 +63,9 @@ export default function FullTextAreaComponent({
   useEffect(() => {
     focusEditorRef.current = focusEditor;
   }, [focusEditor]);
-  useEffect(() => {
-      setToolbarOn(false);
-  }, [nodeSelected]);
+  // useEffect(() => {
+  //     setToolbarOn(false);
+  // }, [nodeSelected]);
 
 
   function handleChange(content){
@@ -81,12 +81,12 @@ export default function FullTextAreaComponent({
           handleChange(editor.getHtml());
       },
       onBlur:(editor:IDomEditor)=>{
-        setToolbarOn(false);
+        // setToolbarOn(false);
         setFocusEditor(false)
       },
       onFocus:(editor:IDomEditor)=>{
         setFocusEditor(true)
-        setToolbarOn(true);
+        // setToolbarOn(true);
       }
   }
   editorConfig.MENU_CONF['image'] = {
@@ -133,7 +133,7 @@ export default function FullTextAreaComponent({
   };
   return (
     <>
-      <NodeToolbar offset={2} isVisible={toolbarOn}>
+      <NodeToolbar offset={2} >
       <Toolbar
           editor={editor}
           defaultConfig={toolbarConfig}

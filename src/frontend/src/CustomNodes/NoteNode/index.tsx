@@ -26,7 +26,7 @@ export default function NoteNode({
   xPos:number;
   yPos:number;
 }) {
-  // const [toolbarOn,setToolbarOn] = useState(false);
+  const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
   const { flows, tabId,updateFlow } =useContext(TabsContext);
   const {  reactFlowInstance } = useContext(typesContext);
@@ -79,17 +79,17 @@ export default function NoteNode({
       MENU_CONF: {},
       onChange :(editor:IDomEditor)=>{
           handleChange(editor.getHtml());
-          setToolbarOn(true);
+          // setToolbarOn(true);
       },
       onBlur:(editor:IDomEditor)=>{
         // setToolbarOn(false);
         // setFocusEditor(false)
-        setToolbarOn(false);
+        // setToolbarOn(false);
       },
       onFocus:(editor:IDomEditor)=>{
         // setFocusEditor(true)
         // setToolbarOn(true);
-        setToolbarOn(true);
+        // setToolbarOn(true);
       }
   }
   editorConfig.MENU_CONF['uploadImage'] = {
@@ -172,11 +172,11 @@ export default function NoteNode({
     fitView({nodes:[node],duration:1000,padding:0.1})
     // setCenter(x, y, { zoom:0.8, duration: 1000 });
   }
-  const [toolbarOn,setToolbarOn] =useState(false);
-  useEffect(()=>{
-    setToolbarOn(selected);
+  // const [toolbarOn,setToolbarOn] =useState(false);
+  // useEffect(()=>{
+  //   setToolbarOn(selected);
 
-  },[selected])
+  // },[selected])
 
   function focusNextNode(){
     let flow = flows.find((flow) => flow.id === tabId);
@@ -221,11 +221,20 @@ export default function NoteNode({
             focusNode();
         }}
         style={{position:"relative"}}
+        onMouseOver={(event)=>{
+          setToolbarOn(true);
+        }}
+        onMouseOut={(event)=>{
+          let timer=setTimeout(() => { setToolbarOn(false);}, 5000);
+          timer=null;
+          // setToolbarOn(false);
+        }}
+        
     >
       <NodeResizer isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"
                    onResizeEnd={refreshCurrentFlow}/>
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
-        <NodeToolbar offset={2} isVisible={toolbarOn} >
+        <NodeToolbar offset={2}>
         <div className="flex justify-between w-full m-0">  
           <div className="m-0">    
           <Toolbar
@@ -237,7 +246,7 @@ export default function NoteNode({
           </div> 
         </div>          
         </NodeToolbar>
-          <NodeToolbar offset={2} isVisible={toolbarOn} position={Position.Left}>
+          <NodeToolbar offset={2} isVisible={toolbarOn}  position={Position.Left}>
           <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
             <ShadTooltip content="Prev Node" side="left" >
               <button onClick={focusPrevNode}>

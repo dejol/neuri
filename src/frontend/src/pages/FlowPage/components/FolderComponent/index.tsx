@@ -60,6 +60,7 @@ export default function FolderPopover() {
   const [openFolder, setOpenFolder] = useState(false);
   const [search, setSearch] = useState([]);
   const [searchKeyword,setSearchKeyword] =useState('');
+  const { setErrorData, setSuccessData } = useContext(alertContext);
 
   // let resultFlows=cloneDeep(flows);
   // useEffect(()=>{
@@ -85,9 +86,17 @@ export default function FolderPopover() {
     event.dataTransfer.setDragImage(crt, 0, 0);
     event.dataTransfer.setData("nodedata", JSON.stringify(data));
   }
-  function webEdit(flow_id,node){
+  function webEdit(flow_id,flow_name,node){
     // let cont=node.node.template.note.value;
       // setNoteContent(cont);
+      if(tabId==flow_id){
+
+      }else{
+        setErrorData({title:"Please open '"+flow_name+"' first!"})
+        return;
+      }
+      
+
       setEditFlowId(flow_id);
       if(node){
         setEditNodeId(node.id);
@@ -238,7 +247,7 @@ export default function FolderPopover() {
                             <div className="ml-5 items-center border border-dashed border-ring rounded-lg p-3 w-40 cursor-grab font-normal"
                             onDoubleClick={(event)=>{
                               event.preventDefault();
-                              webEdit(flow.id,node.data);
+                                webEdit(flow.id,flow.name,node.data);
                               }}>
                             {filterHTML(node.data.value).substring(0,20)}
                             </div>
@@ -267,7 +276,7 @@ export default function FolderPopover() {
                               <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
                               onDoubleClick={(event)=>{
                                 event.preventDefault();
-                                webEdit(flow.id,node.data);
+                                webEdit(flow.id,flow.name,node.data);
                                 }}>
                               {filterHTML(node.data.node.template.note.value).substring(0,20)}
                               </div>
@@ -351,7 +360,7 @@ export default function FolderPopover() {
                   className="pr-0 py-2"
                 >
                   <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
-                  onDoubleClick={()=>{webEdit(flow.id,node.data);}}>
+                  onDoubleClick={()=>{webEdit(flow.id,flow.name,node.data);}}>
                   {filterHTML(node.data.node.template.note.value).substring(0,20)}
                   </div>               
                 </ListItem>
@@ -379,7 +388,7 @@ export default function FolderPopover() {
               <button
                 className={"extra-side-bar-save-disable"}
                 onClick={(event) => {
-                  webEdit(flow.id,null);
+                  webEdit(flow.id,flow.name,null);
                 }}
               >
                 <IconComponent

@@ -115,6 +115,9 @@ export default function WebEditorModal({
       saveFlow(currentFlow);
     }
     setSuccessData({ title: "Changes saved successfully" });
+    cancelChange();
+  }
+  function cancelChange(){
     flow_id="";
     node_id="";
     setEditValue("");    
@@ -265,20 +268,20 @@ useEffect(() => {
 }, [editor]);
 
   return (
-    <BaseModal open={open} setOpen={setOpen} size="large">
-      <BaseModal.Trigger>{children}</BaseModal.Trigger>
-      <BaseModal.Header description="">
-        <span className="pr-2">{(node_id&&node_id!="")?"Edit":"New"} Note Content</span>
-        <IconComponent
-          name="FileText"
-          className="h-6 w-6 pl-1 text-primary "
-          aria-hidden="true"
-        />
-      </BaseModal.Header>
-      <BaseModal.Content>
-        <div className="flex h-full w-full flex-col transition-all">
-          <div className="h-[95%] w-full">
-
+    // <BaseModal open={open} setOpen={setOpen} size="large">
+    //   <BaseModal.Trigger>{children}</BaseModal.Trigger>
+    //   <BaseModal.Header description="">
+    //     <span className="pr-2">{(node_id&&node_id!="")?"Edit":"New"} Note Content</span>
+    //     <IconComponent
+    //       name="FileText"
+    //       className="h-6 w-6 pl-1 text-primary "
+    //       aria-hidden="true"
+    //     />
+    //   </BaseModal.Header>
+    //   <BaseModal.Content>
+      
+        <div className="flex h-full w-full flex-col transition-all overflow-hidden">
+          <div className="h-[91%] w-full">
             <Toolbar
                 editor={editor}
                 defaultConfig={toolbarConfig}
@@ -286,38 +289,36 @@ useEffect(() => {
                 // style={{ borderBottom: '1px solid #ccc' }}
             />
               
-            <div className="w-full h-[85%] items-center input-full-node input-note dark:input-note-dark"
-            style={{cursor: 'text'}}
+            <div className="w-full h-[85%] items-center "
+            // style={{cursor: 'text'}}
             >
               <Editor
                   defaultConfig={editorConfig}
                   value={editValue}
                   onCreated={setEditor}
                   mode="simple"
-                  style={{ height: '100%',
+                  style={{ 
+                    height: '100%',
                   minWidth:'300px',
                   minHeight:'300px',
                   width:'100%',
-                  fontSize:'20px',
+                  overflow:'hidden',
+                  // fontSize:'20px',
                   //  overflowY: 'scroll' 
                   }} 
               />
             </div>
           </div>
-          <div
-            className={
-              "w-full transition-all delay-500 " +
-              (error?.detail.error !== undefined ? "h-2/6" : "h-0")
-            }
-          >
-          </div>
           <div className="flex h-fit w-full justify-end">
-            <Button className="mt-3" onClick={handleClick} type="submit">
+          <Button className="mt-0  mr-4" onClick={cancelChange} type="button" variant={"secondary"}>
+              Cancel
+            </Button>
+            <Button className="mt-0 mr-6" onClick={handleClick} type="submit">
               Save
             </Button>
           </div>
         </div>
-      </BaseModal.Content>
-    </BaseModal>
+    //   </BaseModal.Content>
+    // </BaseModal>
   );
 }

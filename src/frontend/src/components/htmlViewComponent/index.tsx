@@ -70,7 +70,7 @@ export default function HtmlViewComponent({
 */
 const { tabId } =useContext(TabsContext);
 //below is wangEditor
-const [toolbarOn,setToolbarOn] = useState(false);
+// const [toolbarOn,setToolbarOn] = useState(false);
 Boot.registerModule(markdownModule)
 
 // editor 实例
@@ -123,15 +123,15 @@ const editorConfig: Partial<IEditorConfig> = {
     autoFocus:false,
     MENU_CONF:{},
     onChange :(editor:IDomEditor)=>{
-      setToolbarOn(true);
+      // setToolbarOn(true);
       handleChange(editor.getHtml());
     },
     onBlur:(editor:IDomEditor)=>{
-      setToolbarOn(false);
+      // setToolbarOn(false);
       setFocusEditor(false);
     },
     onFocus:(editor:IDomEditor)=>{
-      setToolbarOn(true);
+      // setToolbarOn(true);
       setFocusEditor(true)
     }    
 }
@@ -206,13 +206,13 @@ const handleMouseUp = () => {
   setIsDragging(false);
   setDragOffset({ x: 0, y: 0 });
 };
-useEffect(() => {
-    setToolbarOn(nodeSelected);
-}, [nodeSelected]);
+// useEffect(() => {
+//     setToolbarOn(nodeSelected);
+// }, [nodeSelected]);
 
   return (
     <>
-    <NodeToolbar offset={2} isVisible={toolbarOn}>
+    <NodeToolbar offset={2} >
     <Toolbar
         editor={editor}
         defaultConfig={toolbarConfig}

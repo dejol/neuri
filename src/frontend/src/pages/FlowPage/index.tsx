@@ -51,12 +51,12 @@ export default function FlowPage() {
         {version && <div className="mt-1"> Neuri v{version}</div>}
         <div className={version ? "mt-2" : "mt-1"}>Created by King Yu</div>
       </a> */}
-      <WebEditorModal
+      {/* <WebEditorModal
         setOpen={setOpenWebEditor}
         open={openWebEditor}
         flow_id={editFlowId}
         node_id={editNodeId}
-      ></WebEditorModal>
+      ></WebEditorModal> */}
     </div>
   );
 }

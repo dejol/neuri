@@ -35,7 +35,7 @@ const StyledMenu = styled((props: MenuProps) => (
 ))(({ theme }) => ({
   '& .MuiPaper-root': {
     borderRadius: 6,
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2),
     minWidth: 110,
     color:
       theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
@@ -187,13 +187,11 @@ export const MenuBar = ({ flows, tabId }) => {
               
           >
           <MenuItem 
-          
             disabled={!isPending}
             onClick={(event) => {
               handleClose();
               saveFlow(flow).then(()=>{
                 setSuccessData({ title: "Changes saved successfully" });
-
               });
             }} disableRipple>
           <IconComponent name="Save" className={"side-bar-button-size mr-2" }/>
@@ -209,7 +207,6 @@ export const MenuBar = ({ flows, tabId }) => {
           </MenuItem>
           <ExportModal>
             <MenuItem disableRipple>
-              
             <IconComponent name="FileDown" className={ "side-bar-button-size mr-2" } />
             Export
             </MenuItem>

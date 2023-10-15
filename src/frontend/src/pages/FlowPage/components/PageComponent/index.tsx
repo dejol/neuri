@@ -45,6 +45,7 @@ import FloatingEdge from "../FloatingEdgeComponent";
 import { postNotesAssistant } from "../../../../controllers/API";
 import LoadingComponent from "../../../../components/loadingComponent";
 import { darkContext } from "../../../../contexts/darkContext";
+import WebEditorModal from "../../../../modals/webEditorModal";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
@@ -107,7 +108,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList,openAssistant } = useContext(TabsContext);
+  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,editNodeId } = useContext(TabsContext);
   const [openSearch,setOpenSearch]=useState(false);
   const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
   // useEffect(() => {
@@ -355,7 +356,12 @@ export default function Page({ flow }: { flow: FlowType }) {
           //   let nodesList=flow.data.nodes;
           //   nodesList.push(newNode);
           //   reactFlowInstance.setNodes(nodesList);
-          createNoteNode("",position);
+          if(data.node?.value){
+            createNoteNode(data.node?.value,position);
+          }else{
+            createNoteNode("",position);
+
+          }
         }else{
           if (data.type !== "groupNode") {
             // Create a new node object
@@ -630,75 +636,88 @@ function createNoteNode(newValue,newPosition){
               <LoadingComponent remSize={30} />
             </div>
           ):(
-          <div className="h-full w-full" ref={reactFlowWrapper}>
-            {Object.keys(templates).length > 0 &&
-            Object.keys(types).length > 0 ? (
-              <div className="h-full w-full">
-                <ReactFlow
-                  snapToGrid={true}
-                  snapGrid={[50,50]}
-                  nodes={nodes}
-                  onMove={() => {
-                    if (reactFlowInstance)
-                      updateFlow({
-                        ...flow,
-                        data: reactFlowInstance.toObject(),
-                      });
-                  }}
-                  edges={edges}
-                  onNodesChange={onNodesChangeMod}
-                  onEdgesChange={onEdgesChangeMod} 
-                  onConnect={onConnect} //链接线 连接成功后执行
-                  disableKeyboardA11y={true}
-                  onLoad={setReactFlowInstance}
-                  onInit={setReactFlowInstance}
-                  nodeTypes={nodeTypes}
-                  edgeTypes={edgeTypes}
-                  onEdgeUpdate={onEdgeUpdate}
-                  onEdgeUpdateStart={onEdgeUpdateStart}
-                  onEdgeUpdateEnd={onEdgeUpdateEnd}
-                  onNodeDragStart={onNodeDragStart}
-                  onSelectionDragStart={onSelectionDragStart}
-                  onSelectionEnd={onSelectionEnd}
-                  onSelectionStart={onSelectionStart}
-                  onEdgesDelete={onEdgesDelete}
-                  connectionLineComponent={ConnectionLineComponent} //定义链接线(连接成功前)的样式
-                  onDragOver={onDragOver}
-                  onDrop={onDrop}
-                  onNodesDelete={onDelete}
-                  onSelectionChange={onSelectionChange}
-                  className="theme-attribution"
-                  minZoom={0.01}
-                  maxZoom={8}
-                >
-                  {openMiniMap&&(
-                    <MiniMap pannable={true} 
-                    position="bottom-right" 
-                    zoomable={true} 
-                    ariaLabel="Zoom In/Out & Move" 
-                    className="dark:bg-muted"
-                    />
-                  )}
-                  <Controls
-                    className="bg-muted fill-foreground stroke-foreground text-primary
-                   [&>button]:border-b-border hover:[&>button]:bg-border"
-                   showZoom={false}
-                   position="bottom-right"
+            <div className="h-full w-full" ref={reactFlowWrapper}>
+              <>
+              {Object.keys(templates).length > 0 &&
+              Object.keys(types).length > 0 ? (
+                <>
+                {openWebEditor&&flow&&(
+                  <WebEditorModal
+                    setOpen={setOpenWebEditor}
+                    open={openWebEditor}
+                    flow_id={flow.id}
+                    node_id={editNodeId}
+                  ></WebEditorModal>
+               )}
+                
+                <div className={"h-full w-full"+(openWebEditor?" hidden ":"")}>
+                  <ReactFlow
+                    snapToGrid={true}
+                    snapGrid={[50,50]}
+                    nodes={nodes}
+                    onMove={() => {
+                      if (reactFlowInstance)
+                        updateFlow({
+                          ...flow,
+                          data: reactFlowInstance.toObject(),
+                        });
+                    }}
+                    edges={edges}
+                    onNodesChange={onNodesChangeMod}
+                    onEdgesChange={onEdgesChangeMod} 
+                    onConnect={onConnect} //链接线 连接成功后执行
+                    disableKeyboardA11y={true}
+                    onLoad={setReactFlowInstance}
+                    onInit={setReactFlowInstance}
+                    nodeTypes={nodeTypes}
+                    edgeTypes={edgeTypes}
+                    onEdgeUpdate={onEdgeUpdate}
+                    onEdgeUpdateStart={onEdgeUpdateStart}
+                    onEdgeUpdateEnd={onEdgeUpdateEnd}
+                    onNodeDragStart={onNodeDragStart}
+                    onSelectionDragStart={onSelectionDragStart}
+                    onSelectionEnd={onSelectionEnd}
+                    onSelectionStart={onSelectionStart}
+                    onEdgesDelete={onEdgesDelete}
+                    connectionLineComponent={ConnectionLineComponent} //定义链接线(连接成功前)的样式
+                    onDragOver={onDragOver}
+                    onDrop={onDrop}
+                    onNodesDelete={onDelete}
+                    onSelectionChange={onSelectionChange}
+                    className="theme-attribution"
+                    minZoom={0.01}
+                    maxZoom={8}
                   >
-                    </Controls>
-                  <ExtendButton/>
-                  <Background 
-                  //  color="#ccc" 
-                  variant={dark?BackgroundVariant.Dots:BackgroundVariant.Lines}
-                  />
-                </ReactFlow>
-                <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
-              </div>
-            ) : (
-              <></>
-            )
-            }
-          </div>
+                    {openMiniMap&&(
+                      <MiniMap pannable={true} 
+                      position="bottom-right" 
+                      zoomable={true} 
+                      ariaLabel="Zoom In/Out & Move" 
+                      className="dark:bg-muted"
+                      />
+                    )}
+                    <Controls
+                      className="bg-muted fill-foreground stroke-foreground text-primary
+                    [&>button]:border-b-border hover:[&>button]:bg-border"
+                    showZoom={false}
+                    position="bottom-right"
+                    >
+                      </Controls>
+                    <ExtendButton/>
+                    <Background 
+                    //  color="#ccc" 
+                    variant={dark?BackgroundVariant.Dots:BackgroundVariant.Lines}
+                    />
+                  </ReactFlow>
+                  <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
+                </div>
+                
+                </>
+              ) : (
+                <></>
+              )}
+              </>
+            </div>
           )}
         </div>
       </main>
