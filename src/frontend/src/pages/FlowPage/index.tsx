@@ -83,7 +83,7 @@ export default function FlowPage() {
   return (
     <div className="flow-page-positioning flex">
       {flows.length > 0 &&(
-          <Transition
+        <Transition
           show={openFolderList}
           enter="transition-transform duration-500 ease-out"
           enterFrom={"transform translate-x-[-100%]"}
@@ -94,7 +94,7 @@ export default function FlowPage() {
           className={"chat-message-modal-thought-cursor"}
         >
           <div className="flex h-full overflow-hidden">
-          <FolderPopover />
+            <FolderPopover />
           </div>
         </Transition>
        

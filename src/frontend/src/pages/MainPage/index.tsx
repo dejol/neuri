@@ -39,8 +39,10 @@ export default function HomePage() {
         <LoginModal>
         </LoginModal>
      )}
-    <div className="main-page-nav-arrangement justify-center">
-      <div className="main-page-flows-display">
+    <div className="main-page-nav-arrangement justify-center align-middle w-full">
+      <div 
+      // className="main-page-flows-display "
+      >
         {flows.length>0?(
           
           <CardComponent
@@ -58,6 +60,7 @@ export default function HomePage() {
                 </Button>
               </Link>
             }
+            
           />
           ):(
             <Link to={"/flow/"+loginUserId}>

@@ -83,7 +83,7 @@ export default function Header() {
     setIsLogin(false);
     localStorage.setItem('login',"");
     localStorage.setItem('userName',"");
-    navigate("/");
+    navigate("/flow/");
   }
 
   const store = useStoreApi();
@@ -231,75 +231,70 @@ const handleChange = (event: SyntheticEvent, newValue: string) => {
   
       <div className="round-button-div">
       <Box sx={{ height:"2.8rem" }}>
-
         <Tabs value={tabId} onChange={handleChange} aria-label="neuri tabs"
          sx={{height:"45px",minHeight:"45px",maxWidth:"600px",minWidth:"200px"}} 
          variant="scrollable">
             <Tab 
               className="p-3 mt-1"
               style={{borderTop: 2,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
-              label={
-              (<div className="flex">
-                Welcome
-              </div>)
-              }  
+              label={(<div className="flex">Welcome</div>)}  
               value={""} 
               sx={{color:"unset"}}
             />
-         {Array.from(tabValues.values()).map((value,inx)=>{
-          let label="";
-          if(value.id!=""){
-            if(value.type=="flow"){
-              let flow = flows.find((flow) => flow.id === value.id);
-              if(flow){
-                label=flow.name; 
-              }
-            }else{
-              let note = notes.find((note) => note.id === value.id);
-              if(note){
-                label=note.name; 
-              }else{
-                label="New Note";
-              }
-            }
-            
-          }
-          return(
-            <Tab 
-              className="p-3 mt-1"
-              style={{borderTop: 2,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
-              label={
-              (<div className="flex">
-                <IconComponent name={value.type=="flow"?"FileText":"Square"} className={"w-4 h-4 mr-2"} />{label}
-              <button onClick={(event)=>{
-                // let newValues=cloneDeep(tabValues);
-                // newValues=newValues.filter((value) => value !== key);
-                // setTabValues(newValues);
-                // event.stopPropagation();
+            {Array.from(tabValues.values()).map((value,inx)=>{
+              let label="";
+              if(value.id!=""){
+                if(value.type=="flow"){
+                  let flow = flows.find((flow) => flow.id === value.id);
+                  if(flow){
+                    label=flow.name; 
+                  }
+                }else{
+                  let note = notes.find((note) => note.id === value.id);
+                  if(note){
+                    label=note.name; 
+                  }else{
+                    label="New Note";
+                  }
+                }
                 
-                setTabId("");
-                // reactFlowInstances.delete(value.flowId);
-                // setTimeout(()=>{
-                  tabValues.delete(value.id);
-                  reactFlowInstances.delete(value.id);
-                // },1000);
-                // setReactFlowInstance(null);
-              }}>
-                <IconComponent name={"X"} className="w-4 h-4 ml-2" />
-              </button>
-              </div>)
-            }  
-            value={value.id} sx={{color:"unset"}
-            
-          }
-            // icon={
-            //   (
-            //     <IconComponent name={"File"} className="mx-2" />
-            //   )
-            // } iconPosition="start" className="mb-4" 
-            />
-          )                        
-         })}
+              }
+              return(
+                <Tab 
+                  className="p-3 mt-1"
+                  style={{borderTop: 2,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
+                  label={
+                  (<div className="flex">
+                    <IconComponent name={value.type=="flow"?"FileText":"Square"} className={"w-4 h-4 mr-2"} />{label}
+                  <button onClick={(event)=>{
+                    // let newValues=cloneDeep(tabValues);
+                    // newValues=newValues.filter((value) => value !== key);
+                    // setTabValues(newValues);
+                    // event.stopPropagation();
+                    
+                    setTabId("");
+                    // reactFlowInstances.delete(value.flowId);
+                    // setTimeout(()=>{
+                      tabValues.delete(value.id);
+                      reactFlowInstances.delete(value.id);
+                    // },1000);
+                    // setReactFlowInstance(null);
+                  }}>
+                    <IconComponent name={"X"} className="w-4 h-4 ml-2" />
+                  </button>
+                  </div>)
+                }  
+                value={value.id} sx={{color:"unset"}
+                
+              }
+                // icon={
+                //   (
+                //     <IconComponent name={"File"} className="mx-2" />
+                //   )
+                // } iconPosition="start" className="mb-4" 
+                />
+              )                        
+            })}
 
         </Tabs>
       </Box>
