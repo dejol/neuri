@@ -8,6 +8,7 @@ import EditNodeModal from "../../../../modals/EditNodeModal";
 import { classNames } from "../../../../utils/utils";
 import { NodeType } from "../../../../types/flow";
 import ToggleShadComponent from "../../../../components/toggleShadComponent";
+import { typesContext } from "../../../../contexts/typesContext";
 
 export default function NodeToolbarComponent({ data, setData, deleteNode,runnabler,setRunnabler,miniSize,setMiniSize }) {
   const [nodeLength, setNodeLength] = useState(
@@ -27,7 +28,8 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
   );
 
   const { paste,openWebEditor,setOpenWebEditor,tabId,setEditFlowId,setEditNodeId } = useContext(TabsContext);
-  const reactFlowInstance = useReactFlow();
+  // const reactFlowInstance = useReactFlow();
+  const {reactFlowInstances} =useContext(typesContext);
   function changeAINoteToNote(node:NodeType){
     // console.info("type is :",node)
         // Create a new node object
@@ -75,7 +77,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             <button
               className="relative inline-flex items-center rounded-l-md  bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
               onClick={() => {
-                deleteNode(data.id);
+                deleteNode(data.id,tabId);
               }}
             >
               <IconComponent name="Trash2" className="h-4 w-4" />
@@ -91,14 +93,14 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
                 event.preventDefault();
                 paste(
                   {
-                    nodes: [reactFlowInstance.getNode(data.id)],
+                    nodes: [reactFlowInstances.get(tabId).getNode(data.id)],
                     edges: [],
                   },
                   {
                     x: 50,
                     y: 10,
-                    paneX: reactFlowInstance.getNode(data.id).position.x,
-                    paneY: reactFlowInstance.getNode(data.id).position.y,
+                    paneX: reactFlowInstances.get(tabId).getNode(data.id).position.x,
+                    paneY: reactFlowInstances.get(tabId).getNode(data.id).position.y,
                   }
                 );
               }}
@@ -107,7 +109,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
               <IconComponent name="Copy" className="h-4 w-4" />
             </button>
           </ShadTooltip>
-          {reactFlowInstance.getNode(data.id).data.type=="AINote"&&(
+          {reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"&&(
 
          
           <ShadTooltip content="Copy as Note" side="top">
@@ -119,14 +121,14 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
                 event.preventDefault();
                 paste(
                   {
-                    nodes: [changeAINoteToNote(reactFlowInstance.getNode(data.id))],
+                    nodes: [changeAINoteToNote(reactFlowInstances.get(tabId).getNode(data.id))],
                     edges: [],
                   },
                   {
                     x: 50,
                     y: 10,
-                    paneX: reactFlowInstance.getNode(data.id).position.x,
-                    paneY: reactFlowInstance.getNode(data.id).position.y,
+                    paneX: reactFlowInstances.get(tabId).getNode(data.id).position.x,
+                    paneY: reactFlowInstances.get(tabId).getNode(data.id).position.y,
                   }
                 );
               }}

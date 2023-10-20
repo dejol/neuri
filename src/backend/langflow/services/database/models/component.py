@@ -4,7 +4,7 @@ from typing import Optional
 from datetime import datetime
 import uuid
 
-
+###本对象(数据表）没有被使用###
 class Component(SQLModelSerializable, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     frontend_node_id: uuid.UUID = Field(index=True)

@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { addEdge } from "reactflow";
+import { Viewport, addEdge } from "reactflow";
 import ShortUniqueId from "short-unique-id";
 import {
   deleteFlowFromDatabase,
@@ -21,9 +21,13 @@ import {
   updateFolderInDatabase,
   deleteFolderFromDatabase,
   loginUserFromDatabase,
+  saveNoteToDatabase,
+  updateNoteInDatabase,
+  readNotesFromDatabase,
+  deleteNoteFromDatabase,
 } from "../controllers/API";
 import { APIClassType, APITemplateType } from "../types/api";
-import { FlowType, NodeType,FolderType, UserType } from "../types/flow";
+import { FlowType, NodeType,FolderType, UserType, NoteType } from "../types/flow";
 import { TabsContextType, TabsState } from "../types/tabs";
 import {
   addVersionToDuplicates,
@@ -40,16 +44,25 @@ const TabsContextInitialValue: TabsContextType = {
   save: () => { },
   tabId: "",
   setTabId: (index: string) => { },
+  // tabValues: [""], //临时使用，来测试一下tabs功能
+  // setTabValues: (values: Array<string>) => { },//临时使用，来测试一下tabs功能
+  tabValues: new Map<"",{id:"",type:"",viewport?:Viewport}>(),
+  setTabValues: () => {},
+
   loginUserId: "",
   setLoginUserId: (index: string) => { },
   flows: [],
   folders: [],
+  notes:[],
   removeFlow: (id: string) => { },
   addFlow: async (flowData?: any) => "",
   addFolder: async (folderData?: any) => "",
   saveFolder: async (folder: FolderType) => { },
+  saveNote: async (note: NoteType) => { },
+  addNote:async (noteData?: NoteType) => "",
+  removeNote: (id: string) => { },
   removeFolder: (id: string) => { },
-  updateFlow: (newFlow: FlowType) => { },
+  updateFlow: (newFlow: FlowType,who?:string) => { },
   incrementNodeId: () => uid(),
   downloadFlow: (flow: FlowType) => { },
   downloadFlows: () => { },
@@ -105,9 +118,10 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const [flows, setFlows] = useState<Array<FlowType>>([]);
   
   const [folders, setFolders] = useState<Array<FolderType>>([]);
+  const [notes, setNotes] = useState<Array<NoteType>>([]);
 
   const [id, setId] = useState(uid());
-  const { templates, reactFlowInstance } = useContext(typesContext);
+  const { templates, reactFlowInstances } = useContext(typesContext);
   const [lastCopiedSelection, setLastCopiedSelection] = useState(null);
   const [tabsState, setTabsState] = useState<TabsState>({});
   const [getTweak, setTweak] = useState([]);
@@ -174,7 +188,13 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     
    
   }
-
+  function refreshNotes() {
+    getNotesDataFromDB().then((DbData) => {
+      setNotes(DbData);
+    });
+  
+ 
+}
   useEffect(() => {
     // get data from db
     //get tabs locally saved
@@ -194,6 +214,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     if(loginUserId){
       refreshFolders();
       refreshFlows();
+      refreshNotes();
     }
   }, [loginUserId]);
 
@@ -202,12 +223,16 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     return readFlowsFromDatabase(loginUserId);
   }
   function getFoldersDataFromDB() {
-    //get tabs from db
+    //get folders from db
 
     // if(loginUserId){
       return readFoldersFromDatabase(loginUserId);
     // }
     // return;
+  }
+  function getNotesDataFromDB() {
+    //get notes from db
+      return readNotesFromDatabase(loginUserId);
   }
   function processDBData(DbData) {
     DbData.forEach((flow) => {
@@ -430,7 +455,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       });
     }
   }
-    /**
+  /**
    * Removes a folder from an array of folders based on its id.
    * Updates the state of folders and tabIndex using setFolders.
    * @param {string} id - The id of the folder to remove.
@@ -440,6 +465,20 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       if (index >= 0) {
         deleteFolderFromDatabase(id).then(() => {
           setFolders(folders.filter((folder) => folder.id !== id));
+        });
+      }
+    }
+  
+  /**
+   * Removes a note from an array of notes based on its id.
+   * Updates the state of notes and Index using setNotes.
+   * @param {string} id - The id of the note to remove.
+   */
+    function removeNote(id: string) {
+      const index = notes.findIndex((note) => note.id === id);
+      if (index >= 0) {
+        deleteNoteFromDatabase(id).then(() => {
+          setNotes(notes.filter((note) => note.id !== id));
         });
       }
     }
@@ -455,8 +494,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     let minimumX = Infinity;
     let minimumY = Infinity;
     let idsMap = {};
-    let nodes = reactFlowInstance.getNodes();
-    let edges = reactFlowInstance.getEdges();
+    let nodes = reactFlowInstances.get(tabId).getNodes();
+    let edges = reactFlowInstances.get(tabId).getEdges();
     selectionInstance.nodes.forEach((node) => {
       if (node.position.y < minimumY) {
         minimumY = node.position.y;
@@ -468,7 +507,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
     const insidePosition = position.paneX
       ? { x: position.paneX + position.x, y: position.paneY + position.y }
-      : reactFlowInstance.project({ x: position.x, y: position.y });
+      : reactFlowInstances.get(tabId).project({ x: position.x, y: position.y });
 
     selectionInstance.nodes.forEach((node: NodeType) => {
       // Generate a unique node ID
@@ -494,7 +533,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         .map((node) => ({ ...node, selected: false }))
         .concat({ ...newNode, selected: false });
     });
-    reactFlowInstance.setNodes(nodes);
+    reactFlowInstances.get(tabId).setNodes(nodes);
 
     selectionInstance.edges.forEach((edge) => {
       let source = idsMap[edge.source];
@@ -534,7 +573,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         edges.map((edge) => ({ ...edge, selected: false }))
       );
     });
-    reactFlowInstance.setEdges(edges);
+    reactFlowInstances.get(tabId).setEdges(edges);
   }
 
   const addFlow = async (
@@ -604,6 +643,33 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         // Handle the error if needed
         console.error("Error while adding folder:", error);
+        throw error; // Re-throw the error so the caller can handle it if needed
+      }
+
+  };
+  const addNote = async (
+    note?: NoteType
+  ): Promise<String> => {
+      let newNote = {
+        content:{id:"",value:""},
+        name: "NO-NAME",
+        user_id:note?.user_id ?? loginUserId,
+        folder_id:"",
+        id: "",
+      }
+      if(note){
+        newNote.content.value=note.content?.value;
+        newNote.name=note.name;
+        newNote.folder_id=note?.folder_id;
+      }
+      try {
+        const { id } = await saveNoteToDatabase(newNote);
+        refreshNotes();
+        // Return the id
+        return id;
+      } catch (error) {
+        // Handle the error if needed
+        console.error("Error while adding note:", error);
         throw error; // Re-throw the error so the caller can handle it if needed
       }
 
@@ -678,17 +744,25 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   /**
    * Updates an existing flow with new data
    * @param newFlow - The new flow object containing the updated data
+   * @param who - indicated who call this function ,just for debugging
    */
-  function updateFlow(newFlow: FlowType) {
+  function updateFlow(newFlow: FlowType,who?:string) {
+    // console.log("newFlow:",who,newFlow.data.viewport);
     setFlows((prevState) => {
       const newFlows = [...prevState];
       const index = newFlows.findIndex((flow) => flow.id === newFlow.id);
       if (index !== -1) {
         newFlows[index].description = newFlow.description ?? "";
         newFlows[index].data = newFlow.data;
+        // newFlows[index].data.viewport = newFlow.data.viewport;
+
         newFlows[index].name = newFlow.name;
         newFlows[index].user_id = loginUserId;
+
+        // console.log("afterUpdated:",newFlows[index]);
       }
+      
+
       return newFlows;
     });
   }
@@ -760,6 +834,29 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       setErrorData(err);
     }
   }
+  async function saveNote(newNote: NoteType) {
+    try {
+      // updates note in db
+      if(!newNote.user_id){
+        newNote.user_id=loginUserId;
+      }
+      const updatedNote = await updateNoteInDatabase(newNote);
+      if (updatedNote) {
+        // updates note in state
+        setNotes((prevNotes) => {
+          const newNotes = [...prevNotes];
+          const index = newNotes.findIndex((note) => note.id === newNote.id);
+          if (index !== -1) {
+            newNotes[index].content = newNote.content ?? {id:newNote.id,value:""};
+            newNotes[index].name = newNote.name;
+          }
+          return newNotes;
+        });
+      }
+    } catch (err) {
+      setErrorData(err);
+    }
+  }
   const login = async (
     user: UserType
   ): Promise<String> => {
@@ -780,6 +877,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const [openWebEditor, setOpenWebEditor] = useState(false);
   const [openMiniMap, setOpenMiniMap] = useState(JSON.parse(window.localStorage.getItem("openMiniMap")) ?? false);
   const [openAssistant, setOpenAssistant] = useState(false);
+
   useEffect(() => {
     window.localStorage.setItem("openFolder", openFolderList.toString());
   }, [openFolderList]);
@@ -789,6 +887,9 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     window.localStorage.setItem("openMiniMap", openMiniMap.toString());
   }, [openMiniMap]);
+
+  const [tabValues, setTabValues] = useState(new Map);
+
   return (
     <TabsContext.Provider
       value={{
@@ -812,8 +913,14 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         hardReset,
         tabId,
         setTabId,
+        tabValues, //临时使用，来测试一下tabs功能
+        setTabValues,//临时使用，来测试一下tabs功能        
         flows,
         folders,
+        notes,
+        saveNote,
+        addNote,
+        removeNote,
         save,
         incrementNodeId,
         removeFlow,

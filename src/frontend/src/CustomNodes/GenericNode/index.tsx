@@ -27,7 +27,7 @@ export default function GenericNode({
   const [data, setData] = useState(olddata);
   const { updateFlow, flows, tabId,saveFlow } = useContext(TabsContext);
   const updateNodeInternals = useUpdateNodeInternals();
-  const { types, deleteNode, reactFlowInstance } = useContext(typesContext);
+  const { types, deleteNode, reactFlowInstances } = useContext(typesContext);
   const name = nodeIconsLucide[data.type] ? data.type : types[data.type];
   const [validationStatus, setValidationStatus] = useState(null);
   // State for outline color
@@ -46,9 +46,14 @@ export default function GenericNode({
     olddata.node = data.node;
     olddata.node.mini_size=miniSize;
     let myFlow = flows.find((flow) => flow.id === tabId);
-    if (reactFlowInstance && myFlow) {
+    
+    if (reactFlowInstances.get(tabId) && myFlow) {
+      // console.log("myFlow:",myFlow.data.viewport);
       let flow = cloneDeep(myFlow);
-      flow.data = reactFlowInstance.toObject();
+      flow.data.viewport=myFlow.data.viewport; //for the bug of cloneDeep()
+      // console.log("after clone of myFlow:",flow.data.viewport);
+
+      flow.data = reactFlowInstances.get(tabId).toObject();
       cleanEdges({
         flow: {
           edges: flow.data.edges,
@@ -56,12 +61,12 @@ export default function GenericNode({
         },
         updateEdge: (edge) => {
           flow.data.edges = edge;
-          reactFlowInstance.setEdges(edge);
+          reactFlowInstances.get(tabId).setEdges(edge);
           updateNodeInternals(data.id);
         },
       });
-      reactFlowInstance.setNodes(flow.data.nodes);
-      updateFlow(flow);
+      reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
+      updateFlow(flow,"data of GenericNode");
     }
   }, [data]);
   // New useEffect to watch for changes in sseData and update validation status
@@ -101,10 +106,11 @@ export default function GenericNode({
   }
   function refreshCurrentFlow(){
     let myFlow = flows.find((flow) => flow.id === tabId);
-    if (reactFlowInstance && myFlow) {
+    if (reactFlowInstances.get(tabId) && myFlow) {
       let flow = cloneDeep(myFlow);
-      flow.data = reactFlowInstance.toObject();
-      reactFlowInstance.setNodes(flow.data.nodes);
+      flow.data = reactFlowInstances.get(tabId).toObject();
+      reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
+      flow.data.viewport=myFlow.data.viewport; //for the bug of cloneDeep()
       updateFlow(flow);
     }
   }    

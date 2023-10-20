@@ -68,21 +68,13 @@ export default function FolderPopover() {
 
       setPopoverState(status);
     };
-    const muiTheme = ()=>{
-      if(dark){
-        return createTheme({
+    const muiTheme = createTheme({
           palette: {
-            mode: 'dark',
+            mode: dark?'dark':'light',
           },
         });
-      }
-      return createTheme({
-        palette: {
-           mode: 'light',
-        },
-      });
-
-  };
+      
+      
 
   const [newFolderId, setNewFolderId] = useState("");
   const list = () => (
@@ -225,6 +217,7 @@ export default function FolderPopover() {
         </Drawer>
       </Fragment>
       </ThemeProvider>
+      
       <FlowSettingsModal
         open={open}
         setOpen={setOpen}

@@ -175,7 +175,7 @@ const [isDragging, setIsDragging] = useState(false);
 const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 const ref = useRef<HTMLDivElement>(null);
-const { reactFlowInstance } = useContext(typesContext);
+// const { reactFlowInstance } = useContext(typesContext);
 const handleMouseDown = (event) => {
   // console.log("call handleMouseDown");
   event.stopPropagation();
@@ -186,20 +186,20 @@ const handleMouseDown = (event) => {
   // });
 };
 
-const handleMouseMove = (event) => {
-  // console.log("call handleMouseMove",reactFlowInstance.getNode(data.id).position.x);
+// const handleMouseMove = (event) => {
+//   // console.log("call handleMouseMove",reactFlowInstance.getNode(data.id).position.x);
 
-  if (isDragging) {
-    const dx = event.clientX - mouseOffset.x - reactFlowInstance.getNode(data.id).position.x - dragOffset.x;
-    const dy = event.clientY - mouseOffset.y - reactFlowInstance.getNode(data.id).position.y - dragOffset.y;
-    // console.log("dx:[",dx,"]dy:[",dy,"]")
-    // Replace the following condition with your own logic to control the draggable area
-    if (dx > 10 && dx < 90 && dy > 10 && dy < 90) {
-      reactFlowInstance.getNode(data.id).position = { x: reactFlowInstance.getNode(data.id).position.x + dx, y: reactFlowInstance.getNode(data.id).position.y + dy };
-      setDragOffset({ x: dragOffset.x + dx, y: dragOffset.y + dy });
-    }
-  }
-};
+//   if (isDragging) {
+//     const dx = event.clientX - mouseOffset.x - reactFlowInstance.getNode(data.id).position.x - dragOffset.x;
+//     const dy = event.clientY - mouseOffset.y - reactFlowInstance.getNode(data.id).position.y - dragOffset.y;
+//     // console.log("dx:[",dx,"]dy:[",dy,"]")
+//     // Replace the following condition with your own logic to control the draggable area
+//     if (dx > 10 && dx < 90 && dy > 10 && dy < 90) {
+//       reactFlowInstance.getNode(data.id).position = { x: reactFlowInstance.getNode(data.id).position.x + dx, y: reactFlowInstance.getNode(data.id).position.y + dy };
+//       setDragOffset({ x: dragOffset.x + dx, y: dragOffset.y + dy });
+//     }
+//   }
+// };
 
 const handleMouseUp = () => {
   // console.log("call handleMouseUp");

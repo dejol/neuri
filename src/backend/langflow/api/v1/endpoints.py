@@ -116,7 +116,8 @@ async def create_upload_file(file: UploadFile, flow_id: str):
     try:
         
         file_path = save_uploaded_file(file.file, folder_name=flow_id)
-        image_extensions = ['.jpg', '.jpeg', '.png', '.gif','.svg','.webp']
+        image_extensions = ['.jpg', '.jpeg', '.png', '.gif','.svg','.webp',
+                            '.mp4','.mov','.wmv','.avi','.mpg','.mpeg','.rm','.ram','.swf','.flv']
         file_extension = os.path.splitext(file.filename)[1].lower()
         file_name = os.path.basename(file_path)
         if file_extension in image_extensions:

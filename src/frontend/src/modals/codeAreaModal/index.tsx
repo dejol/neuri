@@ -33,7 +33,7 @@ export default function CodeAreaModal({
 }) {
   const [code, setCode] = useState(value);
   const { dark } = useContext(darkContext);
-  const { reactFlowInstance } = useContext(typesContext);
+  // const { reactFlowInstance } = useContext(typesContext);
   const [height, setHeight] = useState(null);
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const [error, setError] = useState<{

@@ -8,6 +8,7 @@ from langflow.api.v1 import (
     component_router,
     users_router,
     folders_router,
+    notes_router,
 )
 
 
@@ -21,3 +22,4 @@ router.include_router(component_router)
 router.include_router(flows_router)
 router.include_router(folders_router)
 router.include_router(users_router)
+router.include_router(notes_router)

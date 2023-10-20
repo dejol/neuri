@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { Node } from "reactflow";
+import { Node, ReactFlowInstance } from "reactflow";
 import { getAll } from "../controllers/API";
 import { APIKindType } from "../types/api";
 import { typesContextType } from "../types/typesContext";
@@ -7,8 +7,10 @@ import { typesContextType } from "../types/typesContext";
 //context to share types adn functions from nodes to flow
 
 const initialValue: typesContextType = {
-  reactFlowInstance: null,
-  setReactFlowInstance: () => {},
+  // reactFlowInstance: null,
+  // setReactFlowInstance: () => {},
+  reactFlowInstances: new Map<string,ReactFlowInstance>(),
+  setReactFlowInstances: () => {},
   deleteNode: () => {},
   types: {},
   setTypes: () => {},
@@ -22,7 +24,9 @@ export const typesContext = createContext<typesContextType>(initialValue);
 
 export function TypesProvider({ children }: { children: ReactNode }) {
   const [types, setTypes] = useState({});
-  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  // const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [reactFlowInstances, setReactFlowInstances] = useState(new Map());
+
   const [templates, setTemplates] = useState({});
   const [data, setData] = useState({});
 
@@ -86,12 +90,12 @@ export function TypesProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  function deleteNode(idx: string) {
-    reactFlowInstance.setNodes(
-      reactFlowInstance.getNodes().filter((node: Node) => node.id !== idx)
+  function deleteNode(idx: string,flowId:string) {
+    reactFlowInstances.get(flowId).setNodes(
+      reactFlowInstances.get(flowId).getNodes().filter((node: Node) => node.id !== idx)
     );
-    reactFlowInstance.setEdges(
-      reactFlowInstance
+    reactFlowInstances.get(flowId).setEdges(
+      reactFlowInstances.get(flowId)
         .getEdges()
         .filter((edge) => edge.source !== idx && edge.target !== idx)
     );
@@ -101,8 +105,10 @@ export function TypesProvider({ children }: { children: ReactNode }) {
       value={{
         types,
         setTypes,
-        reactFlowInstance,
-        setReactFlowInstance,
+        // reactFlowInstance,
+        // setReactFlowInstance,
+        reactFlowInstances,
+        setReactFlowInstances,        
         deleteNode,
         setTemplates,
         templates,

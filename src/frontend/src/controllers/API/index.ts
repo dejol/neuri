@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { ReactFlowJsonObject } from "reactflow";
 import { api } from "../../controllers/API/api";
 import { APIObjectType, AssistantTypeAPI, sendAllProps } from "../../types/api/index";
-import { FlowStyleType, FlowType, FolderType, UserType } from "../../types/flow";
+import { FlowStyleType, FlowType, FolderType, NoteType, UserType } from "../../types/flow";
 import {
   APIClassType,
   BuildStatusTypeAPI,
@@ -433,6 +433,7 @@ export async function updateFolderInDatabase(
   }
 }
 
+
 /**
  * Deletes a folder from the database.
  *
@@ -443,6 +444,105 @@ export async function updateFolderInDatabase(
 export async function deleteFolderFromDatabase(folderId: string) {
   try {
     const response = await api.delete(`/api/v1/folders/${folderId}`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+
+/**
+ * Reads all notes from the database.
+ *
+ * @returns {Promise<any>} The notes data.
+ * @throws Will throw an error if reading fails.
+ */
+export async function readNotesFromDatabase(user_id:string) {
+  try {
+    // console.log("user_id:",user_id)
+    const response = await api.get(`/api/v1/notes/all/${user_id}`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+/**
+ * Saves a new note to the database.
+ *
+ * @param {NoteType} newNote - The note data to save.
+ * @returns {Promise<NoteType>} The saved note data.
+ * @throws Will throw an error if saving fails.
+ */
+export async function saveNoteToDatabase(newNote: {
+  name: string;
+  id: string;
+  content: {id:string,value:string};
+  user_id:string;
+}): Promise<NoteType> {
+  try {
+    const response = await api.post("/api/v1/notes/", {
+      name: newNote.name,
+      content: newNote.content,
+      user_id:newNote.user_id,
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+/**
+ * Updates an existing note in the database.
+ *
+ * @param {NoteType} updatedNote - The updated note data.
+ * @returns {Promise<NoteType>} The updated note data.
+ * @throws Will throw an error if the update fails.
+ */
+export async function updateNoteInDatabase(
+  updatedNote: NoteType
+): Promise<NoteType> {
+  try {
+    const response = await api.patch(`/api/v1/notes/${updatedNote.id}`, {
+      name: updatedNote.name,
+      content: updatedNote.content,
+      user_id:updatedNote.user_id,
+      folder_id:updatedNote.folder_id,
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+
+/**
+ * Deletes a note from the database.
+ *
+ * @param {string} noteId - The ID of the note to delete.
+ * @returns {Promise<any>} The deleted note data.
+ * @throws Will throw an error if deletion fails.
+ */
+export async function deleteNoteFromDatabase(noteId: string) {
+  try {
+    const response = await api.delete(`/api/v1/notes/${noteId}`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

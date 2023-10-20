@@ -69,7 +69,7 @@
     @apply flex h-full w-52 flex-col overflow-hidden border-r scrollbar-hide;
   }
   .left-side-folder-arrangement {
-    @apply grid h-full w-52  overflow-hidden border-r scrollbar-hide;grid-template-rows: 7% 86% 7%;
+    @apply grid h-full w-60  overflow-hidden border-r scrollbar-hide;grid-template-rows: 7% 86% 7%;
   }
   .small-side-bar-arrangement {
     @apply flex h-full w-16 flex-col overflow-hidden border-r scrollbar-hide;
@@ -531,7 +531,7 @@
   }
 
   .header-arrangement {
-    @apply grid h-12 items-center border-border bg-muted;grid-template-columns: 64px 40% 10% auto;
+    @apply grid h-12 items-center border-border bg-muted;grid-template-columns: 64px 100px auto 260px;
   }
   .header-start-display {
     @apply flex w-[64px] items-center justify-start gap-2;
@@ -607,7 +607,7 @@
   }
 
   .app-div {
-    @apply fixed bottom-5 right-12 flex flex-col-reverse;
+    @apply fixed bottom-5 right-24 flex flex-col-reverse;
   }
 
   .chat-input-modal-txtarea {

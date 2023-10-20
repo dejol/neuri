@@ -25,7 +25,7 @@ export default function LeftFormModal({
   setOpen: (open: boolean) => void;
   flow: FlowType;
 }) {
-  const { tabsState, setTabsState } = useContext(TabsContext);
+  const { tabsState, setTabsState,tabId } = useContext(TabsContext);
   const [chatValue, setChatValue] = useState(() => {
     try {
       const { formKeysData } = tabsState[flow.id];
@@ -48,7 +48,7 @@ export default function LeftFormModal({
   });
 
   const [chatHistory, setChatHistory] = useState<ChatMessageType[]>([]);
-  const { reactFlowInstance } = useContext(typesContext);
+  const { reactFlowInstances } = useContext(typesContext);
   const { setErrorData } = useContext(alertContext);
   const ws = useRef<WebSocket | null>(null);
   const [lockChat, setLockChat] = useState(false);
@@ -333,7 +333,7 @@ export default function LeftFormModal({
   }, [open]);
 
   function sendMessage() {
-    let nodeValidationErrors = validateNodes(reactFlowInstance);
+    let nodeValidationErrors = validateNodes(reactFlowInstances.get(tabId));
     if (nodeValidationErrors.length === 0) {
       setLockChat(true);
       let inputs = tabsState[id.current].formKeysData.input_keys;
@@ -346,7 +346,7 @@ export default function LeftFormModal({
         tabsState[flow.id].formKeysData.template
       );
       sendAll({
-        ...reactFlowInstance.toObject(),
+        ...reactFlowInstances.get(tabId).toObject(),
         inputs: inputs,
         chatHistory,
         name: flow.name,

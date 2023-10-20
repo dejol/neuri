@@ -10,7 +10,7 @@ import { DropdownMenu,DropdownMenuTrigger, DropdownMenuItem,DropdownMenuContent}
 import { Label } from "../../components/ui/label";
 import { useNavigate } from "react-router-dom";
 import Dropdown from "../../components/dropdownComponent";
-import { flow } from "lodash";
+import { cloneDeep, flow } from "lodash";
 
 export default function FlowSettingsModal({
   open,
@@ -25,16 +25,12 @@ export default function FlowSettingsModal({
 }) {
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const ref = useRef();
-  const { flows, tabId,loginUserId, updateFlow, setTabsState, saveFlow,folders,addFlow,removeFlow } =
+  const { flows, tabId,loginUserId, updateFlow, setTabsState, saveFlow,folders,addFlow,removeFlow,setTabValues,setTabId,tabValues } =
     useContext(TabsContext);
   const maxLength = 50;
   
-  const [name, setName] = useState(
-      isNew?"":(flows.find((flow) => flow.id === tabId).name)
-  );
-  const [folderId, setFolderId] = useState(
-    isNew?newFolderId:(flows.find((flow) => flow.id === tabId).folder_id)
-  );
+  const [name, setName] = useState("");
+  const [folderId, setFolderId] = useState("");
 
   const [description, setDescription] = useState(
     isNew?"":(flows.find((flow) => flow.id === tabId).description)
@@ -48,12 +44,22 @@ export default function FlowSettingsModal({
       if(!folderId){
         addFlow({"name":name,"description":description,"id":"","data":null,"folder_id":newFolderId},true,newFolderId)
         .then((id) => {
-         navigate("/flow/" + id);
+        //  navigate("/flow/" + id);
+        //  let newValues=cloneDeep(tabValues);
+        //  newValues.push(id.toString());
+        //  setTabValues(newValues);
+          tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
+         setTabId(id.toString());
        });
       }else{
         addFlow({"name":name,"description":description,"id":"","data":null,"folder_id":folderId},true,folderId)
         .then((id) => {
-         navigate("/flow/" + id);
+        //  navigate("/flow/" + id);
+        // let newValues=cloneDeep(tabValues);
+        // newValues.push(id.toString());
+        // setTabValues(newValues);
+        tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
+        setTabId(id.toString());
        });
       }
       setSuccessData({ title: "New notebook successfully" });
@@ -73,6 +79,16 @@ export default function FlowSettingsModal({
       setFolderId(newFolderId);
     }
   },[newFolderId])
+  useEffect(()=>{
+    if(!isNew){
+      let flow=flows.find((flow) => flow.id === tabId);
+      if(flow){
+        setName(flow.name);
+        setDescription(flow.description);
+        setFolderId(flow.folder_id);
+      }
+    }
+  },[tabId])
   return (
     <BaseModal open={open} setOpen={setOpen} size="medium">
       <BaseModal.Header description={SETTINGS_DIALOG_SUBTITLE}>
@@ -99,6 +115,9 @@ export default function FlowSettingsModal({
                         <div key={idx}>{folder.name}</div>
                       )
                     ))}
+                    {!folderId&&(
+                      <div key="unclass">Unclassified</div>
+                    )}
                     </div>
                     <IconComponent name="ChevronDown" className="h-4 w-4" />
                   </div>
@@ -116,6 +135,12 @@ export default function FlowSettingsModal({
                 {folder.name}
                 </DropdownMenuItem>
                 ))}
+                <DropdownMenuItem
+                onClick={() => {
+                  setFolderId("");
+                }}
+                className="cursor-pointer"
+                >Unclassified</DropdownMenuItem>                
               </DropdownMenuContent>
             </DropdownMenu>
             </div>
@@ -145,8 +170,9 @@ export default function FlowSettingsModal({
               setOpen(false);
               setDescription("");
               setName("");
-              let url="/flow/"+loginUserId;
-              navigate(url);
+              // let url="/flow/"+loginUserId;
+              // navigate(url);
+              setTabId("");
             }} type="button" className="mx-2" variant={"secondary"}>
               <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
             Delete

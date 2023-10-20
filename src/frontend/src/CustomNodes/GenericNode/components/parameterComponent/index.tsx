@@ -74,9 +74,9 @@ export default function ParameterComponent({
     updateNodeInternals(data.id);
   }, [data.id, position, updateNodeInternals]);
 
-  const { reactFlowInstance } = useContext(typesContext);
+  const { reactFlowInstances } = useContext(typesContext);
   let disabled =
-    reactFlowInstance?.getEdges().some((edge) => edge.targetHandle === id) ??
+    reactFlowInstances.get(tabId)?.getEdges().some((edge) => edge.targetHandle === id) ??
     false;
 
   const { data: myData } = useContext(typesContext);
@@ -106,12 +106,13 @@ export default function ParameterComponent({
         };
         return newTabsState;
       }
+      // console.log("tabId in handleOnNewValue of ParameterComponent:",tabId)
         return {
           ...prev,
           [tabId]: {
             ...prev[tabId],
             isPending: true,
-            formKeysData: prev[tabId].formKeysData,
+            formKeysData: prev[tabId]?.formKeysData,
           },
         };
       
@@ -259,7 +260,7 @@ export default function ParameterComponent({
               position={left ? Position.Left : Position.Right}
               id={id}
               isValidConnection={(connection) =>
-                isValidConnection(connection, reactFlowInstance!)
+                isValidConnection(connection, reactFlowInstances.get(tabId)!)
               }
               className={classNames(
                 left ? "-ml-0.5 " : "-mr-0.5 ",
@@ -318,7 +319,8 @@ export default function ParameterComponent({
                     key={currentFlow.id}
                     flow={currentFlow}
                     name={name}
-                  />):(
+                  />
+                  ):(
                     <HtmlViewComponent
                       contentValue={data.node.template[name].value}
                       onChange={handleOnNewValue}

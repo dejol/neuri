@@ -25,7 +25,7 @@ const LoginModal = forwardRef((props: { children: ReactNode }, ref) => {
           localStorage.setItem('login',response['id']);
           localStorage.setItem('userName',response['name']);
           if(response!=""){
-            let url="/flow/"+response['id'];
+            let url="/flow/"; //+response['id'];
             navigate(url);
           }
           if(response==""){

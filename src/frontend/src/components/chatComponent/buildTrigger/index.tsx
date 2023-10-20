@@ -25,8 +25,8 @@ export default function BuildTrigger({
   isBuilt: boolean;
 }) {
   const { updateSSEData, isBuilding, setIsBuilding, sseData } = useSSE();
-  const { reactFlowInstance } = useContext(typesContext);
-  const { setTabsState } = useContext(TabsContext);
+  const { reactFlowInstances } = useContext(typesContext);
+  const { setTabsState,tabId } = useContext(TabsContext);
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const [isIconTouched, setIsIconTouched] = useState(false);
   const eventClick = isBuilding ? "pointer-events-none" : "";
@@ -37,7 +37,7 @@ export default function BuildTrigger({
       if (isBuilding) {
         return;
       }
-      const errors = validateNodes(reactFlowInstance);
+      const errors = validateNodes(reactFlowInstances.get(tabId));
       if (errors.length > 0) {
         setErrorData({
           title: "Oops! Looks like you missed something",

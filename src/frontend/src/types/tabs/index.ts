@@ -1,21 +1,31 @@
 import { Dispatch, SetStateAction } from "react";
-import { FlowType, TweaksType,FolderType, UserType } from "../flow";
+import { FlowType, TweaksType,FolderType, UserType, NoteType } from "../flow";
+import { Viewport } from "reactflow";
 
 export type TabsContextType = {
   saveFlow: (flow: FlowType) => Promise<void>;
   save: () => void;
   tabId: string;
   setTabId: (index: string) => void;
+  // tabValues: Array<string>;//临时使用，来测试一下tabs功能
+  // setTabValues: (index: Array<string>) => void;//临时使用，来测试一下tabs功能
+  tabValues: Map<string,{id:string,type:string,viewport?:Viewport}>;
+  setTabValues: {};  
+
   loginUserId: string,
   setLoginUserId: (index: string) => void,
   flows: Array<FlowType>;
   folders:Array<FolderType>;
+  notes:Array<NoteType>;
+  saveNote: (note: NoteType) => Promise<void>;
+  addNote: (noteData?: NoteType) => Promise<String>;
+  removeNote:(id: string) => void;
   removeFlow: (id: string) => void;
   addFlow: (flowData?: FlowType, newProject?: boolean,folder_id?:string) => Promise<String>;
   addFolder: (folderData?: FolderType) => Promise<String>;
   saveFolder: (folder: FolderType) => Promise<void>;
   removeFolder: (id: string) => void;
-  updateFlow: (newFlow: FlowType) => void;
+  updateFlow: (newFlow: FlowType,who?:string) => void;
   incrementNodeId: () => string;
   downloadFlow: (
     flow: FlowType,

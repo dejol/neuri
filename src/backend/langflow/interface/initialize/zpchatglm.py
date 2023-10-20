@@ -13,7 +13,7 @@ import zhipuai
 from zhipuai.utils import jwt_token
 from zhipuai.utils.http_client import get, post, stream
 from zhipuai.utils.sse_client import SSEClient
-    
+####本文件没有被使用，仅仅用来记录 智普AI API 的使用方法####
 logger = logging.getLogger(__name__)
 
 class InvokeType:

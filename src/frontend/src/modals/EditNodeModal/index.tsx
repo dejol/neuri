@@ -46,10 +46,10 @@ const EditNodeModal = forwardRef(
     const [modalOpen, setModalOpen] = useState(false);
     const [myData, setMyData] = useState(data);
     const { setTabsState, tabId } = useContext(TabsContext);
-    const { reactFlowInstance } = useContext(typesContext);
+    const { reactFlowInstances } = useContext(typesContext);
 
     let disabled =
-      reactFlowInstance
+      reactFlowInstances.get(tabId)
         ?.getEdges()
         .some((edge) => edge.targetHandle === data.id) ?? false;
 

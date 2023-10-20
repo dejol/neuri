@@ -5,6 +5,7 @@ from langflow.api.v1.flows import router as flows_router
 from langflow.api.v1.components import router as component_router
 from langflow.api.v1.folders import router as folders_router
 from langflow.api.v1.users import router as users_router
+from langflow.api.v1.notes import router as notes_router
 __all__ = [
     "chat_router",
     "endpoints_router",
@@ -13,4 +14,5 @@ __all__ = [
     "flows_router",
     "folders_router",
     "users_router",
+    "notes_router",
 ]

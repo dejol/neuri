@@ -29,7 +29,7 @@ export default function NoteNode({
   const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
   const { flows, tabId,updateFlow } =useContext(TabsContext);
-  const {  reactFlowInstance } = useContext(typesContext);
+  const {  reactFlowInstances } = useContext(typesContext);
 
   const updateNodeInternals = useUpdateNodeInternals();
 
@@ -204,10 +204,11 @@ export default function NoteNode({
   }
   function refreshCurrentFlow(){
     let myFlow = flows.find((flow) => flow.id === tabId);
-    if (reactFlowInstance && myFlow) {
+    if (reactFlowInstances.get(tabId) && myFlow) {
       let flow = cloneDeep(myFlow);
-      flow.data = reactFlowInstance.toObject();
-      reactFlowInstance.setNodes(flow.data.nodes);
+      flow.data = reactFlowInstances.get(tabId).toObject();
+      reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
+      flow.data.viewport=myFlow.data.viewport; //for the bug of cloneDeep()
       updateFlow(flow);
     }
   }

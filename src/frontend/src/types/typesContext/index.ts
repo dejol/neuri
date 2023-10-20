@@ -6,13 +6,17 @@ const template: { [char: string]: APIClassType } = {};
 const data: { [char: string]: string } = {};
 
 export type typesContextType = {
-  reactFlowInstance: ReactFlowInstance | null;
-  setReactFlowInstance: any;
-  deleteNode: (idx: string) => void;
+  // reactFlowInstance: ReactFlowInstance | null;
+  // setReactFlowInstance: any;
+  deleteNode: (idx: string,flowId:string) => void;
   types: typeof types;
   setTypes: (newState: {}) => void;
   templates: typeof template;
   setTemplates: (newState: {}) => void;
   data: typeof data;
   setData: (newState: {}) => void;
+  reactFlowInstances:Map<string,ReactFlowInstance>;
+  setReactFlowInstances: {};
+  
+
 };

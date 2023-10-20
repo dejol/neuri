@@ -24,7 +24,7 @@ export default function EmbeddedModal({
   flow: FlowType;
 }) {
   // console.log("--------:::",sourceData);
-  const { tabsState, setTabsState } = useContext(TabsContext);
+  const { tabsState, setTabsState,tabId } = useContext(TabsContext);
   const [chatValue, setChatValue] = useState(() => {
     try {
       const { formKeysData } = tabsState[flow.id];
@@ -47,7 +47,7 @@ export default function EmbeddedModal({
   });
 
   const [chatHistory, setChatHistory] = useState<ChatMessageType[]>([]);
-  const { reactFlowInstance } = useContext(typesContext);
+  const { reactFlowInstances } = useContext(typesContext);
   const { setErrorData } = useContext(alertContext);
   const ws = useRef<WebSocket | null>(null);
   const [lockChat, setLockChat] = useState(false);
@@ -332,20 +332,20 @@ export default function EmbeddedModal({
     }
   }
 
-  useEffect(() => {
-    if (ref.current) ref.current.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory]);
+  // useEffect(() => {
+  //   if (ref.current) ref.current.scrollIntoView({ behavior: "smooth" });
+  // }, [chatHistory]);//这里的ref会根据chatHistory的值变化，触动scroll，导致reactflow整个页面溢出
 
-  const ref = useRef(null);
+  // const ref = useRef(null); 
 
-  useEffect(() => {
-    if (open && ref.current) {
-      ref.current.focus();
-    }
-  }, [open]);
+  // useEffect(() => {
+  //   if (open && ref.current) {
+  //     ref.current.focus();
+  //   }
+  // }, [open]);
 
   function sendMessage() {
-    let nodeValidationErrors = validateNodes(reactFlowInstance);
+    let nodeValidationErrors = validateNodes(reactFlowInstances.get(tabId));
     if (nodeValidationErrors.length === 0) {
       setLockChat(true);
       let inputs = tabsState[id.current].formKeysData.input_keys;
@@ -358,7 +358,7 @@ export default function EmbeddedModal({
         tabsState[flow.id].formKeysData.template
       );
       sendAll({
-        ...reactFlowInstance.toObject(),
+        ...reactFlowInstances.get(tabId).toObject(),
         inputs: inputs,
         chatHistory,
         name: flow.name,
@@ -398,7 +398,7 @@ export default function EmbeddedModal({
             <div className="eraser-column-arrangement">
               <div className="eraser-size-embedded">
                 <div ref={messagesRef} className="chat-message-div">
-                  {chatHistory.length > 0 ? (
+                  {chatHistory.length > 0 && (
                     chatHistory.map((chat, index) => (
                       <ChatMessage
                         lockChat={lockChat}
@@ -409,23 +409,12 @@ export default function EmbeddedModal({
                         key={index}
                       />
                     ))
-                  ) : (
-                    <div className="chat-alert-box">
-                      <span>
-                        👋{" "}
-                        <span className="langflow-chat-span">
-                          预览
-                        </span>
-                      </span>
-                      <br />
-                    </div>
                   )}
-                  <div ref={ref}></div>
+                  {/* <div ref={ref}></div> */}
                 </div>
               </div>
             </div>
           </div>
-
       )
 
   );

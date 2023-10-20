@@ -90,22 +90,12 @@ export const MenuBar = ({ flows, tabId }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const muiTheme = ()=>{
-    if(dark){
-      return createTheme({
+  const muiTheme = createTheme({
         palette: {
-          mode: 'dark',
+          mode: dark?'dark':'light',
         },
       });
-    }
-    return createTheme({
-      palette: {
-         mode: 'light',
-      },
-    });
-
-  };
-
+   
   return (
     <div className="round-button-div">
       {/* <Link to="/">
@@ -129,7 +119,28 @@ export const MenuBar = ({ flows, tabId }) => {
               }
             />
           </button>
-        </ShadTooltip>  */}   
+        </ShadTooltip> */}   
+        <ShadTooltip content="Save" side="bottom">
+          <button
+            className={
+              "extra-side-bar-buttons " + (isPending ? "" : "button-disable")
+            }
+            onClick={(event) => {
+              saveFlow(flow).then(()=>{
+                setSuccessData({ title: "Changes saved successfully" });
+
+              });
+            }}
+          >
+            <IconComponent
+              name="Save"
+              className={
+                "side-bar-button-size" +
+                (isPending ? " remind-blue" : " extra-side-bar-save-disable")
+              }
+            />
+          </button>
+        </ShadTooltip>          
         <ShadTooltip content="Undo" side="bottom">
           <button
             className={
@@ -186,17 +197,22 @@ export const MenuBar = ({ flows, tabId }) => {
               onClose={handleClose}
               
           >
-          <MenuItem 
+          {/* <MenuItem 
             disabled={!isPending}
             onClick={(event) => {
               handleClose();
-              saveFlow(flow).then(()=>{
-                setSuccessData({ title: "Changes saved successfully" });
-              });
+              if(flow.id==tabId){
+                saveFlow(flow).then(()=>{
+                  setSuccessData({ title: "Changes saved successfully" });
+                });
+              }else{
+                setErrorData({title:"Fail to save, please check the Tabs is correct"})
+              }
+
             }} disableRipple>
           <IconComponent name="Save" className={"side-bar-button-size mr-2" }/>
           Save
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem onClick={() => {
                 uploadFlow();
                 handleClose();

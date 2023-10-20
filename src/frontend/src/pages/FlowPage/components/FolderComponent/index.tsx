@@ -48,9 +48,9 @@ import { filterHTML } from "../../../../utils/utils";
 
 export default function FolderPopover() {
   const { data, templates } = useContext(typesContext);
-  const { flows, tabId, tabsState, isBuilt,folders,
+  const { flows, tabId, setTabId, tabsState, isBuilt,folders,
     downloadFlows,uploadFlows,setOpenFolderList,setOpenWebEditor,openWebEditor,
-    setEditFlowId,setEditNodeId
+    setEditFlowId,setEditNodeId,setTabValues,tabValues,notes,getNodeId
    } =useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const flow = flows.find((flow) => flow.id === tabId);
@@ -164,6 +164,16 @@ export default function FolderPopover() {
   // useEffect(()=>{
   //   console.log("noteContent:",noteContent);
   // },[noteContent]);
+  const openNewTab=(id,type)=>{
+    // let newValues=cloneDeep(tabValues);
+    // let exiting=newValues.find((item)=>item===id);
+    // if(!exiting){
+    //   newValues.push(id);
+    //   setTabValues(newValues);
+    // }
+    tabValues.set(id,{id:id,type:type})
+    setTabId(id);
+  }
   const list = () => (
     <Box
       sx={{ width: 200 }}
@@ -207,7 +217,8 @@ export default function FolderPopover() {
                           size="sm"
                           variant="link"
                           onClick={() => {
-                            window.location.href="/flow/"+flow.id;
+                            // window.location.href="/flow/"+flow.id;
+                            openNewTab(flow.id,"flow");
                           }}
                           
                           >
@@ -252,7 +263,8 @@ export default function FolderPopover() {
                             {filterHTML(node.data.value).substring(0,20)}
                             </div>
                           </ListItem>
-                          </ShadTooltip>                        ):(
+                          </ShadTooltip>                        
+                          ):(
                           (node.data.type=="Note"||node.data.type=="AINote")&&(
                             <ShadTooltip content={filterHTML(node.data.node.template.note.value)} side="right" key={idx}>
                             <ListItem  
@@ -294,9 +306,52 @@ export default function FolderPopover() {
 
           )
         ))}
-        
+
+
+      {notes.map((note, idx) => (
+          (note.folder_id && note.folder_id==folder.id)&&(
+              <ListItem  
+                sx={{ pl: 2 }}
+                draggable={true}
+                onDragStart={(event) =>
+                  onDragStart(event, {
+                    type: "noteNode",
+                    node:{value:(note.name?("<p><strong style='font-size:19px;'>"+note.name+"</strong></p>"):"")+note.content.value} ,
+                  })
+                }
+                onDragEnd={() => {
+                  document.body.removeChild(
+                    document.getElementsByClassName(
+                      "cursor-grabbing"
+                    )[0]
+                  );
+                }}
+                className="pr-0 py-2"
+              >
+
+
+                <div className="file-component-badge-div justify-start h-4">
+                    <Button1
+                    size="sm"
+                    variant="link"
+                    onClick={() => {
+                      openNewTab(note.id,"note");
+                      // webEdit(note.id,note.name,note.content.value);
+                    }}
+                    
+                    >
+                    <IconComponent name="Square" className="main-page-nav-button" />
+                    {filterHTML(note.name).substring(0,20)}
+                    </Button1>                          
+                </div>                
+              </ListItem>
+    
+            )
+          ))
+        }
         </List>          
         </div>
+
       </AccordionComponent>
     </div>
     ))}
@@ -325,7 +380,9 @@ export default function FolderPopover() {
                 size="sm"
                 variant="link"
                 onClick={() => {
-                  window.location.href="/flow/"+flow.id;
+                  // window.location.href="/flow/"+flow.id;
+                  openNewTab(flow.id,"flow");
+
                 }}
                 >
                   <IconComponent name="FileText" className="main-page-nav-button" />
@@ -339,15 +396,15 @@ export default function FolderPopover() {
           >
             <List component="div" disablePadding={true}>
             {flow.data?.nodes.map((node, idx) => (
-              (node.data.type=="Note"||node.data.type=="AINote")&&(
-                <ShadTooltip content={filterHTML(node.data.node.template.note.value)} side="right">
-                <ListItem 
+              (node.type=="noteNode")?(
+                <ShadTooltip content={filterHTML(node.data.value)} side="right" key={idx}>
+                <ListItem  
                   sx={{ pl: 2 }}
                   draggable={true}
                   onDragStart={(event) =>
                     onDragStart(event, {
-                      type: node.data.type,
-                      node: node.data.node,
+                      type: node.type,
+                      node: node.data,
                     })
                   }
                   onDragEnd={() => {
@@ -359,13 +416,45 @@ export default function FolderPopover() {
                   }}
                   className="pr-0 py-2"
                 >
-                  <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
-                  onDoubleClick={()=>{webEdit(flow.id,flow.name,node.data);}}>
-                  {filterHTML(node.data.node.template.note.value).substring(0,20)}
-                  </div>               
+                  <div className="ml-5 items-center border border-dashed border-ring rounded-lg p-3 w-40 cursor-grab font-normal"
+                  onDoubleClick={(event)=>{
+                    event.preventDefault();
+                      webEdit(flow.id,flow.name,node.data);
+                    }}>
+                  {filterHTML(node.data.value).substring(0,20)}
+                  </div>
                 </ListItem>
-                </ShadTooltip>
-              )
+                </ShadTooltip>                        
+                ):(
+                  (node.data.type=="Note"||node.data.type=="AINote")&&(
+                    <ShadTooltip content={filterHTML(node.data.node.template.note.value)} side="right">
+                    <ListItem 
+                      sx={{ pl: 2 }}
+                      draggable={true}
+                      onDragStart={(event) =>
+                        onDragStart(event, {
+                          type: node.data.type,
+                          node: node.data.node,
+                        })
+                      }
+                      onDragEnd={() => {
+                        document.body.removeChild(
+                          document.getElementsByClassName(
+                            "cursor-grabbing"
+                          )[0]
+                        );
+                      }}
+                      className="pr-0 py-2"
+                    >
+                      <div className="ml-5 items-center border border-dashed border-ring input-note dark:input-note-dark w-40 cursor-grab font-normal"
+                      onDoubleClick={()=>{webEdit(flow.id,flow.name,node.data);}}>
+                      {filterHTML(node.data.node.template.note.value).substring(0,20)}
+                      </div>               
+                    </ListItem>
+                    </ShadTooltip>
+                  )
+                )
+
             ))
             }
 
@@ -374,6 +463,47 @@ export default function FolderPopover() {
     </AccordionComponent>
           )
         ))}
+        {notes.map((note, idx) => (
+          (!note.folder_id )&&(
+              <ListItem  
+                sx={{ pl: 2 }}
+                draggable={true}
+                onDragStart={(event) =>
+                  onDragStart(event, {
+                    type: "noteNode",
+                    node:{value:(note.name?("<p><strong style='font-size:19px;'>"+note.name+"</strong></p>"):"")+note.content.value} ,
+                  })
+                }
+                onDragEnd={() => {
+                  document.body.removeChild(
+                    document.getElementsByClassName(
+                      "cursor-grabbing"
+                    )[0]
+                  );
+                }}
+                className="pr-0 py-2"
+              >
+
+
+                <div className="file-component-badge-div justify-start h-4">
+                    <Button1
+                    size="sm"
+                    variant="link"
+                    onClick={() => {
+                      openNewTab(note.id,"note");
+                      // webEdit(note.id,note.name,note.content.value);
+                    }}
+                    
+                    >
+                    <IconComponent name="Square" className="main-page-nav-button" />
+                    {filterHTML(note.name).substring(0,20)}
+                    </Button1>                          
+                </div>                
+              </ListItem>
+    
+            )
+          ))
+        }
         </List>
       </AccordionComponent>
      </div> 
@@ -384,11 +514,17 @@ export default function FolderPopover() {
     <div className={"left-side-folder-arrangement"}>
       <div className={"side-bar-search-div-placement"}>
         <div className="header-end-display">
-            <ShadTooltip content="New note" side="bottom">
+              <ShadTooltip content="New note" side="bottom">
               <button
                 className={"extra-side-bar-save-disable"}
                 onClick={(event) => {
-                  webEdit(flow.id,flow.name,null);
+                  if(flow){
+                    webEdit(flow.id,flow.name,null);
+                  }else{
+                    let noteId=getNodeId("NewNote");
+                    setTabId(noteId);
+                    tabValues.set(noteId,{id:noteId,type:"note"})
+                  }
                 }}
               >
                 <IconComponent
@@ -399,6 +535,7 @@ export default function FolderPopover() {
                 />
               </button>
             </ShadTooltip>  
+
             <ShadTooltip content="New notebook" side="bottom">
               <button
                 className={"extra-side-bar-save-disable"}
@@ -440,7 +577,7 @@ export default function FolderPopover() {
       <div className="eraser-column-arrangement">
         <div className="eraser-size">
         <div className="side-bar-search-div-placement">
-          <div className="ml-1 ">
+          <div className="ml-1 mt-1 ">
           <Input
           type="text"
           name="search"

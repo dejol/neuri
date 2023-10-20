@@ -7,10 +7,13 @@ const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/community" element={<CommunityPage />} />
+      {/* <Route path="/community" element={<CommunityPage />} /> */}
       <Route path="/flow/:id/">
         <Route path="" element={<FlowPage />} />
       </Route>
+      <Route path="/flow/">
+        <Route path="" element={<FlowPage />} />
+      </Route>      
       <Route path="*" element={<HomePage />} />
     </Routes>
   );

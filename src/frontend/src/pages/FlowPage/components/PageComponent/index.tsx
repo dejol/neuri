@@ -1,5 +1,5 @@
-import _ from "lodash";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import _, { cloneDeep } from "lodash";
+import { ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   Connection,
@@ -20,6 +20,7 @@ import ReactFlow, {
   Panel,
   MarkerType,
   BackgroundVariant,
+  ReactFlowInstance,
 } from "reactflow";
 import GenericNode from "../../../../CustomNodes/GenericNode";
 import Chat from "../../../../components/chatComponent";
@@ -46,21 +47,22 @@ import { postNotesAssistant } from "../../../../controllers/API";
 import LoadingComponent from "../../../../components/loadingComponent";
 import { darkContext } from "../../../../contexts/darkContext";
 import WebEditorModal from "../../../../modals/webEditorModal";
+import { Box, Typography } from "@mui/material";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
-  const { setOpenFolderList,openFolderList } = useContext(TabsContext);
+  // const { setOpenFolderList,openFolderList } = useContext(TabsContext);
   const { setOpenModelList,openModelList } = useContext(TabsContext);
   return (
     <>
-    <Panel position="top-left" className="m-0 mt-6">
+    {/* <Panel position="top-left" className="m-0 mt-6">
       <ShadTooltip content="文件夹" side="right">
         <button onClick={()=>{setOpenFolderList(!openFolderList);}}
               className='mt-0'>
           <IconComponent name={openFolderList?"ChevronsLeft":"ChevronsRight"} className="side-bar-button-size " />
         </button>
         </ShadTooltip>
-    </Panel>
+    </Panel> */}
 
     <Panel position="top-right" className="m-0 mt-6">
     <ShadTooltip content="模块" side="left">
@@ -73,6 +75,8 @@ export function ExtendButton(){
   </>
   );
 };
+
+
 
 const nodeTypes = {
   genericNode: GenericNode,
@@ -94,7 +98,11 @@ export default function Page({ flow }: { flow: FlowType }) {
     tabId,
     loginUserId,
   } = useContext(TabsContext);
-  const { types, reactFlowInstance, setReactFlowInstance, templates,data } =
+  const { types, 
+    // reactFlowInstance,
+     reactFlowInstances,
+    // setReactFlowInstance,
+     templates,data } =
     useContext(typesContext);
     const { dark } = useContext(darkContext);
 
@@ -108,7 +116,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,editNodeId } = useContext(TabsContext);
+  const {tabValues,isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,editNodeId } = useContext(TabsContext);
   const [openSearch,setOpenSearch]=useState(false);
   const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
   // useEffect(() => {
@@ -194,22 +202,41 @@ export default function Page({ flow }: { flow: FlowType }) {
   const { setViewport } = useReactFlow();
   const edgeUpdateSuccessful = useRef(true);
   useEffect(() => {
-    if (reactFlowInstance && flow) {
-      flow.data = reactFlowInstance.toObject();
-      updateFlow(flow);
+    let cloneRFI=cloneDeep(reactFlowInstances);
+    if(cloneRFI.get(tabId) && flow){
+      let vp=cloneRFI.get(tabId).getViewport();
+      if (vp&&!(vp.x==0 && vp.y==0 && vp.zoom==1)) {
+        flow.data = reactFlowInstances.get(tabId).toObject();
+        
+        //  console.log("currentView:",reactFlowInstances.get(tabId).getViewport());
+
+        // if(tabValues.get(tabId).viewport&&vp&&vp.x==0 && vp.y==0 && vp.zoom==1){
+          // reactFlowInstances.get(tabId).setViewport(tabValues.get(tabId).viewport);
+        // }
+        // if(tabId==flow.id)
+          updateFlow(flow);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [edges]);
+  }, [edges,nodes]);
   //update flow when tabs change
   useEffect(() => {
-    setNodes(flow?.data?.nodes ?? []);
-    setEdges(flow?.data?.edges ?? []);
-    if (reactFlowInstance) {
-      setLoading(false);
-      setViewport(flow?.data?.viewport ?? { x: 1, y: 0, zoom: 0.5 });
-      // reactFlowInstance.fitView();
-    }
-  }, [flow, reactFlowInstance, setEdges, setNodes, setViewport]);
+      // console.log("nodes:",flow?.data?.nodes);
+      setNodes(flow?.data?.nodes ?? []);
+      setEdges(flow?.data?.edges ?? []);
+      if (reactFlowInstances.get(tabId)) {
+        // setLoading(false);
+        // console.log('flow viewport:',flow?.data?.viewport)
+        // console.log('current viewport:',reactFlowInstances.get(tabId).getViewport())
+        setViewport(flow?.data?.viewport ?? { x: 1, y: 0, zoom: 0.5 });
+        // reactFlowInstances.get(tabId).fitView();
+      }
+  }, [flow
+    ,reactFlowInstances.get(tabId)
+    , setEdges, setNodes
+    // , setViewport //不理解这里为啥要用setViewport
+  ]);
+  
   //set extra sidebar
   useEffect(() => {
     setExtraComponent(<ExtraSidebar />);
@@ -333,7 +360,8 @@ export default function Page({ flow }: { flow: FlowType }) {
 
         // If data type is not "chatInput" or if there are no "chatInputNode" nodes present in the ReactFlow instance, create a new node
         // Calculate the position where the node should be created
-        const position = reactFlowInstance.project({
+        // console.log("reactFlowInstances:",reactFlowInstances);
+        const position = reactFlowInstances.get(tabId).project({
           x: event.clientX - reactflowBounds.left,
           y: event.clientY - reactflowBounds.top,
         });
@@ -403,16 +431,16 @@ export default function Page({ flow }: { flow: FlowType }) {
 
     },
     // Specify dependencies for useCallback
-    [getNodeId, reactFlowInstance, setNodes, takeSnapshot]
+    [getNodeId, reactFlowInstances.get(tabId), setNodes, takeSnapshot]
   );
 
   useEffect(() => {
     setLoading(true);
-    return () => {
-      if (tabsState && tabsState[flow.id]?.isPending) {
-        saveFlow(flow);
-      }
-    };
+    // return () => {
+    //   if (tabsState && tabsState[flow.id]?.isPending) {
+    //     saveFlow(flow);
+    //   }
+    // };
   }, []);
 
   const onDelete = useCallback(
@@ -436,12 +464,12 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const onEdgeUpdate = useCallback(
     (oldEdge: Edge, newConnection: Connection) => {
-      if (isValidConnection(newConnection, reactFlowInstance)) {
+      if (isValidConnection(newConnection, reactFlowInstances.get(tabId))) {
         edgeUpdateSuccessful.current = true;
         setEdges((els) => updateEdge(oldEdge, newConnection, els));
       }
     },
-    [reactFlowInstance, setEdges]
+    [reactFlowInstances.get(tabId), setEdges]
   );
 
   const onEdgeUpdateEnd = useCallback((_, edge) => {
@@ -509,7 +537,7 @@ function createNoteNode(newValue,newPosition){
   let newId = getNodeId("noteNode");
   if(!newPosition){
     let bounds = reactFlowWrapper.current.getBoundingClientRect();
-    newPosition = reactFlowInstance.project({
+    newPosition = reactFlowInstances.get(tabId).project({
       x: position.x - bounds.left,
       y: position.y - bounds.top,    
     });
@@ -533,7 +561,7 @@ function createNoteNode(newValue,newPosition){
   
   nodesList.push(newNode);
 
-  reactFlowInstance.setNodes(nodesList);
+  reactFlowInstances.get(tabId).setNodes(nodesList);
 }
 
   const edgeTypes = {
@@ -571,6 +599,24 @@ function createNoteNode(newValue,newPosition){
     }
     setConChanged(false);
   };
+  function initFlowInstance(reactFlowIns:ReactFlowInstance){
+    // setReactFlowInstance(reactFlowIns);
+    reactFlowInstances.set(tabId,reactFlowIns);
+    if(flow.id==tabId && flow.data?.viewport){
+
+      setViewport(flow.data?.viewport);
+    }
+    // console.log("set flow and params0:",reactFlowInstances.get(tabId).getViewport());
+
+    setLoading(false);
+    // console.log("set flow instances:",tabId,reactFlowIns);
+    // console.log("set flow and params:",reactFlowIns.viewportInitialized,reactFlowIns.getViewport());
+
+    // console.log("set nodes instances:",reactFlowIns.getNodes());
+    // console.log("set flowMap instances:",reactFlowInstances.get(tabId).getNodes());
+
+
+  }
   return (
     <div className="flex h-full overflow-hidden">
       {/* {
@@ -588,21 +634,7 @@ function createNoteNode(newValue,newPosition){
           </div>
           )
           }         */}
-          {flow&&(
-            <Transition
-            show={openFolderList}
-            enter="transition-transform duration-500 ease-out"
-            enterFrom={"transform translate-x-[-100%]"}
-            enterTo={"transform translate-x-0"}
-            leave="transition-transform duration-500 ease-in"
-            leaveFrom={"transform translate-x-0"}
-            leaveTo={"transform translate-x-[-100%]"}
-            className={"chat-message-modal-thought-cursor"}
 
-          >
-            <FolderPopover />
-          </Transition>
-          )}
           
 
       {/* {openSearch && getSearchResult&&getSearchResult.length>0&&( */}
@@ -628,99 +660,123 @@ function createNoteNode(newValue,newPosition){
         </Transition> */}
         {/* )}                   */}
       {/* Main area */}
+
       <main className="flex flex-1">
         {/* Primary column */}
-        <div className="h-full w-full">
-          {loading ? (
-            <div className="loading-component-div h-full">
-              <LoadingComponent remSize={30} />
-            </div>
-          ):(
-            <div className="h-full w-full" ref={reactFlowWrapper}>
-              <>
-              {Object.keys(templates).length > 0 &&
-              Object.keys(types).length > 0 ? (
+          <div className="h-full w-full">
+            {loading ? (
+              <div className="loading-component-div h-full">
+                <LoadingComponent remSize={30} />
+              </div>
+            ):(
+              <div className="h-full w-full" ref={reactFlowWrapper}>
                 <>
-                {openWebEditor&&flow&&(
-                  <WebEditorModal
-                    setOpen={setOpenWebEditor}
-                    open={openWebEditor}
-                    flow_id={flow.id}
-                    node_id={editNodeId}
-                  ></WebEditorModal>
-               )}
-                
-                <div className={"h-full w-full"+(openWebEditor?" hidden ":"")}>
-                  <ReactFlow
-                    snapToGrid={true}
-                    snapGrid={[50,50]}
-                    nodes={nodes}
-                    onMove={() => {
-                      if (reactFlowInstance)
-                        updateFlow({
-                          ...flow,
-                          data: reactFlowInstance.toObject(),
-                        });
-                    }}
-                    edges={edges}
-                    onNodesChange={onNodesChangeMod}
-                    onEdgesChange={onEdgesChangeMod} 
-                    onConnect={onConnect} //链接线 连接成功后执行
-                    disableKeyboardA11y={true}
-                    onLoad={setReactFlowInstance}
-                    onInit={setReactFlowInstance}
-                    nodeTypes={nodeTypes}
-                    edgeTypes={edgeTypes}
-                    onEdgeUpdate={onEdgeUpdate}
-                    onEdgeUpdateStart={onEdgeUpdateStart}
-                    onEdgeUpdateEnd={onEdgeUpdateEnd}
-                    onNodeDragStart={onNodeDragStart}
-                    onSelectionDragStart={onSelectionDragStart}
-                    onSelectionEnd={onSelectionEnd}
-                    onSelectionStart={onSelectionStart}
-                    onEdgesDelete={onEdgesDelete}
-                    connectionLineComponent={ConnectionLineComponent} //定义链接线(连接成功前)的样式
-                    onDragOver={onDragOver}
-                    onDrop={onDrop}
-                    onNodesDelete={onDelete}
-                    onSelectionChange={onSelectionChange}
-                    className="theme-attribution"
-                    minZoom={0.01}
-                    maxZoom={8}
-                  >
-                    {openMiniMap&&(
-                      <MiniMap pannable={true} 
-                      position="bottom-right" 
-                      zoomable={true} 
-                      ariaLabel="Zoom In/Out & Move" 
-                      className="dark:bg-muted"
-                      />
-                    )}
-                    <Controls
-                      className="bg-muted fill-foreground stroke-foreground text-primary
-                    [&>button]:border-b-border hover:[&>button]:bg-border"
-                    showZoom={false}
-                    position="bottom-right"
+                {Object.keys(templates).length > 0 &&
+                Object.keys(types).length > 0 ? (
+                  <>
+                  {openWebEditor&&flow&&(
+                    <WebEditorModal
+                      setOpen={setOpenWebEditor}
+                      open={openWebEditor}
+                      flow_id={flow.id}
+                      node_id={editNodeId}
+                    ></WebEditorModal>
+                )}
+                  
+                  <div className={"h-full w-full"+(openWebEditor?" hidden ":"")}>
+                    <ReactFlow
+                      // id={flow.id}
+                      snapToGrid={true}
+                      snapGrid={[50,50]}
+                      nodes={nodes}
+                      onMove={() => {
+                        if (reactFlowInstances.get(tabId)&&tabId==flow.id){
+                          // console.log("instances:",flow);
+                          // console.log("call updateFlow:",reactFlowInstances.get(tabId).toObject());
+                          // console.log("call updateFlow onMove:",reactFlowInstances.get(tabId).getViewport());
+                          let viewport=reactFlowInstances.get(tabId).getViewport();
+                          if(viewport&&viewport.x==0&&viewport.y==0&&viewport.zoom==1){
+                            updateFlow({
+                              ...flow,
+                              data:{
+                                nodes:reactFlowInstances.get(tabId).toObject().nodes,
+                                edges:reactFlowInstances.get(tabId).toObject().edges,
+                                viewport:flow.data.viewport
+                              } ,
+                            });
+                          }else{
+                            updateFlow({
+                              ...flow,
+                              data: reactFlowInstances.get(tabId).toObject(),
+                            });
+                          }
+                          
+
+                        }
+                      }}
+                      edges={edges}
+                      onNodesChange={onNodesChangeMod}
+                      onEdgesChange={onEdgesChangeMod} 
+                      onConnect={onConnect} //链接线 连接成功后执行
+                      disableKeyboardA11y={true}
+                      // onLoad={initFlowInstance}
+                      onInit={initFlowInstance}
+                      nodeTypes={nodeTypes}
+                      edgeTypes={edgeTypes}
+                      onEdgeUpdate={onEdgeUpdate}
+                      onEdgeUpdateStart={onEdgeUpdateStart}
+                      onEdgeUpdateEnd={onEdgeUpdateEnd}
+                      onNodeDragStart={onNodeDragStart}
+                      onSelectionDragStart={onSelectionDragStart}
+                      onSelectionEnd={onSelectionEnd}
+                      onSelectionStart={onSelectionStart}
+                      onEdgesDelete={onEdgesDelete}
+                      connectionLineComponent={ConnectionLineComponent} //定义链接线(连接成功前)的样式
+                      onDragOver={onDragOver}
+                      onDrop={onDrop}
+                      onNodesDelete={onDelete}
+                      onSelectionChange={onSelectionChange}
+                      className="theme-attribution"
+                      minZoom={0.01}
+                      maxZoom={8}
+                      
                     >
-                      </Controls>
-                    <ExtendButton/>
-                    <Background 
-                    //  color="#ccc" 
-                    variant={dark?BackgroundVariant.Dots:BackgroundVariant.Lines}
-                    />
-                  </ReactFlow>
-                  <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
-                </div>
-                
+                      {openMiniMap&&(
+                        <MiniMap pannable={true} 
+                        position="bottom-right" 
+                        zoomable={true} 
+                        ariaLabel="Zoom In/Out & Move" 
+                        className="dark:bg-muted"
+                        />
+                      )}
+                      <Controls
+                        className="bg-muted fill-foreground stroke-foreground text-primary
+                      [&>button]:border-b-border hover:[&>button]:bg-border"
+                      showZoom={false}
+                      position="bottom-right"
+                      >
+                        </Controls>
+                      <ExtendButton/>
+                      <Background 
+                      //  color="#ccc" 
+                      variant={dark?BackgroundVariant.Dots:BackgroundVariant.Lines}
+                      // gap={50}
+                      id={flow.id}
+                      />
+                    </ReactFlow>
+                    <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
+                  </div>
+                  
+                  </>
+                ) : (
+                  <></>
+                )}
                 </>
-              ) : (
-                <></>
-              )}
-              </>
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
       </main>
+      
       {flow&&(
             <Transition
             show={openModelList}

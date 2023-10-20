@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState,Fragment } from "react";
+import { useContext, useEffect, useState,Fragment, SyntheticEvent } from "react";
 // import { FaDiscord, FaGithub, FaTwitter } from "react-icons/fa";
 import { Link, useLocation, useNavigate} from "react-router-dom";
 import AlertDropdown from "../../alerts/alertDropDown";
@@ -19,7 +19,10 @@ import MenuBar from "./components/menuBar";
 //   DropdownMenuTrigger,
 // } from "../ui/dropdown-menu";
 import ShadTooltip from "../ShadTooltipComponent";
-import { Input } from "../ui/input";
+
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 
 import { useStoreApi, useReactFlow } from 'reactflow';
 import { filterHTML } from "../../utils/utils";
@@ -35,11 +38,25 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import { cloneDeep } from "lodash";
 import { postNotesAssistant } from "../../controllers/API";
+import { typesContext } from "../../contexts/typesContext";
+
+function a11yProps(index: string) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+
 
 export default function Header() {
-  const { flows, tabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,openFolderList,folders,setLoginUserId,setOpenMiniMap,openMiniMap,openAssistant,setOpenAssistant } = useContext(TabsContext);
+  const { flows,notes, tabId,setTabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,
+    openFolderList,folders,setLoginUserId,setOpenMiniMap,openMiniMap,openAssistant,
+    setOpenAssistant,tabValues,setTabValues } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter,setNoticeData } = useContext(alertContext);
+  const {  reactFlowInstances, setReactFlowInstances } =
+    useContext(typesContext);
   const location = useLocation();
 
   let current_flow = flows.find((flow) => flow.id === tabId);
@@ -136,25 +153,35 @@ export default function Header() {
   //   });
 
   // }
-  const muiTheme = ()=>{
-    if(dark){
-      return createTheme({
+  const muiTheme = createTheme({
         palette: {
-          mode: 'dark',
+          mode: dark?'dark':'light',
         },
       });
-    }
-    return createTheme({
-      palette: {
-         mode: 'light',
-      },
-    });
+   
 
+const handleChange = (event: SyntheticEvent, newValue: string) => {
+  // if(reactFlowInstances.get(tabId)){
+  //   let cloneRFI=cloneDeep(reactFlowInstances);
+  //   let prevViewport=cloneRFI.get(tabId).getViewport();
+  //    console.log("prevView:",tabId,prevViewport)
+  //    tabValues.set(tabId,{flowId:tabId,type:"flow",viewport:prevViewport});
+  //    console.log("valuesView:",tabId,tabValues.get(tabId).viewport);
+  // }
+
+  // console.log("veiwPort:",reactFlowInstances.get(tabId).getViewport());
+  // if(reactFlowInstances.get(newValue)&&tabValues.get(newValue).viewport){
+  //   console.log("setviewport----");
+  //   reactFlowInstances.get(newValue).setViewport(tabValues.get(newValue).viewport);
+  // }
+  setTabId(newValue);
+
+  // setReactFlowInstance(null);
 };
   return (
     <div className="header-arrangement">
       
-        {tabId === "" || !tabId ? (
+        {/* {tabId === "" || !tabId ? (
           <>
           <div className="header-start-display">
           <Link to="/" className="ml-2">
@@ -164,28 +191,29 @@ export default function Header() {
           <div className="flex justify-start">
           </div>
           </>
-        ) : (
+        ) : ( */}
           <>
           <div className="header-start-display">
             <Link to="/" className="ml-2">
               <img src="/logo.svg" width="40px" alt="Neuri"/>
             </Link>
-            {/* <ShadTooltip content="Folder" side="bottom">
-          <button 
-          className="extra-side-bar-save-disable"
-          onClick={()=>{setOpenFolderList(!openFolderList);}}
-          >
-            <IconComponent name={openFolderList?"X":"Sidebar"} className="side-bar-button-size " />
-          </button>
-          </ShadTooltip> */}
-      </div>
-      <div className="flex justify-start">
-          <div className="header-menu-bar">
-          <Link to="/" className="gap-2">          
+          </div>
+          <div className="flex justify-start">
+           <div className="header-menu-bar">
+            <ShadTooltip content="Folder" side="bottom">
+              <button 
+              className="extra-side-bar-save-disable"
+              onClick={()=>{setOpenFolderList(!openFolderList);}}
+              >
+                <IconComponent name={"Sidebar"} className={"side-bar-button-size "+(openFolderList?"remind-blue":"" )} />
+              </button>
+            </ShadTooltip>
+
+          {/* <Link to="/" className="gap-2">          
           <div className="flex-1">Home</div>
           </Link>
-          <IconComponent name="ChevronRight" className="w-4" />
-            {current_flow&&current_folder&&(
+          <IconComponent name="ChevronRight" className="w-4" /> */}
+            {/* {current_flow&&current_folder&&(
               <>
                 <div>{current_folder.name}</div>
                 <IconComponent name="ChevronRight" className="w-4" />
@@ -193,15 +221,89 @@ export default function Header() {
             )}
             {(current_flow&&current_flow.name) &&(
                <div>{current_flow.name}</div>
-            )}
+            )} */}
           </div>
 
       </div>
 
-        </>         
-        )}
-     
+    </>         
+    {/* )} */}
+  
       <div className="round-button-div">
+      <Box sx={{ height:"2.8rem" }}>
+
+        <Tabs value={tabId} onChange={handleChange} aria-label="neuri tabs"
+         sx={{height:"45px",minHeight:"45px",maxWidth:"600px",minWidth:"200px"}} 
+         variant="scrollable">
+            <Tab 
+              className="p-3 mt-1"
+              style={{borderTop: 2,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
+              label={
+              (<div className="flex">
+                Welcome
+              </div>)
+              }  
+              value={""} 
+              sx={{color:"unset"}}
+            />
+         {Array.from(tabValues.values()).map((value,inx)=>{
+          let label="";
+          if(value.id!=""){
+            if(value.type=="flow"){
+              let flow = flows.find((flow) => flow.id === value.id);
+              if(flow){
+                label=flow.name; 
+              }
+            }else{
+              let note = notes.find((note) => note.id === value.id);
+              if(note){
+                label=note.name; 
+              }else{
+                label="New Note";
+              }
+            }
+            
+          }
+          return(
+            <Tab 
+              className="p-3 mt-1"
+              style={{borderTop: 2,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
+              label={
+              (<div className="flex">
+                <IconComponent name={value.type=="flow"?"FileText":"Square"} className={"w-4 h-4 mr-2"} />{label}
+              <button onClick={(event)=>{
+                // let newValues=cloneDeep(tabValues);
+                // newValues=newValues.filter((value) => value !== key);
+                // setTabValues(newValues);
+                // event.stopPropagation();
+                
+                setTabId("");
+                // reactFlowInstances.delete(value.flowId);
+                // setTimeout(()=>{
+                  tabValues.delete(value.id);
+                  reactFlowInstances.delete(value.id);
+                // },1000);
+                // setReactFlowInstance(null);
+              }}>
+                <IconComponent name={"X"} className="w-4 h-4 ml-2" />
+              </button>
+              </div>)
+            }  
+            value={value.id} sx={{color:"unset"}
+            
+          }
+            // icon={
+            //   (
+            //     <IconComponent name={"File"} className="mx-2" />
+            //   )
+            // } iconPosition="start" className="mb-4" 
+            />
+          )                        
+         })}
+
+        </Tabs>
+      </Box>
+
           {/* {(current_flow&&current_flow.name) ?(
             <>
           <div className="side-bar-search-div-placement">

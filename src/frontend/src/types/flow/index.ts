@@ -16,6 +16,14 @@ export type FolderType = {
   user_id?:string;
   description?: string;
 };
+export type NoteType = {
+  name: string;
+  id: string;
+  user_id?:string;
+  folder_id?:string;
+  content?: {id:string, value:string};
+};
+
 export type NodeType = {
   id: string;
   type?: string;
