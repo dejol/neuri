@@ -196,7 +196,8 @@ export default function Header() {
           title=curNote.name;
         }else if(tabObj.type=="flow"){
           let flow=flows.find((flow)=>flow.id==tabId);
-          title=flow.name;
+          if(flow)
+            title=flow.name;
         }
         
       }
