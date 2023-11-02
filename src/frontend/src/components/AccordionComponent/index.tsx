@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -12,10 +12,15 @@ export default function AccordionComponent({
   children,
   open = [],
   keyValue,
+  side,
 }: AccordionComponentType) {
   const [value, setValue] = useState(
     open.length === 0 ? "" : getOpenAccordion()
   );
+
+  useEffect(()=>{
+    setValue(open.length === 0 ? "" : getOpenAccordion());
+  },[open])
 
   function getOpenAccordion() {
     let value = "";
@@ -47,7 +52,7 @@ export default function AccordionComponent({
             onClick={() => {
               handleClick();
             }}
-            className="ml-3 py-2"
+            className={"ml-3 py-2 "+(side=="left"?"flex-row-reverse":"")}
             
           >
             {trigger}

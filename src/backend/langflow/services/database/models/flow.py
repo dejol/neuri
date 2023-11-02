@@ -1,5 +1,6 @@
 # Path: src/backend/langflow/database/models/flow.py
 
+from datetime import datetime
 from langflow.services.database.models.base import SQLModelSerializable
 from pydantic import validator
 from sqlmodel import Field, JSON, Column
@@ -36,7 +37,8 @@ class FlowBase(SQLModelSerializable):
 class Flow(FlowBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True, unique=True)
     data: Optional[Dict] = Field(default=None, sa_column=Column(JSON))
-
+    create_at: datetime = Field(default_factory=datetime.now)
+    update_at: datetime = Field(default_factory=datetime.now)
 
 class FlowCreate(FlowBase):
     pass
@@ -44,6 +46,8 @@ class FlowCreate(FlowBase):
 
 class FlowRead(FlowBase):
     id: UUID
+    create_at: datetime
+    update_at: datetime
 
 
 class FlowUpdate(SQLModelSerializable):

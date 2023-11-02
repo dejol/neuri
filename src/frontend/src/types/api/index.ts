@@ -58,6 +58,7 @@ export type BuildStatusTypeAPI = {
 
 export type InitTypeAPI = {
   flowId: string;
+  nodeId: string;
 };
 
 export type AssistantTypeAPI = {

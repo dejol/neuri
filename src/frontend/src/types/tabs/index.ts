@@ -7,6 +7,9 @@ export type TabsContextType = {
   save: () => void;
   tabId: string;
   setTabId: (index: string) => void;
+  pageTitle:string;
+  setPageTitle: (title: string) => void;
+
   // tabValues: Array<string>;//临时使用，来测试一下tabs功能
   // setTabValues: (index: Array<string>) => void;//临时使用，来测试一下tabs功能
   tabValues: Map<string,{id:string,type:string,viewport?:Viewport}>;
@@ -17,6 +20,7 @@ export type TabsContextType = {
   flows: Array<FlowType>;
   folders:Array<FolderType>;
   notes:Array<NoteType>;
+  setNotes:(notes:Array<NoteType>)=>void;
   saveNote: (note: NoteType) => Promise<void>;
   addNote: (noteData?: NoteType) => Promise<String>;
   removeNote:(id: string) => void;
@@ -34,6 +38,8 @@ export type TabsContextType = {
   ) => void;
   downloadFlows: () => void;
   uploadFlows: () => void;
+  backup: () => void;
+  restore: () => void;
   isBuilt: boolean;
   setIsBuilt: (state: boolean) => void;
   isLogin: boolean;
@@ -61,8 +67,8 @@ export type TabsContextType = {
   setLastCopiedSelection: (selection: { nodes: any; edges: any }) => void;
   setTweak: (tweak: TweaksType) => void;
   getTweak: TweaksType[];
-  setSearchResult: (node: Array<any>) => void;
-  getSearchResult: any[];
+  setSearchResult: (results:{folderId:string;keyword:string;notes:Array<NoteType>;flows:Array<FlowType>}) => void;
+  getSearchResult: {folderId:string; keyword:string; notes:Array<NoteType>; flows:Array<FlowType>};
   login:(user:UserType) => Promise<String>;
   editFlowId:string;
   setEditFlowId: (editFlowId: string) => void;//for webEditorModal

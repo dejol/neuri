@@ -6,17 +6,23 @@ import '../../style/custom.css'
 import { Boot } from '@wangeditor/editor'
 import markdownModule from '@wangeditor/plugin-md'
 import {NodeDataType} from "../../types/flow/index"
-import { NodeToolbar } from "reactflow";
+import { NodeToolbar, Position } from "reactflow";
 import { TabsContext } from "../../contexts/tabsContext";
+import { darkContext } from "../../contexts/darkContext";
+import { cloneDeep } from "lodash";
+import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
+
 export default function FullTextAreaComponent({
   value,
   onChange,
   data,
+  // setBorder,
   nodeSelected,
 }: {
   onChange: (value: string[] | string) => void;
   value: string;
   data?:NodeDataType;
+  // setBorder: (value: string) => void;
   nodeSelected:boolean;
 }) {
   const { tabId } =useContext(TabsContext);
@@ -131,18 +137,32 @@ export default function FullTextAreaComponent({
   const handleMouseDown = (event) => {
     event.stopPropagation();
   };
+  const {dark} =useContext(darkContext);
+  // const [borderColour,setBorderColour] =useState(data.borderColor??"inherit");
+  // useEffect(() => {
+  //     setBorder(borderColour); //for update flow data and prepare for save setting into DB
+  // },[borderColour,dark]); 
+
   return (
     <>
-      <NodeToolbar offset={2} >
+      <NodeToolbar offset={2} className="bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border" >
       <Toolbar
           editor={editor}
           defaultConfig={toolbarConfig}
           mode={"simple"}
-          style={{ border: '1px solid #ccc' }}
+          // style={{ border: '1px solid #ccc' }}
+          className="m-1"
       />
       </NodeToolbar>
-      <div className="w-full items-center input-full-node input-note dark:input-note-dark"
-            style={{cursor: 'text'}}
+      {/* <NodeToolbar offset={30} position={Position.Bottom}>
+        <BorderColorComponent
+              data={data}
+              setBorder={setBorderColour}
+              dark={dark}
+            />   
+      </NodeToolbar>            */}
+      <div className="w-full items-center h-full"
+            // style={{cursor: 'text',borderColor:data.borderColor}}
             onMouseDownCapture={handleMouseDown}
       >
         <Editor
@@ -154,11 +174,12 @@ export default function FullTextAreaComponent({
                 // console.log(editor.getHtml());
               // }}
               mode="simple"
-              style={{ height: '95%',
+              style={{ height: '100%',
               minWidth:'200px',
               minHeight:'200px',
               width:'100%',
               fontSize:'20px',
+              backgroundColor:switchToBG(data.borderColor,dark),
               //  overflowY: 'scroll' 
             }} 
           />

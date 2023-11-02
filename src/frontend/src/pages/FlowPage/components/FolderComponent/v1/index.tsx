@@ -84,7 +84,7 @@ export default function FolderPopover() {
       onKeyDown={toggleDrawer(false)}
     >
     {folders.map((folder, idx) => (
-      <div className="file-component-accordion-div mr-5" key={idx}>
+      <div className="file-component-accordion-div mr-5" key={"F"+idx}>
       <AccordionComponent
         trigger={
           <div className="file-component-badge-div justify-start">
@@ -111,7 +111,7 @@ export default function FolderPopover() {
             {folder.name}
           </div>
         }
-        key={idx}
+        key={"F1"+idx}
         keyValue={folder.id}
         open={[(flow&&flow.folder_id)?flow.folder_id:""]}
       >

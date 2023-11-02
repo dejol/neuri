@@ -25,9 +25,10 @@ export default function EmbeddedModal({
 }) {
   // console.log("--------:::",sourceData);
   const { tabsState, setTabsState,tabId } = useContext(TabsContext);
+  const [responseId,setResponseId] = useState(flow.id+"-"+sourceData.id);
   const [chatValue, setChatValue] = useState(() => {
     try {
-      const { formKeysData } = tabsState[flow.id];
+      const { formKeysData } = tabsState[responseId];
       if (!formKeysData) {
         throw new Error("formKeysData is undefined");
       }
@@ -53,15 +54,15 @@ export default function EmbeddedModal({
   const [lockChat, setLockChat] = useState(false);
   const isOpen = useRef(open);
   const messagesRef = useRef(null);
-  const id = useRef(flow.id);
-  const tabsStateFlowId = tabsState[flow.id];
+  const id = useRef(responseId);
+  const tabsStateFlowId = tabsState[responseId];
   const tabsStateFlowIdFormKeysData = tabsStateFlowId.formKeysData;
   const [chatKey, setChatKey] = useState(() => {
-    if (tabsState[flow.id]?.formKeysData?.input_keys) {
-      return Object.keys(tabsState[flow.id].formKeysData.input_keys).find(
+    if (tabsState[responseId]?.formKeysData?.input_keys) {
+      return Object.keys(tabsState[responseId].formKeysData.input_keys).find(
         (key) =>
-          !tabsState[flow.id].formKeysData.handle_keys.some((j) => j === key) &&
-          tabsState[flow.id].formKeysData.input_keys[key] === ""
+          !tabsState[responseId].formKeysData.handle_keys.some((j) => j === key) &&
+          tabsState[responseId].formKeysData.input_keys[key] === ""
       );
     }
     // TODO: return a sensible default
@@ -77,7 +78,7 @@ export default function EmbeddedModal({
     isOpen.current = open;
   }, [open]);
   useEffect(() => {
-    id.current = flow.id;
+    id.current = responseId;
   }, [flow.id, tabsStateFlowId, tabsStateFlowIdFormKeysData]);
 
   var isStream = false;
@@ -212,7 +213,6 @@ export default function EmbeddedModal({
       let newData = cloneDeep(sourceData);
       newData.node!.template[name].value = data.message;
       setSourceData(newData);
-      // console.log("after data:", data.message);  
       }
       if (data.intermediate_steps) {
         updateLastMessage({
@@ -243,25 +243,16 @@ export default function EmbeddedModal({
         process.env.NODE_ENV === "development"
       );
       const newWs = new WebSocket(urlWs);
-      // console.log("lkjkjkjkjkjkjkjkjk-----lock:"+lockChat);
       newWs.onopen = () => {
         console.log("WebSocket connection established!");
         if(!lockChat){
           sendMessage();  
         }
-        // console.log("lkjkjkjkjkjkjkjkjk-----lock2:"+lockChat);
-        // console.log("lkjkjkjkjkjkjkjkjk-----:"+isOpen.current);
-        // console.log("lkjkjkjkjkjkjkjkjk-----1:"+open);
       };
       newWs.onmessage = (event) => {
         const data = JSON.parse(event.data);
         //console.log("Received data:", data);
-        
-
-
         handleWsMessage(data);
-
-     
         //get chat history
       };
       newWs.onclose = (event) => {
@@ -348,6 +339,7 @@ export default function EmbeddedModal({
     let nodeValidationErrors = validateNodes(reactFlowInstances.get(tabId));
     if (nodeValidationErrors.length === 0) {
       setLockChat(true);
+
       let inputs = tabsState[id.current].formKeysData.input_keys;
       setChatValue("");
       const message = inputs;
@@ -355,7 +347,7 @@ export default function EmbeddedModal({
         message,
         true,
         chatKey,
-        tabsState[flow.id].formKeysData.template
+        tabsState[responseId].formKeysData.template
       );
       sendAll({
         ...reactFlowInstances.get(tabId).toObject(),
@@ -386,14 +378,14 @@ export default function EmbeddedModal({
   function handleOnCheckedChange(checked: boolean, i: string) {
     if (checked === true) {
       setChatKey(i);
-      setChatValue(tabsState[flow.id].formKeysData.input_keys[i]);
+      setChatValue(tabsState[responseId].formKeysData.input_keys[i]);
     } else {
       setChatKey(null);
       setChatValue("");
     }
   }
   return (
-       tabsState[flow.id].formKeysData && (
+       tabsState[responseId].formKeysData && (
           <div className="left-form-modal-iv-box ">
             <div className="eraser-column-arrangement">
               <div className="eraser-size-embedded">

@@ -194,7 +194,7 @@ export default function ParameterComponent({
   useEffect(() => {
     renderTooltips();
   }, [tooltipTitle, flow]);
-
+  
   return (
     <div
       ref={ref}
@@ -310,9 +310,9 @@ export default function ParameterComponent({
               ) : data.node?.template[name].chat_view ? (
                   <div className="input-full-node-wrap input-note dark:input-note-dark">
                     {
-                    (isBuilt && tabsState[currentFlow.id] &&
-                    tabsState[currentFlow.id].formKeysData &&
-                    tabsState[currentFlow.id].formKeysData.input_keys!==null)? (
+                    (isBuilt && tabsState[currentFlow.id+"-"+data.id] &&
+                    tabsState[currentFlow.id+"-"+data.id].formKeysData &&
+                    tabsState[currentFlow.id+"-"+data.id].formKeysData.input_keys!==null)? (
                     <EmbeddedModal
                     sourceData={data}
                     setSourceData={setData}

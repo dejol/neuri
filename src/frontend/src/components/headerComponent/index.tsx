@@ -39,31 +39,26 @@ import Tooltip from '@mui/material/Tooltip';
 import { cloneDeep } from "lodash";
 import { postNotesAssistant } from "../../controllers/API";
 import { typesContext } from "../../contexts/typesContext";
-
-function a11yProps(index: string) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
-
+import DocumentTitle from 'react-document-title';
+import ToggleShadComponent from "../toggleShadComponent";
+import {StyledMenu} from './components/menuBar'
 
 export default function Header() {
-  const { flows,notes, tabId,setTabId,isLogin,setIsLogin,setSearchResult,setOpenFolderList,
-    openFolderList,folders,setLoginUserId,setOpenMiniMap,openMiniMap,openAssistant,
-    setOpenAssistant,tabValues,setTabValues } = useContext(TabsContext);
+  const { flows,notes, tabId,setTabId,isLogin,setIsLogin,setOpenFolderList,
+    openFolderList,setLoginUserId,setOpenMiniMap,openMiniMap,openAssistant,
+    setOpenAssistant,tabValues,setTabValues,setNotes,setPageTitle,pageTitle,
+    backup,restore,getNodeId,addFlow,getSearchResult } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
-  const { notificationCenter,setNoticeData } = useContext(alertContext);
-  const {  reactFlowInstances, setReactFlowInstances } =
-    useContext(typesContext);
-  const location = useLocation();
+  const { notificationCenter,setNoticeData,setSuccessData } = useContext(alertContext);
+  const {  reactFlowInstances, setReactFlowInstances } = useContext(typesContext);
+  const curPath=useLocation().pathname;
+  // const location = useLocation();
 
-  let current_flow = flows.find((flow) => flow.id === tabId);
-  var current_folder;
-  if(current_flow){
-      current_folder = folders.find((folder) => folder.id === current_flow.folder_id);
-  }
+  // let current_flow = flows.find((flow) => flow.id === tabId);
+  // var current_folder;
+  // if(current_flow){
+  //     current_folder = folders.find((folder) => folder.id === current_flow.folder_id);
+  // }
   
 
   // const [stars, setStars] = useState(null);
@@ -86,66 +81,66 @@ export default function Header() {
     navigate("/flow/");
   }
 
-  const store = useStoreApi();
-  const [searchKeyword,setSearchKeyword] =useState('');
-  const { setCenter } = useReactFlow();
+  // const store = useStoreApi();
+  // const [searchKeyword,setSearchKeyword] =useState('');
+  // const { setCenter } = useReactFlow();
 
-  const searchNode = () => {
-    // const { nodeInternals } = store.getState();
-    // const nodes = Array.from(nodeInternals).map(([, node]) => node);
-    let results=[];
-    if (flows.length > 0) {
-      flows.forEach((flow) => {
-        let nodes=flow.data.nodes;
-        let tempNodes=[];
-        if (nodes.length > 0) {
-          nodes.forEach((node) => {
-            let content="";
-            if(node.type=="noteNode"){
-              content=node.data.value;
-            }else{
-              if(node.data.type=="Note"||node.data.type=="AINote"){
-                content=node.data.node.template.note.value;
-              }
-            }
-            if(content){
-              content=filterHTML(content)
-              if(content&&content.indexOf(searchKeyword)>=0){
-                const x = node.position.x + node.width / 2;
-                const y = node.position.y + node.height / 2;
-                // const zoom = 1.1;
-                let begin=content.indexOf(searchKeyword);
-                begin=(begin-10)>0?begin-10:0;
-                content=content.substring(begin,begin+20+searchKeyword.length);
-                content=(begin==0?"":"...")+content+"...";
-                // tempNodes.push({"id":node.id,"x":x,"y":y,"content":content})
-                tempNodes.push(node);
-              }
-            }
-          });
+  // const searchNode = () => {
+  //   // const { nodeInternals } = store.getState();
+  //   // const nodes = Array.from(nodeInternals).map(([, node]) => node);
+  //   let results=[];
+  //   if (flows.length > 0) {
+  //     flows.forEach((flow) => {
+  //       let nodes=flow.data.nodes;
+  //       let tempNodes=[];
+  //       if (nodes.length > 0) {
+  //         nodes.forEach((node) => {
+  //           let content="";
+  //           if(node.type=="noteNode"){
+  //             content=node.data.value;
+  //           }else{
+  //             if(node.data.type=="Note"||node.data.type=="AINote"){
+  //               content=node.data.node.template.note.value;
+  //             }
+  //           }
+  //           if(content){
+  //             content=filterHTML(content)
+  //             if(content&&content.indexOf(searchKeyword)>=0){
+  //               const x = node.position.x + node.width / 2;
+  //               const y = node.position.y + node.height / 2;
+  //               // const zoom = 1.1;
+  //               let begin=content.indexOf(searchKeyword);
+  //               begin=(begin-10)>0?begin-10:0;
+  //               content=content.substring(begin,begin+20+searchKeyword.length);
+  //               content=(begin==0?"":"...")+content+"...";
+  //               // tempNodes.push({"id":node.id,"x":x,"y":y,"content":content})
+  //               tempNodes.push(node);
+  //             }
+  //           }
+  //         });
     
-        }
-        let tempFlow=cloneDeep(flow);
-        tempFlow.data.nodes=tempNodes;
-        results.push(tempFlow);
-      });
-    }
+  //       }
+  //       let tempFlow=cloneDeep(flow);
+  //       tempFlow.data.nodes=tempNodes;
+  //       results.push(tempFlow);
+  //     });
+  //   }
 
-    if(results.length==1){
-      setCenter(results[0].x, results[0].y, { zoom:0.8, duration: 1000 });
-    }else{
-      setSearchResult(results);
-    }
-  };
+  //   if(results.length==1){
+  //     setCenter(results[0].x, results[0].y, { zoom:0.8, duration: 1000 });
+  //   }else{
+  //     setSearchResult(results);
+  //   }
+  // };
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
   // function callAssistant(){
   //  postNotesAssistant(current_flow).then((resp)=>{
   //     // console.log("resp:",resp);
@@ -153,6 +148,19 @@ export default function Header() {
   //   });
 
   // }
+  const [anchorNew, setAnchorNew] = useState<null | HTMLElement>(null);
+  const [openNew,setOpenNew] = useState(Boolean(anchorNew));
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorNew(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorNew(null);
+    setOpenNew(false);
+  };
+  useEffect(()=>{
+    setOpenNew(Boolean(anchorNew));
+  },[anchorNew]); 
+
   const muiTheme = createTheme({
         palette: {
           mode: dark?'dark':'light',
@@ -160,27 +168,55 @@ export default function Header() {
       });
    
 
-const handleChange = (event: SyntheticEvent, newValue: string) => {
-  // if(reactFlowInstances.get(tabId)){
-  //   let cloneRFI=cloneDeep(reactFlowInstances);
-  //   let prevViewport=cloneRFI.get(tabId).getViewport();
-  //    console.log("prevView:",tabId,prevViewport)
-  //    tabValues.set(tabId,{flowId:tabId,type:"flow",viewport:prevViewport});
-  //    console.log("valuesView:",tabId,tabValues.get(tabId).viewport);
-  // }
+  const handleChange = (event: SyntheticEvent, newValue: string) => {
+    // if(reactFlowInstances.get(tabId)){
+    //   let cloneRFI=cloneDeep(reactFlowInstances);
+    //   let prevViewport=cloneRFI.get(tabId).getViewport();
+    //    console.log("prevView:",tabId,prevViewport)
+    //    tabValues.set(tabId,{flowId:tabId,type:"flow",viewport:prevViewport});
+    //    console.log("valuesView:",tabId,tabValues.get(tabId).viewport);
+    // }
 
-  // console.log("veiwPort:",reactFlowInstances.get(tabId).getViewport());
-  // if(reactFlowInstances.get(newValue)&&tabValues.get(newValue).viewport){
-  //   console.log("setviewport----");
-  //   reactFlowInstances.get(newValue).setViewport(tabValues.get(newValue).viewport);
-  // }
-  setTabId(newValue);
+    // console.log("veiwPort:",reactFlowInstances.get(tabId).getViewport());
+    // if(reactFlowInstances.get(newValue)&&tabValues.get(newValue).viewport){
+    //   console.log("setviewport----");
+    //   reactFlowInstances.get(newValue).setViewport(tabValues.get(newValue).viewport);
+    // }
+    setTabId(newValue);
+    // setReactFlowInstance(null);
+  };
 
-  // setReactFlowInstance(null);
-};
+  useEffect(()=>{
+    let title="Welcome"; //default page title
+    if(tabId&&tabId.length>0){
+      let tabObj=tabValues.get(tabId);
+      if(tabObj){
+        if(tabObj.type=="note"){
+          let curNote=notes.find((note)=>note.id==tabId);
+          title=curNote.name;
+        }else if(tabObj.type=="flow"){
+          let flow=flows.find((flow)=>flow.id==tabId);
+          title=flow.name;
+        }
+        
+      }
+    }
+    setPageTitle(title);
+  },[tabId]);
+
+  function prevTabId(targetKey:string){
+    const keysArray = Array.from(tabValues.keys());
+    const targetKeyIndex = keysArray.indexOf(targetKey);
+    if (targetKeyIndex > 0) {
+      const previousKey = keysArray[targetKeyIndex - 1];
+      return previousKey;
+    } else {
+      return "";
+    }
+  }
   return (
     <div className="header-arrangement">
-      
+      <DocumentTitle title={pageTitle+" - Neuri"}/>
         {/* {tabId === "" || !tabId ? (
           <>
           <div className="header-start-display">
@@ -199,106 +235,162 @@ const handleChange = (event: SyntheticEvent, newValue: string) => {
             </Link>
           </div>
           <div className="flex justify-start">
-           <div className="header-menu-bar">
-            <ShadTooltip content="Folder" side="bottom">
-              <button 
-              className="extra-side-bar-save-disable"
-              onClick={()=>{setOpenFolderList(!openFolderList);}}
-              >
-                <IconComponent name={"Sidebar"} className={"side-bar-button-size "+(openFolderList?"remind-blue":"" )} />
-              </button>
-            </ShadTooltip>
+            {curPath.startsWith("/flow")&&(
+            <div className="header-menu-bar w-full space-x-8">
+              <ShadTooltip content="Folder" side="bottom">
+                <button 
+                className="extra-side-bar-save-disable"
+                onClick={()=>{setOpenFolderList(!openFolderList);}}
+                >
+                  <IconComponent name={"Sidebar"} className={"side-bar-button-size "+(openFolderList?"remind-blue":"" )} />
+                </button>
+              </ShadTooltip>
+              <ShadTooltip content="New" side="bottom">
+                  <button
+                    className={"extra-side-bar-save-disable"}
+                    onClick={handleClick}
+                  >
+                    <IconComponent
+                      name="Edit"
+                      className={
+                        "side-bar-button-size"
+                      }
+                    />
+                  </button>
+                </ShadTooltip>
+                  <ThemeProvider theme={muiTheme}>
+                    <StyledMenu
+                        id="new-menu"
+                        MenuListProps={{
+                          'aria-labelledby': 'demo-customized-button',
+                        }}
+                        anchorEl={anchorNew}
+                        open={openNew}
+                        onClose={handleClose}
+                        
+                    >
+                    <MenuItem onClick={() => {
+                          handleClose();
+                          let noteId=getNodeId("NewNote");
+                          setTabId(noteId);
+                          tabValues.set(noteId,{id:noteId,type:"note"})
+                          notes.push({id:noteId,name:"",folder_id:"",content:{id:noteId,value:""}})
+                        }}
+                    disableRipple>
+                    <IconComponent name="PlusSquare" className={ "side-bar-button-size mr-2" } />
+                     Note
+                    </MenuItem>                      
+                    <MenuItem onClick={() => {
+                          handleClose();
+                          let folderId=getSearchResult?getSearchResult.folderId:"";
+                          addFlow({name:"未命名",description:"",id:"",data:null,folder_id:folderId},true,folderId)
+                          .then((id) => {
+                            tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
+                            setTabId(id.toString());
+                            setSuccessData({ title: "New notebook successfully" });    
+                          });                        }}
+                    disableRipple>
+                    <IconComponent name="FilePlus" className={ "side-bar-button-size mr-2" } />
+                     Notebook
+                    </MenuItem>                        
 
-          {/* <Link to="/" className="gap-2">          
-          <div className="flex-1">Home</div>
-          </Link>
-          <IconComponent name="ChevronRight" className="w-4" /> */}
-            {/* {current_flow&&current_folder&&(
-              <>
-                <div>{current_folder.name}</div>
-                <IconComponent name="ChevronRight" className="w-4" />
-              </>
+                    </StyledMenu>
+                  </ThemeProvider>                  
+              {/* <Link to="/" className="gap-2">          
+              <div className="flex-1">Home</div>
+              </Link>
+              <IconComponent name="ChevronRight" className="w-4" /> */}
+                {/* {current_flow&&current_folder&&(
+                  <>
+                    <div>{current_folder.name}</div>
+                    <IconComponent name="ChevronRight" className="w-4" />
+                  </>
+                )}
+                {(current_flow&&current_flow.name) &&(
+                  <div>{current_flow.name}</div>
+                )} */}
+            </div>
             )}
-            {(current_flow&&current_flow.name) &&(
-               <div>{current_flow.name}</div>
-            )} */}
-          </div>
-
       </div>
 
     </>         
     {/* )} */}
   
       <div className="round-button-div">
-      <Box sx={{ height:"2.8rem" }}>
-        <Tabs value={tabId} onChange={handleChange} aria-label="neuri tabs"
-         sx={{height:"45px",minHeight:"45px",maxWidth:"600px",minWidth:"200px"}} 
-         variant="scrollable">
-            <Tab 
-              className="p-3 mt-1"
-              style={{borderTop: 2,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
-              label={(<div className="flex">Welcome</div>)}  
-              value={""} 
-              sx={{color:"unset"}}
-            />
-            {Array.from(tabValues.values()).map((value,inx)=>{
-              let label="";
-              if(value.id!=""){
-                if(value.type=="flow"){
-                  let flow = flows.find((flow) => flow.id === value.id);
-                  if(flow){
-                    label=flow.name; 
-                  }
-                }else{
-                  let note = notes.find((note) => note.id === value.id);
-                  if(note){
-                    label=note.name; 
+      {curPath.startsWith("/flow")&&(
+        <Box sx={{ height:"2.8rem" }}>
+          <Tabs value={tabId} onChange={handleChange} aria-label="neuri tabs"
+          sx={{height:"45px",minHeight:"45px",maxWidth:"600px",minWidth:"200px"}} 
+          variant="scrollable">
+              <Tab 
+                className="p-3 mt-1"
+                style={{borderTop: 1,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
+                label={(<div className="flex">Welcome</div>)}  
+                value={""} 
+                sx={{color:"unset"}}
+              />
+              {Array.from(tabValues.values()).map((value,inx)=>{
+                let label="";
+                if(value.id!=""){
+                  if(value.type=="flow"){
+                    let flow = flows.find((flow) => flow.id === value.id);
+                    if(flow){
+                      label=flow.name; 
+                    }
                   }else{
-                    label="New Note";
+                    let note = notes.find((note) => note.id === value.id);
+                    if(note){
+                      label=note.name; 
+                    }else{
+                      label="New Note";
+                    }
                   }
+                  
                 }
-                
-              }
-              return(
-                <Tab 
-                  className="p-3 mt-1"
-                  style={{borderTop: 2,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
-                  label={
-                  (<div className="flex">
-                    <IconComponent name={value.type=="flow"?"FileText":"Square"} className={"w-4 h-4 mr-2"} />{label}
-                  <button onClick={(event)=>{
-                    // let newValues=cloneDeep(tabValues);
-                    // newValues=newValues.filter((value) => value !== key);
-                    // setTabValues(newValues);
-                    // event.stopPropagation();
-                    
-                    setTabId("");
-                    // reactFlowInstances.delete(value.flowId);
-                    // setTimeout(()=>{
+                return(
+                  <Tab 
+                    className="p-3 mt-1 group/item"
+                    style={{borderTop: 1,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
+                    label={
+                    (<div className="flex">
+                      <IconComponent name={value.type=="flow"?"FileText":"Square"} className={"w-4 h-4 mr-2"} />{label}
+                    <button onClick={(event)=>{
+                      // let newValues=cloneDeep(tabValues);
+                      // newValues=newValues.filter((value) => value !== key);
+                      // setTabValues(newValues);
+                      // event.stopPropagation();
+                      if(value.id.startsWith("NewNote")){
+                        setNotes(notes.filter((note) => note.id !== value.id));
+                      }
+                      setTabId(prevTabId(value.id));
+                      // reactFlowInstances.delete(value.flowId);
+                      // setTimeout(()=>{
+                        
                       tabValues.delete(value.id);
-                      reactFlowInstances.delete(value.id);
-                    // },1000);
-                    // setReactFlowInstance(null);
-                  }}>
-                    <IconComponent name={"X"} className="w-4 h-4 ml-2" />
-                  </button>
-                  </div>)
-                }  
-                value={value.id} sx={{color:"unset"}
-                
-              }
-                // icon={
-                //   (
-                //     <IconComponent name={"File"} className="mx-2" />
-                //   )
-                // } iconPosition="start" className="mb-4" 
-                />
-              )                        
-            })}
+                      if(value.type=="flow"){
+                        reactFlowInstances.delete(value.id);
+                      }
+                      // },1000);
+                      // setReactFlowInstance(null);
+                    }} className="invisible group-hover/item:visible">
+                      <IconComponent name={"X"} className="w-4 h-4 ml-2" />
+                    </button>
+                    </div>)
+                  }  
+                  value={value.id} 
+                  sx={{color:"unset"}}
+                  // icon={
+                  //   (
+                  //     <IconComponent name={"File"} className="mx-2" />
+                  //   )
+                  // } iconPosition="start" className="mb-4" 
+                  />
+                )                        
+              })}
 
-        </Tabs>
-      </Box>
-
+          </Tabs>
+        </Box>
+      )}
           {/* {(current_flow&&current_flow.name) ?(
             <>
           <div className="side-bar-search-div-placement">
@@ -384,8 +476,8 @@ const handleChange = (event: SyntheticEvent, newValue: string) => {
           >
             <FaDiscord className="side-bar-button-size" />
           </a> */}
-        {flows.findIndex((f) => tabId === f.id) !== -1 && tabId !== "" && (
-          <MenuBar flows={flows} tabId={tabId} />
+        { tabId !== "" && (
+          <MenuBar tabId={tabId} />
         )}
           <Separator orientation="vertical" />
           <AlertDropdown>
@@ -471,32 +563,60 @@ const handleChange = (event: SyntheticEvent, newValue: string) => {
                   ) : (
                     <IconComponent name="MoonIcon" className="side-bar-button-size mr-2" />
                   )}
-                    model
+                    Model
                 </MenuItem>
                 <MenuItem onClick={()=>{
-                    
                     setOpenAssistant(!openAssistant);  
                   }
-                }>
-                  {openAssistant ? (
+                }
+                  className="px-0 pr-1"
+                >
+                  {/* {openAssistant ? (
                     <IconComponent name="MicOff" className="side-bar-button-size mr-2" />
                   ) : (
                     <IconComponent name="Mic" className="side-bar-button-size mr-2" />
-                  )}
-                  AI Assistant
+                  )} */}
+                  <ToggleShadComponent
+                  disabled={false}
+                  enabled={openAssistant}
+                  setEnabled={setOpenAssistant}
+                  size="small"
+
+                />
+                AI Assistant
+                  
                 </MenuItem>                
                 <MenuItem onClick={()=>{
                     setOpenMiniMap(!openMiniMap);    
                   }
-                }>
-                  {openMiniMap ? (
-                    <IconComponent name="Square" className="side-bar-button-size mr-2" />
-                  ) : (
-                    <IconComponent name="Move" className="side-bar-button-size mr-2" />
-                  )}
+                }
+                className="px-0 pr-1"
+                >
+                  
+                  <ToggleShadComponent
+                    disabled={false}
+                    enabled={openMiniMap}
+                    setEnabled={setOpenMiniMap}
+                    size="small"
+                  />
                   Mini Map
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />  
+                <MenuItem onClick={()=>{
+                  backup();
+                  }
+                }>
+                  <IconComponent name="Download" className="side-bar-button-size mr-2" />
+                  Backup
+                </MenuItem>
+                <MenuItem onClick={()=>{
+                  restore();
+                  }
+                }>
+                  <IconComponent name="Upload" className="side-bar-button-size mr-2" />
+                  Restore
+                </MenuItem>                
+              <Divider sx={{ my: 0.5 }} /> 
                 <MenuItem onClick={()=>{
                     logout();    
                   }

@@ -27,9 +27,9 @@ export default function ChatMessage({
   const [promptOpen, setPromptOpen] = useState(false);
   return (
     <div
-      className={classNames("form-modal-chat-position", chat.isSend ? "" : " ")}
+      className={classNames("left-form-modal-chat-position", chat.isSend ? "" : " ")}
     >
-      {/* <div className={classNames("form-modal-chatbot-icon ")}>
+      <div className={classNames("form-modal-chatbot-icon ")}>
         {!chat.isSend ? (
           <div className="form-modal-chat-image">
             <div className="form-modal-chat-bot-icon ">
@@ -51,7 +51,7 @@ export default function ChatMessage({
             </div>
           </div>
         )}
-      </div> */}
+      </div>
       {!chat.isSend ? (
         <div className="form-modal-chat-text-position">
           <div className="form-modal-chat-text">
@@ -173,7 +173,7 @@ export default function ChatMessage({
         <div>
           {template ? (
             <>
-              {/* <button
+              <button
                 className="form-modal-initial-prompt-btn"
                 onClick={() => {
                   setPromptOpen((old) => !old);
@@ -186,7 +186,7 @@ export default function ChatMessage({
                     "h-3 w-3 transition-all " + (promptOpen ? "rotate-180" : "")
                   }
                 />
-              </button> */}
+              </button>
               <span className="prose text-primary word-break-break-word dark:prose-invert">
                 {promptOpen
                   ? template?.split("\n")?.map((line, index) => {
@@ -221,7 +221,7 @@ export default function ChatMessage({
               </span>
             </>
           ) : (
-            <span>{chat.message[chat.chatKey]}</span>
+            <span>{(chat.message[chat.chatKey]??"")}</span>
           )}
         </div>
       )}

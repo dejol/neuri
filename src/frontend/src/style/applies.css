@@ -69,16 +69,16 @@
     @apply flex h-full w-52 flex-col overflow-hidden border-r scrollbar-hide;
   }
   .left-side-folder-arrangement {
-    @apply grid h-full w-60  overflow-hidden border-r scrollbar-hide;grid-template-rows: 7% 86% 7%;
+    @apply grid h-full w-52  overflow-hidden border-r scrollbar-hide;grid-template-rows: auto 30px;
   }
   .small-side-bar-arrangement {
     @apply flex h-full w-16 flex-col overflow-hidden border-r scrollbar-hide;
   }
   .left-side-bar-arrangement {
-    @apply h-full w-96 overflow-hidden border-r scrollbar-hide;
+    @apply h-full w-[30rem] overflow-hidden border-r scrollbar-hide;
   }
   .search-list-bar-arrangement {
-    @apply h-full w-52 overflow-hidden border-r scrollbar-hide;
+    @apply h-full w-52 overflow-hidden scrollbar-hide;
   }
   .side-bar-search-div-placement {
     @apply relative mx-auto flex items-center justify-between;
@@ -177,11 +177,11 @@
     @apply cursor-pointer bg-transparent text-ring;
   }
   .message-button {
-    @apply message-button-position flex h-12 w-12 items-center justify-center rounded-full bg-border px-3 py-1 shadow-md transition-all;
+    @apply message-button-position flex h-10 w-10 items-center justify-center rounded-full bg-border px-3 py-1 shadow-md transition-all;
   }
 
   .round-button-form {
-    @apply flex h-12 w-12 cursor-pointer justify-center rounded-full bg-border px-3 py-1 shadow-md;
+    @apply flex h-10 w-10 cursor-pointer justify-center rounded-full bg-border px-3 py-1 shadow-md;
   }
   .round-button-div {
     @apply flex items-center gap-3;
@@ -932,9 +932,13 @@
   .form-modal-play-icon {
     @apply mx-1 h-5 w-5;
   }
+  .left-form-modal-chat-position {
+    @apply flex-max-width p-2 pr-3;
+  }
   .form-modal-chat-position {
     @apply flex-max-width px-2 py-6 pl-4 pr-9;
   }
+
   .form-modal-chatbot-icon {
     @apply mb-3 ml-3 mr-6 mt-1;
   }
@@ -1049,6 +1053,9 @@
   .langflow-chat-input-div {
     @apply flex-max-width flex-col items-center justify-between px-8 pb-6;
   }
+  .neuri-chat-input-div {
+    @apply flex-max-width flex-col items-center justify-between px-4 pb-2;
+  } 
   .langflow-chat-input {
     @apply relative w-full rounded-md shadow-sm;
   }

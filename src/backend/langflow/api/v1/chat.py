@@ -12,6 +12,7 @@ from langchain.llms.base import BaseLLM
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
 import os
 
@@ -49,7 +50,7 @@ async def init_build(graph_data: dict, flow_id: str):
     #         del nodes[ind]
     # logger.debug("after:%s",graph_data)
 ###remove not runnable node
-    logger.debug("total number_of_nodes:%s",len(graph_data['data']['nodes']))
+    # logger.debug("total number_of_nodes:%s",len(graph_data['data']['nodes']))
     i=0
     newNodes=[]
     notRunnable=[] #only node id
@@ -59,7 +60,7 @@ async def init_build(graph_data: dict, flow_id: str):
             notRunnable.append(graph_data['data']['nodes'][i]['id']) 
         else:    
             if( 'runnable' in graph_data['data']['nodes'][i]['data']['node']):
-                logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],graph_data['data']['nodes'][i]['data']['node']['runnable'])
+                # logger.debug("%s:%s:%s",i,graph_data['data']['nodes'][i]['data']['id'],graph_data['data']['nodes'][i]['data']['node']['runnable'])
                 if(graph_data['data']['nodes'][i]['data']['node']['runnable']):
                     # del graph_data['data']['nodes'][i]
                     newNodes.append(graph_data['data']['nodes'][i])
@@ -72,18 +73,18 @@ async def init_build(graph_data: dict, flow_id: str):
         i+=1
     
     graph_data['data']['nodes']=newNodes      
-    logger.debug("runnable number_of_nodes:%s",len(graph_data['data']['nodes']))
+    # logger.debug("runnable number_of_nodes:%s",len(graph_data['data']['nodes']))
 #########
 
-    logger.debug("total number_of_edges:%s",len(graph_data['data']['edges']))
-    logger.debug("notRunnable:%s",notRunnable)
+    # logger.debug("total number_of_edges:%s",len(graph_data['data']['edges']))
+    # logger.debug("notRunnable:%s",notRunnable)
     j=0
     newEdges=[]
     while j< len(graph_data['data']['edges']):
         source=graph_data['data']['edges'][j]['source']
         target=graph_data['data']['edges'][j]['target']
         if(not((source in notRunnable ) and (target in notRunnable ))):
-            logger.debug("%s:%s:%s",j,source,target)
+            # logger.debug("%s:%s:%s",j,source,target)
             newEdges.append(graph_data['data']['edges'][j])
         j+=1
     
@@ -108,7 +109,7 @@ async def init_build(graph_data: dict, flow_id: str):
         if flow_id in chat_manager.in_memory_cache:
             with chat_manager.in_memory_cache._lock:
                 chat_manager.in_memory_cache.delete(flow_id)
-                logger.debug(f"Deleted flow {flow_id} from cache")
+                logger.debug(f"Deleted object {flow_id} from cache")
         flow_data_store[flow_id] = {
             "graph_data": graph_data,
             "status": BuildStatus.STARTED,
@@ -262,13 +263,32 @@ async def assistant(graph_data: dict, flow_id: str):
     try:
         if flow_id is None:
             raise ValueError("No ID provided")
-        prompt_template='将如下内容猜测我做这个笔记的意图,并为这个笔记白板起一个合适的标题\\n{contents}'
+        
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200  
+        ).from_language(language="html")
+        split_texts = text_splitter.split_text(contents)
+        prompt_template = """请基于以下文本起一个标题:
+        {texts}
+        """
+        # 总结:"""  
+
+        # prompt_template='通过提供如下内容,起一个标题\\n{contents}'
+        # prompt_template='将如下内容猜测我做这个笔记的意图,并为这个笔记白板起一个合适的标题\\n{contents}'        
+        
+
         llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo-0613",openai_api_base=os.getenv("OPENAI_API_BASE"),openai_api_key=os.getenv("OPENAI_API_KEY"))
-        prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables={'contents': contents}, template=prompt_template, template_format='f-string', validate_template=True)
+        # prompt=PromptTemplate(input_variables=[],output_parser=None, partial_variables={'contents': contents}, template=prompt_template, template_format='f-string', validate_template=True)
+
+        prompt = PromptTemplate(template=prompt_template, input_variables=["texts"])
+        # prompt.format(texts="\n\n".join(split_texts)) 
+        
         chain = LLMChain(llm=llm,prompt=prompt)
         # logger.debug("contents:",contents)
-        
-        response = chain.run(prompt=prompt_template)
+        # response = chain.run(prompt=prompt_template)
+        response = chain.predict(texts="\n\n".join(split_texts))
+
         resultDict={"flowId":flow_id,"msg":response}
         # logger.debug("result:",resultDict)
         return ProcessResponse(result=resultDict)

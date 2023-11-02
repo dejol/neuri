@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from uuid import UUID
 from langflow.api.utils import remove_api_keys
@@ -66,6 +67,7 @@ def update_flow(
         flow_data = remove_api_keys(flow_data)
     for key, value in flow_data.items():
         setattr(db_flow, key, value)
+    db_flow.update_at = datetime.now()
     session.add(db_flow)
     session.commit()
     session.refresh(db_flow)

@@ -12,15 +12,16 @@ export default function ShadTooltip({
   return (
     <Tooltip delayDuration={delayDuration}>
       <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
-
-      <TooltipContent
-        className={styleClasses}
-        side={side}
-        avoidCollisions={false}
-        sticky="always"
-      >
-        {content}
-      </TooltipContent>
+      {content&&(
+        <TooltipContent
+          className={styleClasses}
+          side={side}
+          avoidCollisions={false}
+          sticky="always"
+        >
+          {content}
+        </TooltipContent>
+      )}
     </Tooltip>
   );
 }

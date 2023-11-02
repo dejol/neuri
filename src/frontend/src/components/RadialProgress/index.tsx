@@ -3,10 +3,11 @@ import { RadialProgressType } from "../../types/components";
 export default function RadialProgressComponent({
   value,
   color,
+  size,
 }: RadialProgressType) {
   const style = {
     "--value": value * 100,
-    "--size": "1.5rem",
+    "--size": size??"1.5rem",
     "--thickness": "2px",
   } as React.CSSProperties;
 

@@ -384,10 +384,10 @@ export default function LeftFormModal({
 
        tabsState[flow.id].formKeysData && (
 
-          <div className="left-form-modal-iv-box ">
+          <div className="form-modal-iv-box ">
             <div className="eraser-column-arrangement">
               <div className="eraser-size">
-                <div className="eraser-position">
+                <div className="eraser-position mb-1">
                   <button disabled={lockChat} onClick={() => clearChat()}>
                     <IconComponent
                       name="Eraser"
@@ -400,15 +400,18 @@ export default function LeftFormModal({
                       aria-hidden="true"
                     />
                   </button>
-                  <button disabled={lockChat} onClick={() => {clearChat();setOpen(false);}}>
+                  {/* <button disabled={lockChat} onClick={() => {
+                    // clearChat();
+                    setOpen(false);
+                    }}>
                     <IconComponent
                       name="X"
                       className="h-5 w-5 text-primary hover:text-gray-600"
                       aria-hidden="true"
                     />
-                  </button>
+                  </button> */}
                 </div>
-                <div ref={messagesRef} className="chat-message-div">
+                <div ref={messagesRef} className="chat-message-div mt-4">
                   {chatHistory.length > 0 ? (
                     chatHistory.map((chat, index) => (
                       <ChatMessage
@@ -422,16 +425,9 @@ export default function LeftFormModal({
                     ))
                   ) : (
                     <div className="chat-alert-box">
-                      <span>
-                        👋{" "}
-                        <span className="langflow-chat-span">
-                          预览
-                        </span>
-                      </span>
-                      <br />
                       <div className="langflow-chat-desc">
                         <span className="langflow-chat-desc-span">
-                          点击下面的按钮，开始表演{" "}
+                          从点击下面的按钮开始{" "}
                           <span>
                             <IconComponent
                               name="MessageSquare"
@@ -444,7 +440,7 @@ export default function LeftFormModal({
                   )}
                   <div ref={ref}></div>
                 </div>
-                <div className="langflow-chat-input-div">
+                <div className="neuri-chat-input-div">
                   <div className="langflow-chat-input">
                     <ChatInput
                       chatValue={chatValue}

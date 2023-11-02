@@ -4,8 +4,9 @@ from langflow.api.utils import remove_api_keys
 
 from langflow.services.database.models.folder import (
     Folder,
-    FolderModel,
+    FolderModel,FolderRead
 )
+from langflow.api.v1.schemas import  FolderListCreate, FolderListRead
 from langflow.services.utils import get_session
 from langflow.services.utils import get_settings_manager
 from sqlmodel import Session, select
@@ -81,3 +82,20 @@ def delete_folder(folder_id: UUID, db: Session = Depends(get_session)):
     db.commit()
     return {"detail":FOLDER_DELETED}
 
+@router.get("/download/{user_id}", response_model=FolderListRead, status_code=200)
+async def download_file(user_id:str, db: Session = Depends(get_session)):
+    """Download all folders as a file."""
+    folders = read_folders(user_id,db=db)
+    return FolderListRead(folders=folders)
+
+def create_folders(*, session: Session = Depends(get_session), folder_list: FolderListCreate):
+    """Create multiple new folders."""
+    db_folders = []
+    for folder in folder_list.folders:
+        db_folder = Folder.from_orm(folder)
+        session.add(db_folder)
+        db_folders.append(db_folder)
+    session.commit()
+    for db_folder in db_folders:
+        session.refresh(db_folder)
+    return db_folders

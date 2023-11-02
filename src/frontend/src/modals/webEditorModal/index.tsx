@@ -114,7 +114,7 @@ export default function WebEditorModal({
       // updateFlow(savedFlow);
       saveFlow(currentFlow);
     }
-    setSuccessData({ title: "Changes saved successfully" });
+    setSuccessData({ title: "Notebook saved successfully" });
     cancelChange();
   }
   function cancelChange(){
@@ -150,10 +150,12 @@ export default function WebEditorModal({
       if(savedFlow){
         if(node_id){
           let editedNode=savedFlow.data.nodes.find((node)=>node.data.id===node_id);
-          if(editedNode.type=="noteNode"){
-            setEditValue(editedNode.data.value);
-          }else{
-            setEditValue(editedNode.data.node.template.note.value);
+          if(editedNode){
+            if(editedNode.type=="noteNode"){
+              setEditValue(editedNode.data.value);
+            }else{
+              setEditValue(editedNode.data.node.template.note.value);
+            }
           }
         }
       }

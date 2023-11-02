@@ -9,12 +9,15 @@ export type FlowType = {
   data: ReactFlowJsonObject;
   description: string;
   style?: FlowStyleType;
+  create_at?:Date;
+  update_at?:Date;  
 };
 export type FolderType = {
   name: string;
   id: string;
   user_id?:string;
   description?: string;
+  parent_id?:string;
 };
 export type NoteType = {
   name: string;
@@ -22,6 +25,8 @@ export type NoteType = {
   user_id?:string;
   folder_id?:string;
   content?: {id:string, value:string};
+  create_at?:Date;
+  update_at?:Date;
 };
 
 export type NodeType = {
@@ -35,6 +40,10 @@ export type NodeDataType = {
   node?: APIClassType;
   id: string;
   value: any;
+  update_at?:Date;
+  create_at?:Date;
+  borderColor?:string;
+
 };
 // FlowStyleType is the type of the style object that is used to style the
 // Flow card with an emoji and a color.

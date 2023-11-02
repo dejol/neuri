@@ -34,7 +34,7 @@ from langchain.chains.base import Chain
 from langchain.vectorstores.base import VectorStore
 from langchain.document_loaders.base import BaseLoader
 from langflow.utils.logger import logger
-
+from langchain.schema import Document
 
 def instantiate_class(node_type: str, base_type: str, params: Dict) -> Any:
     """Instantiate class from module type and key, and params"""
@@ -373,7 +373,14 @@ def instantiate_textsplitter(
         params.pop("separators", None)
 
         text_splitter = class_object.from_language(**params)
-    return text_splitter.split_documents(documents)
+    # print("Documents:",documents,type(documents))
+    newDocs=[]
+    for doc in documents:
+        if type(doc)==str:
+            newDocs.append(Document(page_content=str(doc)))
+        else:
+            newDocs.append(doc)
+    return text_splitter.split_documents(newDocs)
 
 
 def instantiate_utility(node_type, class_object, params: Dict):

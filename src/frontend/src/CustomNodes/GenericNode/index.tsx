@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { useContext, useEffect, useState } from "react";
-import { NodeResizer,NodeToolbar, useReactFlow, useUpdateNodeInternals } from "reactflow";
+import { NodeResizer,NodeToolbar, Position, useReactFlow, useUpdateNodeInternals } from "reactflow";
 import ShadTooltip from "../../components/ShadTooltipComponent";
 import Tooltip from "../../components/TooltipComponent";
 import IconComponent from "../../components/genericIconComponent";
@@ -32,25 +32,38 @@ export default function GenericNode({
   const [validationStatus, setValidationStatus] = useState(null);
   // State for outline color
   
+  const [borderColor,setBorderColor] = useState(data.borderColor??"inherit");
+  useEffect(()=>{
+    let newData = cloneDeep(olddata);
+    newData.borderColor=borderColor;
+    newData.update_at=new Date();
+    setData(newData);
+  },[borderColor]);
+
   const { sseData, isBuilding } = useSSE();
 
   const [miniSize,setMiniSize] = useState(data.node.mini_size!=undefined&&data.node.mini_size);
   useEffect(()=>{
     let newData = cloneDeep(olddata);
     newData.node.mini_size=miniSize;
+    newData.update_at=new Date();
     setData(newData);
   },[miniSize]);
 
   useEffect(() => {
-
     olddata.node = data.node;
     olddata.node.mini_size=miniSize;
+    olddata.update_at=new Date();
+    olddata.borderColor=data.borderColor;
     let myFlow = flows.find((flow) => flow.id === tabId);
     
     if (reactFlowInstances.get(tabId) && myFlow) {
       // console.log("myFlow:",myFlow.data.viewport);
       let flow = cloneDeep(myFlow);
-      flow.data.viewport=myFlow.data.viewport; //for the bug of cloneDeep()
+      if(myFlow.data){
+        flow.data.viewport=myFlow.data.viewport; //for the bug of cloneDeep()
+
+      }
       // console.log("after clone of myFlow:",flow.data.viewport);
 
       flow.data = reactFlowInstances.get(tabId).toObject();
@@ -66,7 +79,7 @@ export default function GenericNode({
         },
       });
       reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
-      updateFlow(flow,"data of GenericNode");
+      updateFlow(flow);
     }
   }, [data]);
   // New useEffect to watch for changes in sseData and update validation status
@@ -91,6 +104,7 @@ export default function GenericNode({
   useEffect(()=>{
     let newData = cloneDeep(olddata);
     newData.node.runnable=runnabler;
+    newData.update_at=new Date();
     setData(newData);
   },[runnabler]);
 
@@ -116,7 +130,7 @@ export default function GenericNode({
   }    
   return (
     <>
-      <NodeToolbar offset={(data.type=="Note" || data.type=="AINote")?30:-5}>
+      <NodeToolbar offset={(data.type=="Note" || data.type=="AINote")?2:-5} position={(data.type=="Note" || data.type=="AINote")?Position.Bottom:Position.Top}>
         <NodeToolbarComponent
           data={data}
           setData={setData}
@@ -125,6 +139,7 @@ export default function GenericNode({
           setRunnabler={setRunnabler}
           miniSize={miniSize}
           setMiniSize={setMiniSize}
+          setBorder={setBorderColor}
         ></NodeToolbarComponent>
       </NodeToolbar>
       {(data.type=="Note" || data.type=="AINote") &&(
@@ -136,14 +151,16 @@ export default function GenericNode({
       <div
         className={classNames(
           selected ? "border-4 border-ring" : "border-4",
-          data.type =="Note"?" generic-resize-node-div"
-          :data.type =="AINote"?" generic-resize-node-div"
+          data.type =="Note"?"border-8 generic-resize-node-div"
+          :data.type =="AINote"?"border-8 generic-resize-node-div"
           :" generic-node-div"
         )}
         onDoubleClick={(event)=>{
           event.stopPropagation();
           focusNode();
         }}
+        style={{borderColor:data.borderColor}}
+
       >
         {!(data.type=="Note" || data.type=="AINote") &&(
           <>
@@ -176,7 +193,7 @@ export default function GenericNode({
                     <span>Runnable</span>
                 )}
             >
-              <div>
+              <div className="mt-1">
                 <ToggleShadComponent
                   disabled={false}
                   enabled={runnabler}

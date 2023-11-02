@@ -9,8 +9,12 @@ import { classNames } from "../../../../utils/utils";
 import { NodeType } from "../../../../types/flow";
 import ToggleShadComponent from "../../../../components/toggleShadComponent";
 import { typesContext } from "../../../../contexts/typesContext";
+import { Popover } from "@mui/material";
+import BorderColorComponent from "../borderColorComponent";
+import { darkContext } from "../../../../contexts/darkContext";
+import BuildTrigger from "../../../../modals/embeddedModal/buildTrigger";
 
-export default function NodeToolbarComponent({ data, setData, deleteNode,runnabler,setRunnabler,miniSize,setMiniSize }) {
+export default function NodeToolbarComponent({ data, setData, deleteNode,runnabler,setRunnabler,miniSize,setMiniSize,setBorder }) {
   const [nodeLength, setNodeLength] = useState(
     Object.keys(data.node.template).filter(
       (templateField) =>
@@ -27,9 +31,10 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
     ).length
   );
 
-  const { paste,openWebEditor,setOpenWebEditor,tabId,setEditFlowId,setEditNodeId } = useContext(TabsContext);
+  const { flows, paste,openWebEditor,setOpenWebEditor,tabId,setEditFlowId,setEditNodeId,setIsBuilt } = useContext(TabsContext);
   // const reactFlowInstance = useReactFlow();
   const {reactFlowInstances} =useContext(typesContext);
+  const {dark} =useContext(darkContext);
   function changeAINoteToNote(node:NodeType){
     // console.info("type is :",node)
         // Create a new node object
@@ -69,6 +74,21 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
       setEditNodeId(data.id);
       setOpenWebEditor(true);
   }
+
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const popoverColor = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closePop = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'colour-popover' : undefined;
+
+
   return (
     <>
       <div className="w-26 h-10">
@@ -110,33 +130,38 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             </button>
           </ShadTooltip>
           {reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"&&(
-
-         
-          <ShadTooltip content="Copy as Note" side="top">
-            <button
-              className={classNames(
-                "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
-              )}
-              onClick={(event) => {
-                event.preventDefault();
-                paste(
-                  {
-                    nodes: [changeAINoteToNote(reactFlowInstances.get(tabId).getNode(data.id))],
-                    edges: [],
-                  },
-                  {
-                    x: 50,
-                    y: 10,
-                    paneX: reactFlowInstances.get(tabId).getNode(data.id).position.x,
-                    paneY: reactFlowInstances.get(tabId).getNode(data.id).position.y,
-                  }
-                );
-              }}
-            >
-              <IconComponent name="Copy" className="h-4 w-4" iconColor="Green"/>
-            </button>
-          </ShadTooltip>
- )}
+            <>
+            <ShadTooltip content="Copy as Note" side="top">
+              <button
+                className={classNames(
+                  "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
+                )}
+                onClick={(event) => {
+                  event.preventDefault();
+                  paste(
+                    {
+                      nodes: [changeAINoteToNote(reactFlowInstances.get(tabId).getNode(data.id))],
+                      edges: [],
+                    },
+                    {
+                      x: 50,
+                      y: 10,
+                      paneX: reactFlowInstances.get(tabId).getNode(data.id).position.x,
+                      paneY: reactFlowInstances.get(tabId).getNode(data.id).position.y,
+                    }
+                  );
+                }}
+              >
+                <IconComponent name="Copy" className="h-4 w-4" iconColor="Green"/>
+              </button>
+            </ShadTooltip>
+            <BuildTrigger 
+              flow={flows.find((flow)=>flow.id==tabId)}
+              setIsBuilt={setIsBuilt}
+              nodeId={data.id}
+            />
+          </>
+          )}
           <ShadTooltip
             content={
               data.node.documentation === "" ? "Coming Soon" : "Documentation"
@@ -168,16 +193,18 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             <ShadTooltip content="Runnable" side="top">
                 <div
                   className={
-                    "relative -ml-px inline-flex items-center bg-background px-0 py-0 text-foreground shadow-md ring-1 ring-inset  ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
+                    "relative -ml-px inline-flex items-center bg-background p-0 text-foreground shadow-md ring-1 ring-inset  ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
                   }
                 >
+                  <div
+                  className={"mt-1"}>
                 <ToggleShadComponent
                   disabled={false}
                   enabled={runnabler}
                   setEnabled={setRunnabler}
                   size="small"
-                  
                 />
+                </div>
             </div>
           </ShadTooltip>
           <ShadTooltip content="Full editor" side="top">
@@ -195,6 +222,40 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
               <IconComponent name="ExternalLink" className="h-4 w-4"/>
             </button>
           </ShadTooltip>
+          {(data.type=="Note")&&(
+            <ShadTooltip content="Border Color" side="top">
+            <>
+            <button
+              className={classNames(
+                "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
+              )}
+              onClick={popoverColor}
+            >
+              <IconComponent name="Disc" className="h-4 w-4"/>
+            </button>
+            <Popover
+              id={id}
+              open={open}
+              anchorEl={anchorEl}
+              onClose={closePop}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+              sx={{borderRadius:8}}
+
+            >
+              <BorderColorComponent data={data} dark={dark} setBorder={setBorder} />
+            </Popover>     
+            </>       
+          </ShadTooltip>
+          )}
+
+
           </>
           ):(
             

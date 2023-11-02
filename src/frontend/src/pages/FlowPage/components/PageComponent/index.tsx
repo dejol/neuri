@@ -32,7 +32,7 @@ import { undoRedoContext } from "../../../../contexts/undoRedoContext";
 import { APIClassType } from "../../../../types/api";
 import { FlowType, NodeType } from "../../../../types/flow";
 import { isValidConnection } from "../../../../utils/reactflowUtils";
-import { isWrappedWithClass ,isValidImageUrl, classNames} from "../../../../utils/utils";
+import { isWrappedWithClass ,isValidImageUrl, classNames, getAssistantFlow, enforceMinimumLoadingTime} from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
 import LeftFormModal from "../../../../modals/leftFormModal";
@@ -43,11 +43,12 @@ import IconComponent from "../../../../components/genericIconComponent";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
 import NoteNode from "../../../../CustomNodes/NoteNode";
 import FloatingEdge from "../FloatingEdgeComponent";
-import { postNotesAssistant } from "../../../../controllers/API";
+import { postBuildInit, postNotesAssistant } from "../../../../controllers/API";
 import LoadingComponent from "../../../../components/loadingComponent";
 import { darkContext } from "../../../../contexts/darkContext";
 import WebEditorModal from "../../../../modals/webEditorModal";
 import { Box, Typography } from "@mui/material";
+import { useSSE } from "../../../../contexts/SSEContext";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
@@ -83,6 +84,8 @@ const nodeTypes = {
   noteNode:NoteNode,
 };
 
+
+
 export default function Page({ flow }: { flow: FlowType }) {
   let {
     updateFlow,
@@ -110,14 +113,17 @@ export default function Page({ flow }: { flow: FlowType }) {
   const {setNoticeData } = useContext(alertContext);
 
   const { takeSnapshot } = useContext(undoRedoContext);
+  const { updateSSEData, isBuilding, setIsBuilding, sseData } = useSSE();
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lastSelection, setLastSelection] =
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {tabValues,isBuilt, setIsBuilt,getSearchResult,openFolderList,openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,editNodeId } = useContext(TabsContext);
-  const [openSearch,setOpenSearch]=useState(false);
+  const {tabValues,isBuilt, setIsBuilt,getSearchResult,openFolderList,
+    openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,
+    editNodeId } = useContext(TabsContext);
+  // const [openSearch,setOpenSearch]=useState(false);
   const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
   // useEffect(() => {
   //   if(getSearchResult&&getSearchResult.length>0){
@@ -205,6 +211,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     let cloneRFI=cloneDeep(reactFlowInstances);
     if(cloneRFI.get(tabId) && flow){
       let vp=cloneRFI.get(tabId).getViewport();
+      // console.log("edges:",reactFlowInstances.get(tabId).getEdges());
       if (vp&&!(vp.x==0 && vp.y==0 && vp.zoom==1)) {
         flow.data = reactFlowInstances.get(tabId).toObject();
         
@@ -214,7 +221,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           // reactFlowInstances.get(tabId).setViewport(tabValues.get(tabId).viewport);
         // }
         // if(tabId==flow.id)
-          updateFlow(flow);
+          updateFlow(flow,"nodes refresh");
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -232,7 +239,7 @@ export default function Page({ flow }: { flow: FlowType }) {
         // reactFlowInstances.get(tabId).fitView();
       }
   }, [flow
-    ,reactFlowInstances.get(tabId)
+    // ,reactFlowInstances.get(tabId)
     , setEdges, setNodes
     // , setViewport //不理解这里为啥要用setViewport
   ]);
@@ -436,11 +443,13 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   useEffect(() => {
     setLoading(true);
+    // console.log("nodes:",flow);
     // return () => {
     //   if (tabsState && tabsState[flow.id]?.isPending) {
     //     saveFlow(flow);
     //   }
-    // };
+    // };  //不理解这里，暂时注释
+    // console.log("flow:",flow);
   }, []);
 
   const onDelete = useCallback(
@@ -556,7 +565,6 @@ function createNoteNode(newValue,newPosition){
     height:220,
     selected:false,
   };
-  // console.log("nodeNode:",newNode);
   let nodesList=flow.data.nodes;
   
   nodesList.push(newNode);
@@ -575,7 +583,22 @@ function createNoteNode(newValue,newPosition){
     let delay=1000*60; //one minute
     let intervalId = null;
     if(assistantOn.current){
-      intervalId = setInterval(callAssistant, delay);
+      intervalId = setInterval(
+            ()=>{
+            if(assistantOn.current&&flow&&changedContent.current&&!isBuilding){
+              postNotesAssistant(flow).then((resp)=>{
+                if(resp){
+                  // setNoticeData({title:resp.data.result.msg})
+                  console.log("resp:",resp);
+                  handleBuild(getAssistantFlow(flow.id,resp.data.result.msg));
+                     
+                }
+              });
+
+            }
+            setConChanged(false);
+          }, 
+        delay);
     }else{
       clearInterval(intervalId);
     }
@@ -587,18 +610,7 @@ function createNoteNode(newValue,newPosition){
   useEffect(()=>{
     changedContent.current=conChanged;
   },[conChanged]);  
-  function callAssistant(){
-    if(assistantOn.current&&flow&&changedContent.current){
-      // console.log("call assistant")
-      postNotesAssistant(flow).then((resp)=>{
-        // console.log("call assistant:",resp)
-        if(resp){
-          setNoticeData({title:resp.data.result.msg})
-        }
-      });
-    }
-    setConChanged(false);
-  };
+
   function initFlowInstance(reactFlowIns:ReactFlowInstance){
     // setReactFlowInstance(reactFlowIns);
     reactFlowInstances.set(tabId,reactFlowIns);
@@ -606,17 +618,131 @@ function createNoteNode(newValue,newPosition){
 
       setViewport(flow.data?.viewport);
     }
-    // console.log("set flow and params0:",reactFlowInstances.get(tabId).getViewport());
-
     setLoading(false);
-    // console.log("set flow instances:",tabId,reactFlowIns);
-    // console.log("set flow and params:",reactFlowIns.viewportInitialized,reactFlowIns.getViewport());
-
-    // console.log("set nodes instances:",reactFlowIns.getNodes());
-    // console.log("set flowMap instances:",reactFlowInstances.get(tabId).getNodes());
-
-
   }
+  // check is there has AINote 
+  // function checkAINote(){
+    let isAINote:boolean=false;
+    if (!flow.data || !flow.data.nodes) return;
+      flow.data.nodes.forEach((node: NodeType) => {
+        if(node.data.type=="AINote"&&(node.data.node.runnable==undefined||node.data.node.runnable)){
+          isAINote=true;
+          return;
+        }
+    });
+    // return false;
+  // }
+  // useEffect(()=>{
+  //   if(tabsState[flow.id]){
+  //     console.log("formKeysData:",tabsState[flow.id].formKeysData)
+  //   }
+  // },[tabsState[flow.id]])
+
+  async function handleBuild(flow: FlowType) {
+    
+    try {
+      if (isBuilding) {
+        return;
+      }
+      const minimumLoadingTime = 200; // in milliseconds
+      const startTime = Date.now();
+      setIsBuilding(true);
+      const allNodesValid = await streamNodeData(flow);
+      await enforceMinimumLoadingTime(startTime, minimumLoadingTime);
+      setIsBuilt(allNodesValid);
+      if (!allNodesValid) {
+        console.error( "Oops! Looks like you missed something");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsBuilding(false);
+    }
+  }
+
+  async function streamNodeData(flow: FlowType) {
+    // Step 1: Make a POST request to send the flow data and receive a unique session ID
+    const response = await postBuildInit(flow);
+    const { flowId } = response.data;
+    // Step 2: Use the session ID to establish an SSE connection using EventSource
+    let validationResults = [];
+    let finished = false;
+    const apiUrl = `/api/v1/build/stream/${flowId}`;
+    const eventSource = new EventSource(apiUrl);
+    eventSource.onmessage = (event) => {
+      // If the event is parseable, return
+      if (!event.data) {
+        return;
+      }
+      const parsedData = JSON.parse(event.data);
+      // console.log("parseData:",parsedData);
+      // if the event is the end of the stream, close the connection
+      if (parsedData.end_of_stream) {
+        // Close the connection and finish
+        finished = true;
+        eventSource.close();
+
+        return;
+      } else if (parsedData.log) {
+        // If the event is a log, log it
+        // setSuccessData({ title: parsedData.log });
+      } else if (parsedData.input_keys !== undefined) {
+        // console.log("flowId:",flowId);
+        setTabsState((old) => {
+          return {
+            ...old,
+            [flowId]: {
+              ...old[flowId],
+              formKeysData: parsedData,
+            },
+          };
+        });
+      } else {
+        // Otherwise, process the data
+        const isValid = processStreamResult(parsedData);
+        // setProgress(parsedData.progress);
+        validationResults.push(isValid);
+      }
+    };
+
+    eventSource.onerror = (error: any) => {
+      console.error("EventSource failed:", error);
+      eventSource.close();
+      if (error.data) {
+        const parsedData = JSON.parse(error.data);
+        // setErrorData({ title: parsedData.error });
+        setIsBuilding(false);
+      }
+    };
+    // Step 3: Wait for the stream to finish
+    let lengthOfRunnable=0;
+    flow.data.nodes.forEach(node => {
+      if((node.type=="genericNode")&&
+         (node.data.node.runnable==undefined||node.data.node.runnable)){
+        lengthOfRunnable+=1;
+      }
+    });
+    while (!finished) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      finished = validationResults.length === lengthOfRunnable;
+    }
+    // setOpen(finished);
+    // Step 4: Return true if all nodes are valid, false otherwise
+    return validationResults.every((result) => result);
+  }
+
+  function processStreamResult(parsedData) {
+    // Process each chunk of data here
+    // Parse the chunk and update the context
+    try {
+      updateSSEData({ [parsedData.id]: parsedData });
+    } catch (err) {
+      console.log("Error parsing stream data: ", err);
+    }
+    return parsedData.valid;
+  }
+
+
   return (
     <div className="flex h-full overflow-hidden">
       {/* {
@@ -635,30 +761,14 @@ function createNoteNode(newValue,newPosition){
           )
           }         */}
 
-          
+     
 
       {/* {openSearch && getSearchResult&&getSearchResult.length>0&&( */}
-{/*       
-      <Transition
-            show={openSearch && getSearchResult&&getSearchResult.length>0}
-            enter="transition-transform duration-500 ease-out"
-            enterFrom={"transform translate-x-[-100%]"}
-            enterTo={"transform translate-x-0"}
-            leave="transition-transform duration-500 ease-in"
-            leaveFrom={"transform translate-x-0"}
-            leaveTo={"transform translate-x-[-100%]"}
-            className={"chat-message-modal-thought-cursor"}
+      
 
-          >
-            <div className="search-list-bar-arrangement">
-            <SearchListModal
-            open={openSearch}
-            setOpen={setOpenSearch}
-            results={getSearchResult}
-          />
-          </div>
-        </Transition> */}
         {/* )}                   */}
+
+
       {/* Main area */}
 
       <main className="flex flex-1">
@@ -703,12 +813,12 @@ function createNoteNode(newValue,newPosition){
                                 edges:reactFlowInstances.get(tabId).toObject().edges,
                                 viewport:flow.data.viewport
                               } ,
-                            });
+                            },"onMove 1");
                           }else{
                             updateFlow({
                               ...flow,
                               data: reactFlowInstances.get(tabId).toObject(),
-                            });
+                            },"onMove 2");
                           }
                           
 
@@ -765,6 +875,36 @@ function createNoteNode(newValue,newPosition){
                       />
                     </ReactFlow>
                     <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
+                    {isBuilt &&
+                      tabsState[flow.id] &&
+                      tabsState[flow.id].formKeysData && 
+                      // !isAINote&&
+                       canOpen&&(
+                        <Transition
+                        show={open}
+                        appear={true}
+                        enter="transition-transform duration-500 ease-out"
+                        enterFrom={"transform translate-x-[-100%]"}
+                        enterTo={"transform translate-x-0"}
+                        leave="transition-transform duration-500 ease-in"
+                        leaveFrom={"transform translate-x-0"}
+                        leaveTo={"transform translate-x-[-100%]"}
+                        // className={"chat-message-modal-thought-cursor"}
+
+                      > 
+                      <div className="fixed bottom-12 left-2">   
+                        <div className="left-side-bar-arrangement">     
+                        <LeftFormModal
+                          key={flow.id}
+                          flow={flow}
+                          open={open}
+                          setOpen={setOpen}
+                        />
+                        </div>   
+                      </div>
+                      </Transition>
+                      )}
+                      
                   </div>
                   
                   </>
@@ -776,8 +916,9 @@ function createNoteNode(newValue,newPosition){
             )}
           </div>
       </main>
-      
+
       {flow&&(
+        <>
             <Transition
             show={openModelList}
             enter="transition-transform duration-500 ease-out"
@@ -790,7 +931,9 @@ function createNoteNode(newValue,newPosition){
           >
             <ExtraSidebar />
           </Transition>
-        )}
+        </>
+      )}
+
      </div>
   );
 }

@@ -16,6 +16,8 @@ import { typesContext } from "../../contexts/typesContext";
 import markdownModule from '@wangeditor/plugin-md'
 import { NodeToolbar } from "reactflow";
 import { TabsContext } from "../../contexts/tabsContext";
+import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
+import { darkContext } from "../../contexts/darkContext";
 
 export default function HtmlViewComponent({
   contentValue,
@@ -119,7 +121,7 @@ function handleChange(content){
   }
 }
 const editorConfig: Partial<IEditorConfig> = {   
-    placeholder: 'Type something...',
+    placeholder: '展示结果...',
     autoFocus:false,
     MENU_CONF:{},
     onChange :(editor:IDomEditor)=>{
@@ -209,15 +211,18 @@ const handleMouseUp = () => {
 // useEffect(() => {
 //     setToolbarOn(nodeSelected);
 // }, [nodeSelected]);
+const {dark} =useContext(darkContext);
 
   return (
-    <>
-    <NodeToolbar offset={2} >
+    <>  
+    <NodeToolbar offset={2} className="bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border">
     <Toolbar
         editor={editor}
         defaultConfig={toolbarConfig}
         mode={"simple"}
-        style={{ border: '1px solid #ccc' }}
+        // style={{ border: '1px solid #ccc' }}
+        className="m-1"
+
     />
     </NodeToolbar>
     <div className="left-form-modal-iv-box ">
@@ -273,7 +278,8 @@ const handleMouseUp = () => {
                     minWidth:'200px',
                     minHeight:'200px',
                     width:'100%',
-                    fontSize:'20px',                    
+                    fontSize:'20px', 
+                    backgroundColor:switchToBG(data.borderColor,dark),                     
                     //  overflowY: 'scroll' 
                     }}
                 />

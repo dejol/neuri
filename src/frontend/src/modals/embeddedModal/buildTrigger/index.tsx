@@ -1,29 +1,27 @@
-import { Transition } from "@headlessui/react";
 import { useContext, useState } from "react";
 import Loading from "../../../components/ui/loading";
 import { useSSE } from "../../../contexts/SSEContext";
 import { alertContext } from "../../../contexts/alertContext";
 import { typesContext } from "../../../contexts/typesContext";
 import { postBuildInit } from "../../../controllers/API";
-import { FlowType } from "../../../types/flow";
+import { FlowType, NodeType } from "../../../types/flow";
 
 import { TabsContext } from "../../../contexts/tabsContext";
 import { validateNodes } from "../../../utils/reactflowUtils";
-import RadialProgressComponent from "../../RadialProgress";
-import IconComponent from "../../genericIconComponent";
-import { enforceMinimumLoadingTime } from "../../../utils/utils";
+import RadialProgressComponent from "../../../components/RadialProgress";
+import IconComponent from "../../../components/genericIconComponent";
+import ShadTooltip from "../../../components/ShadTooltipComponent";
+import { classNames, enforceMinimumLoadingTime, toNormalCase } from "../../../utils/utils";
+import { cloneDeep, functionsIn } from "lodash";
 
 export default function BuildTrigger({
-  open,
-  setOpen,
   flow,
+  nodeId,
   setIsBuilt,
 }: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
   flow: FlowType;
+  nodeId:string;
   setIsBuilt: any;
-  isBuilt: boolean;
 }) {
   const { updateSSEData, isBuilding, setIsBuilding, sseData } = useSSE();
   const { reactFlowInstances } = useContext(typesContext);
@@ -33,12 +31,67 @@ export default function BuildTrigger({
   const eventClick = isBuilding ? "pointer-events-none" : "";
   const [progress, setProgress] = useState(0);
 
+  function validateRelatedNodes(flow:FlowType){
+    if (flow.data.nodes.length === 0) {
+      return [
+        "No nodes found in the flow. Please add at least one node to the flow.",
+      ];
+    }
+    return flow.data.nodes
+      .flatMap((n: NodeType) => validateRelatedNode(n, flow));
+
+  }
+
+  function validateRelatedNode(
+    node: NodeType,
+    flow: FlowType
+  ): Array<string> {
+    if(node.type=="noteNode") return [];
+    if (!node.data?.node?.template || !Object.keys(node.data.node.template)) {
+      return [
+        "We've noticed a potential issue with a node in the flow. Please review it and, if necessary, submit a bug report with your exported flow file. Thank you for your help!",
+      ];
+    }
+  
+    const {
+      type,
+      node: { template },
+    } = node.data;
+  
+    return Object.keys(template).reduce(
+      (errors: Array<string>, t) =>
+        errors.concat(
+          template[t].required &&
+            template[t].show &&
+            (template[t].value === undefined ||
+              template[t].value === null ||
+              template[t].value === "") &&
+              (node.data?.node?.runnable===undefined||node.data?.node?.runnable)&&
+            !flow.data.edges.some(
+                (edge) =>
+                  edge.targetHandle&&
+                  edge.targetHandle.split("|")[1] === t &&
+                  edge.targetHandle.split("|")[2] === node.id
+                
+              )
+            ? [
+                `${type} is missing ${
+                  template.display_name || toNormalCase(template[t].name)
+                }.`,
+              ]
+            : []
+        ),
+      [] as string[]
+    );
+  }
+
   async function handleBuild(flow: FlowType) {
+    
     try {
       if (isBuilding) {
         return;
       }
-      const errors = validateNodes(reactFlowInstances.get(tabId));
+      const errors = validateRelatedNodes(flow);
       if (errors.length > 0) {
         setErrorData({
           title: "Oops! Looks like you missed something",
@@ -94,6 +147,7 @@ export default function BuildTrigger({
         // If the event is a log, log it
         setSuccessData({ title: parsedData.log });
       } else if (parsedData.input_keys !== undefined) {
+        // console.log("flowId:",flowId);
         setTabsState((old) => {
           return {
             ...old,
@@ -130,10 +184,9 @@ export default function BuildTrigger({
     });
     while (!finished) {
       await new Promise((resolve) => setTimeout(resolve, 100));
-      // console.log("%d:%d/%d",validationResults.length,lengthOfRunnable,flow.data.nodes.length);
       finished = validationResults.length === lengthOfRunnable;
     }
-    setOpen(finished);
+    // setOpen(finished);
     // Step 4: Return true if all nodes are valid, false otherwise
     return validationResults.every((result) => result);
   }
@@ -169,27 +222,75 @@ export default function BuildTrigger({
     setIsIconTouched(false);
   };
 
+  /**
+   * generate a new flow, which id will be changed, and edges & nodes will be filtered
+   * @param flow 
+   * @param node_id 
+   * @returns newFlow
+   */
+  function newFlow(flow:FlowType,node_id:string){
+
+    let newFlow=cloneDeep(flow);
+
+    // 用于存储与给定节点相关的边的目标节点ID
+    const relatedNodeIds = [];
+    // console.log("node_id:",node_id);
+    // console.log("flow:",flow);
+    // 遍历数组edges，找出所有与给定节点相关的边
+    flow.data.edges.forEach((edge) => {
+      // console.log("edge:",edge);
+      if (edge.target === node_id) {
+        relatedNodeIds.push(edge.source);
+      }
+    });
+
+    // 用于存储与给定节点相关联的节点ID
+    const allRelatedNodeIds = new Set(relatedNodeIds);
+
+    // 重复查找直到没有新的关联节点被找到
+    let newRelatedNodeFound = true;
+    while (newRelatedNodeFound) {
+      newRelatedNodeFound = false;
+
+      // 遍历数组edges，找出所有与已知关联节点相关的边
+      flow.data.edges.forEach((edge) => {
+        if (allRelatedNodeIds.has(edge.source) && !allRelatedNodeIds.has(edge.target)) {
+          allRelatedNodeIds.add(edge.target);
+          newRelatedNodeFound = true;
+        }
+        if (allRelatedNodeIds.has(edge.target) && !allRelatedNodeIds.has(edge.source)) {
+          allRelatedNodeIds.add(edge.source);
+          newRelatedNodeFound = true;
+        }
+      });
+    }
+    
+    // 删除没有与给定节点相关的节点和边
+    const filteredNodes = flow.data.nodes.filter((node) => allRelatedNodeIds.has(node.id));
+    const filteredEdges = flow.data.edges.filter((edge) => allRelatedNodeIds.has(edge.source) && allRelatedNodeIds.has(edge.target));
+
+    newFlow.id=flow.id+"-"+node_id;
+    newFlow.data.edges=filteredEdges;
+    newFlow.data.nodes=filteredNodes;
+    // console.log("newFlow:",newFlow);
+    // console.log("filteredNodes:",filteredNodes);
+    // console.log("filteredEdges:",filteredEdges);
+    return newFlow;
+}
   return (
-    <Transition
-      show={true}
-      appear={true}
-      enter="transition ease-out duration-300"
-      enterFrom="translate-y-96"
-      enterTo="translate-y-0"
-      leave="transition ease-in duration-300"
-      leaveFrom="translate-y-0"
-      leaveTo="translate-y-96"
-    >
-      <div className="fixed bottom-14 left-1">
         <div
-          className={`${eventClick} round-button-form`}
+          className={`${eventClick} `}
           onClick={() => {
-            handleBuild(flow);
+            handleBuild(newFlow(flow,nodeId));
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <button>
+          <ShadTooltip content="Run" side="top">
+          <button 
+            className={classNames(
+                  "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
+            )}>
             <div className="round-button-div">
               {isBuilding && progress < 1 ? (
                 // Render your loading animation here when isBuilding is true
@@ -197,22 +298,22 @@ export default function BuildTrigger({
                   // ! confirm below works
                   color={"text-build-trigger"}
                   value={progress}
+                  size="1rem"
                 ></RadialProgressComponent>
               ) : isBuilding ? (
                 <Loading
                   strokeWidth={1.5}
-                  className="build-trigger-loading-icon"
+                  className="build-trigger-loading-icon h-4 w-4"
                 />
               ) : (
                 <IconComponent
-                  name="Zap"
-                  className="sh-5 w-5 fill-build-trigger stroke-build-trigger stroke-1"
+                  name="Play"
+                  className="h-4 w-4 fill-build-trigger stroke-build-trigger stroke-1"
                 />
               )}
             </div>
           </button>
+          </ShadTooltip>
         </div>
-      </div>
-    </Transition>
   );
 }

@@ -11,6 +11,8 @@ import { Label } from "../../components/ui/label";
 import { useNavigate } from "react-router-dom";
 import Dropdown from "../../components/dropdownComponent";
 import { cloneDeep, flow } from "lodash";
+import { ConfirmDialogModal } from "../confirmModal";
+
 
 export default function FlowSettingsModal({
   open,
@@ -33,43 +35,46 @@ export default function FlowSettingsModal({
   const [folderId, setFolderId] = useState("");
 
   const [description, setDescription] = useState(
-    isNew?"":(flows.find((flow) => flow.id === tabId).description)
+    isNew?"":(flows.find((flow) => flow.id === tabId)?flows.find((flow) => flow.id === tabId).description:"")
   );
   const [invalidName, setInvalidName] = useState(false);
   const navigate = useNavigate();
+  const [openConfirm,setOpenConfirm] = useState(false);
 
-  function handleClick() {
+  function handleSave() {
 
     if(isNew){
       if(!folderId){
         addFlow({"name":name,"description":description,"id":"","data":null,"folder_id":newFolderId},true,newFolderId)
         .then((id) => {
-        //  navigate("/flow/" + id);
-        //  let newValues=cloneDeep(tabValues);
-        //  newValues.push(id.toString());
-        //  setTabValues(newValues);
+          //  navigate("/flow/" + id);
+          //  let newValues=cloneDeep(tabValues);
+          //  newValues.push(id.toString());
+          //  setTabValues(newValues);
           tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
-         setTabId(id.toString());
+          setTabId(id.toString());
+          setSuccessData({ title: "New notebook successfully"});
        });
       }else{
         addFlow({"name":name,"description":description,"id":"","data":null,"folder_id":folderId},true,folderId)
         .then((id) => {
-        //  navigate("/flow/" + id);
-        // let newValues=cloneDeep(tabValues);
-        // newValues.push(id.toString());
-        // setTabValues(newValues);
-        tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
-        setTabId(id.toString());
+          //  navigate("/flow/" + id);
+          // let newValues=cloneDeep(tabValues);
+          // newValues.push(id.toString());
+          // setTabValues(newValues);
+          tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
+          setTabId(id.toString());
+          setSuccessData({ title: "New notebook successfully" });
+
        });
       }
-      setSuccessData({ title: "New notebook successfully" });
     }else{
       let savedFlow = flows.find((flow) => flow.id === tabId);
       savedFlow.name = name;
       savedFlow.description = description;
       savedFlow.folder_id = folderId;
       saveFlow(savedFlow);
-      setSuccessData({ title: "Changes saved successfully" });
+      setSuccessData({ title: "Notebook saved successfully" });
     }
     setOpen(false);
   }
@@ -89,7 +94,32 @@ export default function FlowSettingsModal({
       }
     }
   },[tabId])
+
+  function listSubFolders(parentId:string){
+    return(
+      folders.filter((folderItem)=>folderItem.parent_id==parentId)
+        .map((folder, idx) => (
+        <div className={!parentId?"":"ml-3"} key={idx}>
+          <DropdownMenuItem
+            onClick={() => {
+              setFolderId(folder.id);
+            }}
+            className="cursor-pointer"
+            key={idx}
+            >
+            <div className={"file-component-badge-div justify-start "}>
+            <IconComponent name="Folder" className="main-page-nav-button" />
+            {folder.name}
+            </div>
+          </DropdownMenuItem>
+          {listSubFolders(folder.id)}
+        </div>
+      ))
+    )
+  }
+
   return (
+    <>
     <BaseModal open={open} setOpen={setOpen} size="medium">
       <BaseModal.Header description={SETTINGS_DIALOG_SUBTITLE}>
         {isNew?(
@@ -109,6 +139,7 @@ export default function FlowSettingsModal({
               <DropdownMenuTrigger asChild>
                 <Button asChild variant="primary" size="sm">
                   <div className="header-menu-bar-display">
+                  <IconComponent name="Folder" className="main-page-nav-button" />
                     <div className="header-menu-flow-name">
                     {folders&&folders.map((folder,idx) => (
                       (folder.id==folderId)&&(
@@ -124,23 +155,18 @@ export default function FlowSettingsModal({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-50">
-                {folders.map((folder, idx) => (
-                <DropdownMenuItem
-                  onClick={() => {
-                    setFolderId(folder.id);
-                  }}
-                  className="cursor-pointer"
-                  key={idx}
-                  >
-                {folder.name}
-                </DropdownMenuItem>
-                ))}
+                {listSubFolders("")}
                 <DropdownMenuItem
                 onClick={() => {
                   setFolderId("");
                 }}
                 className="cursor-pointer"
-                >Unclassified</DropdownMenuItem>                
+                >
+                  <div className={"file-component-badge-div justify-start "}>
+                    <IconComponent name="Folder" className="main-page-nav-button" />
+                    Unclassified
+                  </div>                  
+                  </DropdownMenuItem>                
               </DropdownMenuContent>
             </DropdownMenu>
             </div>
@@ -159,20 +185,23 @@ export default function FlowSettingsModal({
       </BaseModal.Content>
 
       <BaseModal.Footer>
-        <Button  onClick={handleClick} type="submit">
+        <Button  onClick={handleSave} type="submit">
           Save
         </Button>
-        {(!isNew&&tabId!=loginUserId)&&(
+        {(!isNew)&&(
           <Button  onClick={()=>{
-              let flow=flows.find((flow) => flow.id === tabId);
-              removeFlow(flow.id);
-              setSuccessData({ title: "Delete Notebook successfully" });
+              // let flow=flows.find((flow) => flow.id === tabId);
+              // removeFlow(flow.id);
+              // setSuccessData({ title: "Delete Notebook successfully" });
+              // setOpen(false);
+              // setDescription("");
+              // setName("");
+              // // let url="/flow/"+loginUserId;
+              // // navigate(url);
+              // tabValues.delete(flow.id);
+              // setTabId("");
+              setOpenConfirm(true);
               setOpen(false);
-              setDescription("");
-              setName("");
-              // let url="/flow/"+loginUserId;
-              // navigate(url);
-              setTabId("");
             }} type="button" className="mx-2" variant={"secondary"}>
               <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
             Delete
@@ -181,5 +210,22 @@ export default function FlowSettingsModal({
        
       </BaseModal.Footer>
     </BaseModal>
+    <ConfirmDialogModal
+      title="Confirm your operation"
+      content="Delete Notebook will be NOT redo, Are you sure?"
+      confirm={()=>{
+        let flow=flows.find((flow) => flow.id === tabId);
+        removeFlow(flow.id);
+        setSuccessData({ title: "Delete Notebook successfully" });
+        setOpen(false);
+        setDescription("");
+        setName("");
+        tabValues.delete(flow.id);
+        setTabId("");
+      }}
+      open={openConfirm}
+      setOpen={setOpenConfirm}
+    />
+    </>
   );
 }

@@ -1,4 +1,4 @@
-# Run Langflow from a New Google Cloud Project
+# Run Neuri from a New Google Cloud Project
 
 This guide will help you set up a Langflow development VM in a Google Cloud Platform project using Google Cloud Shell.
 

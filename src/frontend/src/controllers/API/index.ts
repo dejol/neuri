@@ -11,7 +11,7 @@ import {
   UploadFileTypeAPI,
   errorsTypeAPI,
 } from "./../../types/api/index";
-
+import { getAssistantFlow } from "../../utils/utils";
 /**
  * Fetches all objects from the API endpoint.
  *
@@ -187,6 +187,32 @@ export async function downloadFlowsFromDatabase(user_id:string) {
   }
 }
 
+export async function downloadFoldersFromDatabase(user_id:string) {
+  try {
+    const response = await api.get(`/api/v1/folders/download/${user_id}`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function downloadNotesFromDatabase(user_id:string) {
+  try {
+    const response = await api.get(`/api/v1/notes/download/${user_id}`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 export async function uploadFlowsToDatabase(flows) {
   try {
     const response = await api.post(`/api/v1/flows/upload/`, flows);
@@ -200,6 +226,20 @@ export async function uploadFlowsToDatabase(flows) {
     throw error;
   }
 }
+export async function uploadAllToDatabase(allData,user_id:string) {
+  try {
+    const response = await api.post(`/api/v1/users/restore/${user_id}`, allData);
+    
+    if (response.status !== 201) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 
 /**
  * Deletes a flow from the database.
@@ -325,9 +365,14 @@ export async function getBuildStatus(
  *
  */
 export async function postBuildInit(
-  flow: FlowType
+  flow: FlowType,
+  // nodeId?:string
 ): Promise<AxiosResponse<InitTypeAPI>> {
-  return await api.post(`/api/v1/build/init/${flow.id}`, flow);
+  let responseId=flow.id;
+  // if(nodeId&&nodeId.length>0){
+  //   responseId+="-"+nodeId
+  // }
+  return await api.post(`/api/v1/build/init/${responseId}`, flow);
 }
 
 // fetch(`/upload/${id}`, {
@@ -383,17 +428,13 @@ export async function readFoldersFromDatabase(user_id:string) {
  * @returns {Promise<FolderType>} The saved folder data.
  * @throws Will throw an error if saving fails.
  */
-export async function saveFolderToDatabase(newFolder: {
-  name: string;
-  id: string;
-  description: string;
-  user_id:string;
-}): Promise<FolderType> {
+export async function saveFolderToDatabase(newFolder: FolderType): Promise<FolderType> {
   try {
     const response = await api.post("/api/v1/folders/", {
       name: newFolder.name,
       description: newFolder.description,
       user_id:newFolder.user_id,
+      parent_id:newFolder.parent_id,
     });
 
     if (response.status !== 200) {
@@ -487,12 +528,14 @@ export async function saveNoteToDatabase(newNote: {
   id: string;
   content: {id:string,value:string};
   user_id:string;
+  folder_id:string;
 }): Promise<NoteType> {
   try {
     const response = await api.post("/api/v1/notes/", {
       name: newNote.name,
       content: newNote.content,
       user_id:newNote.user_id,
+      folder_id:newNote.folder_id,
     });
 
     if (response.status !== 200) {
@@ -595,8 +638,12 @@ export async function postNotesAssistant(
     })
   }
   if(content.length>3){
+
     return await api.post(`/api/v1/assistant/${flow.id}`, flow);
   }
   return null;
   // ("result"={flowId:flow.id,msg:""});
+
 }
+
+

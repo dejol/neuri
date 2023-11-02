@@ -14,13 +14,13 @@ import { darkContext } from "../../contexts/darkContext";
 import { typesContext } from "../../contexts/typesContext";
 import { postCustomComponent, postValidateCode } from "../../controllers/API";
 import { APIClassType } from "../../types/api";
-import BaseModal from "../baseModal";
+import moment from "moment";
 import { NodeDataType, NodeType, NoteType } from "../../types/flow";
 import { TabsContext } from "../../contexts/tabsContext";
 import {useNodesState,useReactFlow} from "reactflow";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
-import { Boot, IDomEditor, IEditorConfig, IToolbarConfig } from "@wangeditor/editor";
-import markdownModule from '@wangeditor/plugin-md'
+import { IButtonMenu,Boot, IDomEditor, IEditorConfig, IToolbarConfig, IModuleConf } from "@wangeditor/editor";
+import markdownModule from '@wangeditor/plugin-md';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
 
 export default function NoteEditorModal({
@@ -38,6 +38,8 @@ export default function NoteEditorModal({
   const [editValue, setEditValue] = useState(content);
   const [name, setName] = useState(title);
   const [folderId, setFolderId] = useState("");
+  const [createAt, setCreateAt] = useState(new Date());
+  const [udpateAt, setUpdateAt] = useState(new Date());
 
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const [error, setError] = useState<{
@@ -49,46 +51,57 @@ export default function NoteEditorModal({
     let note=notes.find((note) => note.id === note_id);
     if(note){
       setFolderId(note.folder_id);
+      setCreateAt(note.create_at);
+      setUpdateAt(note.update_at);
     }
   },[note_id])
 
-  function handleClick() {
-    if(note_id&&!note_id.startsWith("NewNote")){
-      let savedNote = notes.find((note) => note.id === note_id);
-      savedNote.content.value=editValue;
-      savedNote.name=name;
-      savedNote.folder_id=folderId;
-      saveNote(savedNote).then(()=>{
-        cancelChange();
-        setSuccessData({ title: "Changes saved successfully" });
-      });
-    }else if(!note_id ||note_id.startsWith("NewNote")){
-      let newNote: NoteType;
-      newNote = {
-        id: "",
-        name:name,
-        folder_id:folderId,
-        content: {
-          id: "",
-          value: editValue,
-        },
-      };
-      addNote(newNote).then((id)=>{
-        newNote.id=id.toString();
-        newNote.content.id=id.toString();
-        notes.push(newNote);
-        cancelChange();
-        setSuccessData({ title: "Add Note successfully" });
-      });
+  useEffect(()=>{
+    let note=notes.find((note) => note.id === note_id);
+    if(note){
+      note.name=name;
+      note.content.value=editValue;
     }
+  },[name,editValue])
+
+  // function handleClick() {
+  //   if(note_id&&!note_id.startsWith("NewNote")){
+  //     let savedNote = notes.find((note) => note.id === note_id);
+  //     savedNote.content.value=editValue;
+  //     savedNote.name=name;
+  //     savedNote.folder_id=folderId;
+  //     saveNote(savedNote).then((res)=>{
+  //       console.log("res:",res);
+  //       cancelChange();
+  //       setSuccessData({ title: "Changes saved successfully" });
+  //     });
+  //   }else if(!note_id ||note_id.startsWith("NewNote")){
+  //     let newNote: NoteType;
+  //     newNote = {
+  //       id: "",
+  //       name:name,
+  //       folder_id:folderId,
+  //       content: {
+  //         id: "",
+  //         value: editValue,
+  //       },
+  //     };
+  //     addNote(newNote).then((id)=>{
+  //       newNote.id=id.toString();
+  //       newNote.content.id=id.toString();
+  //       notes.push(newNote);
+  //       cancelChange();
+  //       setSuccessData({ title: "Add Note successfully" });
+  //     });
+  //   }
     
-  }
-  function cancelChange(){
-    setEditValue("");
-    setTabId("");
-    tabValues.delete(note_id);
-    note_id="";
-  }
+  // }
+  // function cancelChange(){
+  //   setEditValue("");
+  //   setTabId("");
+  //   tabValues.delete(note_id);
+  //   note_id="";
+  // }
 
   useEffect(() => {
     // Function to be executed after the state changes
@@ -107,14 +120,16 @@ export default function NoteEditorModal({
   }, [error, setHeight]);
 
 
-  // editor 实例
+  // editor menu
   Boot.registerModule(markdownModule);
-  const [editor, setEditor] = useState<IDomEditor | null>(null)
-  const toolbarConfig: Partial<IToolbarConfig> = { }
+
+  const [editor, setEditor] = useState<IDomEditor | null>(null);
+  const toolbarConfig: Partial<IToolbarConfig> = { };
   toolbarConfig.excludeKeys = [
     'fullScreen',
 
   ];
+
   const editorConfig: Partial<IEditorConfig> = {   
     placeholder: 'Type something...',
     autoFocus:false,
@@ -127,10 +142,11 @@ export default function NoteEditorModal({
     onFocus:(editor:IDomEditor)=>{
     }
     
-};
-editorConfig.MENU_CONF['uploadImage'] = {
-  server: '/api/v1/upload/'+note_id,
-  fieldName: 'file',
+  };
+
+  editorConfig.MENU_CONF['uploadImage'] = {
+    server: '/api/v1/upload/'+note_id,
+    fieldName: 'file',
   
 //   customInsert(res: any, insertFn:InsertFnType) {  
 //     // res 即服务端的返回结果
@@ -226,15 +242,17 @@ editorConfig.MENU_CONF['uploadVideo'] = {
   },
 }
 
-// 及时销毁 editor ，重要！
-useEffect(() => {
-  // console.log("call fullText useEffect");
-    return () => {
-        if (editor == null) return
-        editor.destroy()
-        setEditor(null)
-    }
-}, [editor]);
+
+
+  // 及时销毁 editor ，重要！
+  useEffect(() => {
+    // console.log("call fullText useEffect");
+      return () => {
+          if (editor == null) return
+          editor.destroy()
+          setEditor(null)
+      }
+  }, [editor]);
 
   return (
         <div className="flex h-full w-full flex-col transition-all overflow-hidden " >
@@ -253,7 +271,9 @@ useEffect(() => {
                     // backgroundColor:"#fff"
             }}
              >
-            <div style={{padding:5,paddingBottom:1,borderBottom:"1px solid #e8e8e8"}}>
+            <div style={{padding:5,paddingBottom:1,borderBottom:"1px solid #e8e8e8"}}
+                  className="flex">
+
                 <input style={{outline:"none",border:0,lineHeight:1,width:"100%",fontSize:25}}
                  className="bg-muted" 
                  placeholder="Title..."
@@ -262,6 +282,7 @@ useEffect(() => {
                   setName(event.target.value);                  
                 }}
                  />
+                 <span className="whitespace-nowrap text-sm text-muted-foreground">上次编辑时间:{moment(udpateAt).local().format("LLL")}</span>
             </div>
             <div className="w-full items-center">
               <Editor
@@ -281,20 +302,21 @@ useEffect(() => {
               />
             </div>
           </div>
-          <div className="flex h-fit w-[90%] justify-between">
-            <Button  onClick={()=>{
+          {/* <div className="flex h-fit w-[90%] justify-between"> 
+             <Button  onClick={()=>{
                 let note=notes.find((note) => note.id === note_id);
                 if(note){
+                  setTabId("");
                   removeNote(note_id);
                   setSuccessData({ title: "Delete Note successfully" });
                   setEditValue("");
                   setName("");
-                  setTabId("");
+                  tabValues.delete(note_id);
                 }
               }} type="button" className="mx-2" variant={"secondary"}>
                 <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
               Delete
-            </Button>           
+            </Button>            
             <div className="mb-2 mt-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -334,11 +356,11 @@ useEffect(() => {
                 >Unclassified</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            </div>   
-            <Button className="mt-0 mr-6" onClick={handleClick} type="submit">
+            </div>    
+             <Button className="mt-0 mr-6" onClick={handleClick} type="submit">
               Save
-            </Button>
-          </div>
+            </Button> 
+           </div> */}
         </div>
   );
 }

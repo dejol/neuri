@@ -75,7 +75,7 @@ const ExportModal = forwardRef((props: { children: ReactNode }, ref) => {
           }}
           type="submit"
         >
-          Download Flow
+          Download Notebook
         </Button>
       </BaseModal.Footer>
     </BaseModal>

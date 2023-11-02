@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Viewport, addEdge } from "reactflow";
+import { MarkerType, Viewport, addEdge } from "reactflow";
 import ShortUniqueId from "short-unique-id";
 import {
   deleteFlowFromDatabase,
@@ -25,6 +25,9 @@ import {
   updateNoteInDatabase,
   readNotesFromDatabase,
   deleteNoteFromDatabase,
+  downloadNotesFromDatabase,
+  downloadFoldersFromDatabase,
+  uploadAllToDatabase,
 } from "../controllers/API";
 import { APIClassType, APITemplateType } from "../types/api";
 import { FlowType, NodeType,FolderType, UserType, NoteType } from "../types/flow";
@@ -43,7 +46,9 @@ const uid = new ShortUniqueId({ length: 5 });
 const TabsContextInitialValue: TabsContextType = {
   save: () => { },
   tabId: "",
+  pageTitle:"",
   setTabId: (index: string) => { },
+  setPageTitle: (index: string) => { },
   // tabValues: [""], //临时使用，来测试一下tabs功能
   // setTabValues: (values: Array<string>) => { },//临时使用，来测试一下tabs功能
   tabValues: new Map<"",{id:"",type:"",viewport?:Viewport}>(),
@@ -54,6 +59,7 @@ const TabsContextInitialValue: TabsContextType = {
   flows: [],
   folders: [],
   notes:[],
+  setNotes:()=>{},
   removeFlow: (id: string) => { },
   addFlow: async (flowData?: any) => "",
   addFolder: async (folderData?: any) => "",
@@ -67,6 +73,8 @@ const TabsContextInitialValue: TabsContextType = {
   downloadFlow: (flow: FlowType) => { },
   downloadFlows: () => { },
   uploadFlows: () => { },
+  backup:()=>{ },
+  restore:()=>{ },
   uploadFlow: () => { },
   isBuilt: false,
   setIsBuilt: (state: boolean) => { },
@@ -91,8 +99,8 @@ const TabsContextInitialValue: TabsContextType = {
   getNodeId: (nodeType: string) => "",
   setTweak: (tweak: any) => { },
   getTweak: [],
-  setSearchResult: (node: Array<any>) => { },
-  getSearchResult: [],
+  setSearchResult: (results:{folderId:"",keyword:"",notes:[],flows:[]}) => { },
+  getSearchResult: {folderId:"",keyword:"",notes:[],flows:[]},
   paste: (
     selection: { nodes: any; edges: any; },
     position: { x: number; y: number; paneX?: number; paneY?: number; }
@@ -110,7 +118,7 @@ export const TabsContext = createContext<TabsContextType>(
 );
 
 export function TabsProvider({ children }: { children: ReactNode }) {
-  const { setErrorData, setNoticeData } = useContext(alertContext);
+  const { setErrorData, setNoticeData,setSuccessData } = useContext(alertContext);
 
   const [tabId, setTabId] = useState("");
   const [loginUserId, setLoginUserId] = useState("");
@@ -119,13 +127,13 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   
   const [folders, setFolders] = useState<Array<FolderType>>([]);
   const [notes, setNotes] = useState<Array<NoteType>>([]);
-
+  const [pageTitle,setPageTitle] =useState("");
   const [id, setId] = useState(uid());
   const { templates, reactFlowInstances } = useContext(typesContext);
   const [lastCopiedSelection, setLastCopiedSelection] = useState(null);
   const [tabsState, setTabsState] = useState<TabsState>({});
   const [getTweak, setTweak] = useState([]);
-  const [getSearchResult, setSearchResult] = useState([]);
+  const [getSearchResult, setSearchResult] = useState({folderId:"",keyword:"",notes:[],flows:[]});
   const [editFlowId, setEditFlowId] = useState("");//for webEditorModal
   const [editNodeId, setEditNodeId] = useState("");//for webEditorModal
   const newNodeId = useRef(uid());
@@ -374,7 +382,30 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       link.click();
     });
   }
+  function backup() {
+    let backupTime=new Date();
+    let backup={backupTime:new Date(),userId:loginUserId}
+    downloadFlowsFromDatabase(loginUserId).then((flows) => {
+      backup['flows']=flows.flows;
+      downloadNotesFromDatabase(loginUserId).then((notes)=>{
+        backup['notes']=notes.notes;
+        downloadFoldersFromDatabase(loginUserId).then((folders)=>{
+          backup['folders']=folders.folders;
+          const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+            JSON.stringify(backup)
+          )}`;
+          // create a link element and set its properties
+          const link = document.createElement("a");
+          link.href = jsonString;
+          link.download = `backup-${backupTime}.json`;
+    
+          // simulate a click on the link element to trigger the download
+          link.click();
+        })
+      })
+    });
 
+  }
   function getNodeId(nodeType: string) {
     return nodeType + "-" + incrementNodeId();
   }
@@ -442,6 +473,43 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     // trigger the file input click event to open the file dialog
     input.click();
   }
+
+  function restore() {
+    // create a file input
+    const input = document.createElement("input");
+    input.type = "file";
+    // add a change event listener to the file input
+    input.onchange = (event: Event) => {
+      // check if the file type is application/json
+      if (
+        (event.target as HTMLInputElement).files[0].type === "application/json"
+      ) {
+        // get the file from the file input
+        const file = (event.target as HTMLInputElement).files[0];
+        
+        // read the file as text
+        const formData = new FormData();
+        formData.append("file", file); 
+        try {
+          uploadAllToDatabase(formData,loginUserId).then((res) => {
+            if(res&&res['status']==201){
+              refreshFolders();
+              refreshNotes();
+              refreshFlows();
+              setSuccessData({title:res['message']});
+            }else{
+              setErrorData({title:res['message']});
+            } 
+          });          
+        } catch (error) {
+          setErrorData(error);
+        }       
+      }
+    };
+    // trigger the file input click event to open the file dialog
+    input.click();
+  }
+
   /**
    * Removes a flow from an array of flows based on its id.
    * Updates the state of flows and tabIndex using setFlows and setTabIndex hooks.
@@ -513,11 +581,10 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       // Generate a unique node ID
       let newId = getNodeId(node.data.type);
       idsMap[node.id] = newId;
-
       // Create a new node object
       const newNode: NodeType = {
         id: newId,
-        type: "genericNode",
+        type: node.type,
         position: {
           x: insidePosition.x + node.position.x - minimumX,
           y: insidePosition.y + node.position.y - minimumY,
@@ -527,7 +594,6 @@ export function TabsProvider({ children }: { children: ReactNode }) {
           id: newId,
         },
       };
-
       // Add the new node to the list of nodes in state
       nodes = nodes
         .map((node) => ({ ...node, selected: false }))
@@ -536,42 +602,70 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     reactFlowInstances.get(tabId).setNodes(nodes);
 
     selectionInstance.edges.forEach((edge) => {
+      
       let source = idsMap[edge.source];
       let target = idsMap[edge.target];
-      let sourceHandleSplitted = edge.sourceHandle.split("|");
-      let sourceHandle =
-        sourceHandleSplitted[0] +
-        "|" +
-        source +
-        "|" +
-        sourceHandleSplitted.slice(2).join("|");
-      let targetHandleSplitted = edge.targetHandle.split("|");
-      let targetHandle =
-        targetHandleSplitted.slice(0, -1).join("|") + "|" + target;
-      let id =
-        "reactflow__edge-" +
-        source +
-        sourceHandle +
-        "-" +
-        target +
-        targetHandle;
-      edges = addEdge(
-        {
-          source,
-          target,
-          sourceHandle,
-          targetHandle,
-          id,
-          style: { stroke: "#555" },
-          className:
-            targetHandle.split("|")[0] === "Text"
-              ? "stroke-gray-800 "
-              : "stroke-gray-900 ",
-          animated: targetHandle.split("|")[0] === "Text",
-          selected: false,
-        },
-        edges.map((edge) => ({ ...edge, selected: false }))
-      );
+      // console.log("source:",source)
+      let sourceNode=nodes.find((node)=>node.id==source);
+      if(sourceNode&& sourceNode.type=="noteNode"){   
+        let id =
+          "reactflow__edge-" +
+          source +
+          "-" +
+          target;  
+        edges = addEdge(
+          {
+            source,
+            target,
+            markerEnd:{
+              type: MarkerType.ArrowClosed,
+              // color: 'black',
+            },
+            type:'floating',
+            id,
+            style: { strokeWidth:6 },
+
+            selected: false,
+          },
+          edges.map((edge) => ({ ...edge, selected: false }))
+        );
+      }else{
+        let sourceHandleSplitted = edge.sourceHandle.split("|");
+        let sourceHandle =
+          sourceHandleSplitted[0] +
+          "|" +
+          source +
+          "|" +
+          sourceHandleSplitted.slice(2).join("|");
+        let targetHandleSplitted = edge.targetHandle.split("|");
+        let targetHandle =
+          targetHandleSplitted.slice(0, -1).join("|") + "|" + target;
+        let id =
+          "reactflow__edge-" +
+          source +
+          sourceHandle +
+          "-" +
+          target +
+          targetHandle;
+        edges = addEdge(
+          {
+            source,
+            target,
+            sourceHandle,
+            targetHandle,
+            id,
+            style: { strokeWidth:6 },
+            className:
+              targetHandle.split("|")[0] === "Text"
+                ? "stroke-gray-800 "
+                : "stroke-gray-900 ",
+            animated: targetHandle.split("|")[0] === "Text",
+            selected: false,
+          },
+          edges.map((edge) => ({ ...edge, selected: false }))
+        );
+      }
+      
     });
     reactFlowInstances.get(tabId).setEdges(edges);
   }
@@ -629,11 +723,13 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         description: "NOT DESC",
         name: getRandomName(),
         user_id:folder?.user_id ?? loginUserId,
+        parent_id:"",
         id: "",
       }
       if(folder){
         newFolder.description=folder.description;
         newFolder.name=folder.name;
+        newFolder.parent_id=folder.parent_id??"";
       }
       try {
         const { id } = await saveFolderToDatabase(newFolder);
@@ -729,7 +825,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   const createNewFlow = (flowData, flow) => ({
     description: flowData.description,
     name: flow?.name ?? getRandomName(),
-    data: flowData.data,
+    data: flowData.data?? {"nodes": [], "edges": []},
     folder_id: flow?.folder_id ?? "",
     user_id: flow?.user_id ?? loginUserId,
     id: "",
@@ -747,7 +843,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
    * @param who - indicated who call this function ,just for debugging
    */
   function updateFlow(newFlow: FlowType,who?:string) {
-    // console.log("newFlow:",who,newFlow.data.viewport);
+    // console.log("newFlow:",who,newFlow.data);
     setFlows((prevState) => {
       const newFlows = [...prevState];
       const index = newFlows.findIndex((flow) => flow.id === newFlow.id);
@@ -783,7 +879,9 @@ export function TabsProvider({ children }: { children: ReactNode }) {
             newFlows[index].data = newFlow.data;
             newFlows[index].name = newFlow.name;
             newFlows[index].user_id = loginUserId;
+            newFlows[index].update_at = updatedFlow.update_at;
           }
+          
           return newFlows;
         });
         //update tabs state
@@ -849,6 +947,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
           if (index !== -1) {
             newNotes[index].content = newNote.content ?? {id:newNote.id,value:""};
             newNotes[index].name = newNote.name;
+            newNotes[index].update_at=updatedNote.update_at;
           }
           return newNotes;
         });
@@ -893,6 +992,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   return (
     <TabsContext.Provider
       value={{
+        pageTitle,
+        setPageTitle,
         saveFlow,
         isBuilt,
         setIsBuilt,
@@ -913,11 +1014,12 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         hardReset,
         tabId,
         setTabId,
-        tabValues, //临时使用，来测试一下tabs功能
-        setTabValues,//临时使用，来测试一下tabs功能        
+        tabValues, 
+        setTabValues,        
         flows,
         folders,
         notes,
+        setNotes,
         saveNote,
         addNote,
         removeNote,
@@ -931,6 +1033,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         updateFlow,
         downloadFlow,
         downloadFlows,
+        backup,
+        restore,
         uploadFlows,
         uploadFlow,
         getNodeId,

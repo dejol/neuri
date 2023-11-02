@@ -2,6 +2,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from langflow.services.database.models.flow import FlowCreate, FlowRead
+from langflow.services.database.models.folder import  FolderCreate, FolderRead
+from langflow.services.database.models.note import  Note,NoteCreate
 from pydantic import BaseModel, Field, validator
 import json
 
@@ -90,6 +92,11 @@ class FileResponse(ChatMessage):
 class FlowListCreate(BaseModel):
     flows: List[FlowCreate]
 
+class FolderListCreate(BaseModel):
+    folders: List[FolderRead]
+
+class NoteListCreate(BaseModel):
+    notes:List[NoteCreate]
 
 class FlowListRead(BaseModel):
     flows: List[FlowRead]
@@ -97,7 +104,6 @@ class FlowListRead(BaseModel):
 
 class InitResponse(BaseModel):
     flowId: str
-
 
 class BuiltResponse(BaseModel):
     built: bool
@@ -134,3 +140,9 @@ class ComponentListCreate(BaseModel):
 
 class ComponentListRead(BaseModel):
     flows: List[FlowRead]
+
+class FolderListRead(BaseModel):
+    folders: List[FolderRead]
+
+class NoteListRead(BaseModel):
+    notes: List[Note]    

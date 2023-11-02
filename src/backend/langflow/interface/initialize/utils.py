@@ -13,6 +13,8 @@ def handle_node_type(node_type, class_object, params: Dict):
         params = check_tools_in_params(params)
         prompt = ZeroShotAgent.create_prompt(**params)
     elif "MessagePromptTemplate" in node_type:
+        # print("params:",params)
+        # print("class_object:",class_object)
         prompt = instantiate_from_template(class_object, params)
     elif node_type == "ChatPromptTemplate":
         prompt = class_object.from_messages(**params)
@@ -51,7 +53,10 @@ def handle_partial_variables(prompt, format_kwargs: Dict):
     }
     # Remove handle_keys otherwise LangChain raises an error
     partial_variables.pop("handle_keys", None)
-    return prompt.partial(**partial_variables)
+    if partial_variables and hasattr(prompt, "partial"):
+        return prompt.partial(**partial_variables)
+    else:
+        return prompt
 
 
 def handle_variable(params: Dict, input_variable: str, format_kwargs: Dict):

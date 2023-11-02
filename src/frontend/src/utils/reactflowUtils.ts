@@ -14,29 +14,31 @@ export function cleanEdges({
     // check if the source and target node still exists
     const sourceNode = nodes.find((node) => node.id === edge.source);
     const targetNode = nodes.find((node) => node.id === edge.target);
-    if(sourceNode.type!="genericNode"||targetNode.type!="genericNode"){
-      return;
-    }
+    // if(sourceNode.type!="genericNode"||targetNode.type!="genericNode"){
+    //   return;
+    // }
     if (!sourceNode || !targetNode) {
       newEdges = newEdges.filter((edg) => edg.id !== edge.id);
     }
     // check if the source and target handle still exists
     if (sourceNode && targetNode) {
       const sourceHandle = edge.sourceHandle; //right
-      const targetHandle = edge.targetHandle; //left
-      if (targetHandle) {
-        const field = targetHandle.split("|")[1];
-        const id =
-          (targetNode.data.node.template[field]?.input_types?.join(";") ??
-            targetNode.data.node.template[field]?.type) +
-          "|" +
-          field +
-          "|" +
-          targetNode.data.id;
-        if (id !== targetHandle) {
-          newEdges = newEdges.filter((e) => e.id !== edge.id);
-        }
-      }
+      // const targetHandle = edge.targetHandle; //left
+      // if (targetHandle) {
+      //   const field = targetHandle.split("|")[1];
+      //   // console.log("field:%s, targetHandle:%s",field,targetHandle);
+      //   const id =
+      //     (targetNode.data.node.template[field]?.input_types?.join(";") ??
+      //       targetNode.data.node.template[field]?.type) +
+      //     "|" +
+      //     field +
+      //     "|" +
+      //     targetNode.data.id;
+      //   if (id !== targetHandle) {
+      //     // console.log("id:%s, targetHandle:%s",id,targetHandle);
+      //     newEdges = newEdges.filter((e) => e.id !== edge.id);//不理解，在什么情况会需要清除这个链接
+      //   }
+      // }
       if (sourceHandle) {
         const id = [
           sourceNode.data.type,
@@ -44,7 +46,8 @@ export function cleanEdges({
           ...sourceNode.data.node.base_classes,
         ].join("|");
         if (id !== sourceHandle) {
-          newEdges = newEdges.filter((edg) => edg.id !== edge.id);
+          // console.log("id:%s, sourceHandle:%s",id,sourceHandle);
+          newEdges = newEdges.filter((edg) => edg.id !== edge.id);//不理解，在什么情况会需要清除这个链接
         }
       }
     }
@@ -98,11 +101,12 @@ export function isValidConnection(
 export function removeApiKeys(flow: FlowType): FlowType {
   let cleanFLow = _.cloneDeep(flow);
   cleanFLow.data.nodes.forEach((node) => {
-    for (const key in node.data.node.template) {
-      if (node.data.node.template[key].password) {
-        node.data.node.template[key].value = "";
+    if(node.type&&node.type=="genericNode")
+      for (const key in node.data.node.template) {
+        if (node.data.node.template[key].password) {
+          node.data.node.template[key].value = "";
+        }
       }
-    }
   });
   return cleanFLow;
 }
@@ -201,8 +205,10 @@ export function validateNode(
             .getEdges()
             .some(
               (edge) =>
+                edge.targetHandle&&
                 edge.targetHandle.split("|")[1] === t &&
                 edge.targetHandle.split("|")[2] === node.id
+              
             )
           ? [
               `${type} is missing ${
@@ -216,6 +222,7 @@ export function validateNode(
 }
 
 export function validateNodes(reactFlowInstance: ReactFlowInstance) {
+
   if (reactFlowInstance.getNodes().length === 0) {
     return [
       "No nodes found in the flow. Please add at least one node to the flow.",

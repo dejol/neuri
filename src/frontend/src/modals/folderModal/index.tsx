@@ -8,27 +8,30 @@ import BaseModal from "../baseModal";
 import { Label } from "../../components/ui/label";
 import { FolderType } from "../../types/flow";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDialogModal } from "../confirmModal";
 
 export default function FolderModal({
   open,
   setOpen,
   isNew = false,
-  popoverStatus,
-  setPopoverStatus,
+  // popoverStatus,
+  // setPopoverStatus,
   folderId,
   folders,
+  parentId,
 }: {
   folderId?:string;
   isNew?:boolean;
   open: boolean;
-  popoverStatus:boolean;
+  // popoverStatus:boolean;
   setOpen: (open: boolean) => void;
-  setPopoverStatus:(popoverStatus:boolean)=> void;
+  // setPopoverStatus:(popoverStatus:boolean)=> void;
   folders: Array<FolderType>;
+  parentId?:string;
 }) {
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const ref = useRef();
-  const { flows, tabId,loginUserId, updateFlow, setTabsState, saveFlow,addFolder,saveFolder,removeFolder } =
+  const { flows, notes,tabId,loginUserId, updateFlow, setTabsState, saveFlow,addFolder,saveFolder,removeFolder } =
     useContext(TabsContext);
   const maxLength = 50;
   const navigate = useNavigate();
@@ -58,11 +61,12 @@ export default function FolderModal({
   const [invalidName, setInvalidName] = useState(false);
   function handleClick() {
     if(isNew){
-      addFolder({"id":"","name":name,"description":description}).then((id) => {
-        setPopoverStatus(true);
+      addFolder({id:"",parent_id:parentId,name:name,description:description}).then((id) => {
+        // setPopoverStatus(true);
+        setSuccessData({ title: "New Folder is created" });
       });
       
-      setSuccessData({ title: "New Folder is created" });
+      
     }else{
       let savedFolder = folders.find((folder) => folder.id === folderId);
       savedFolder.name = name;
@@ -70,14 +74,18 @@ export default function FolderModal({
       saveFolder(savedFolder);
       // console.log("save folder:%s:%s",name,description);
       
-      setSuccessData({ title: "Changes saved successfully" });
+      setSuccessData({ title: "Folder saved successfully" });
     }
     setName("");
     setDescription("");
     setOpen(false);
   }
 
+  const [openConfirm,setOpenConfirm] = useState(false);
+
+
   return (
+    <>
     <BaseModal open={open} setOpen={setOpen} size="small">
       <BaseModal.Header description="Detail about Folder">
         {isNew?(
@@ -107,19 +115,8 @@ export default function FolderModal({
         </Button>
         {!isNew&&(
           <Button onClick={()=>{
-            let index = flows.findIndex((flow) => flow.folder_id === folderId);
-            if (index >= 0) {
-              setErrorData({title:"These is a notbook belong it, the Folder can't be deleted. "});
-            }else{
-              removeFolder(folderId);
-              setName("");
-              setDescription("");
               setOpen(false);
-              setSuccessData({ title: "Delete Folder successfully" })
-              let url="/flow/"+loginUserId;
-              navigate(url);
-              
-            }
+              setOpenConfirm(true);
             }} type="button" className="mx-2" variant={"secondary"}>
               <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
             Delete
@@ -127,5 +124,26 @@ export default function FolderModal({
         )}        
       </BaseModal.Footer>
     </BaseModal>
+      <ConfirmDialogModal
+        title="Confirm your operation"
+        content="Delete Folder will be NOT redo. Are you sure?"
+        confirm={()=>{
+          let index = flows.findIndex((flow) => flow.folder_id === folderId);
+          let indexFolder = folders.findIndex((folder) => folder.parent_id === folderId);
+          let indexNote = notes.findIndex((note) => note.folder_id === folderId);
+          if (index >= 0||indexFolder>=0||indexNote>=0) {
+            setErrorData({title:"These is a notbook/folder upder it, the Folder can't be deleted. "});
+          }else{
+            removeFolder(folderId);
+            setName("");
+            setDescription("");
+            setSuccessData({ title: "Delete Folder successfully" })
+          }          
+          setOpenConfirm(false);
+        }}
+        open={openConfirm}
+        setOpen={setOpenConfirm}
+      />
+  </>
   );
 }

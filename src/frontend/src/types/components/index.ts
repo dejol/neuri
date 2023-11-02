@@ -126,6 +126,7 @@ export type ProgressBarType = {
 export type RadialProgressType = {
   value?: number;
   color?: string;
+  size?: string;
 };
 
 export type AccordionComponentType = {
@@ -133,6 +134,7 @@ export type AccordionComponentType = {
   open?: string[];
   trigger?: string | ReactElement;
   keyValue?: string;
+  side?:"right" | "left";
 };
 export type Side = "top" | "right" | "bottom" | "left";
 

@@ -8,8 +8,8 @@ import ChatTrigger from "./chatTrigger";
 import * as _ from "lodash";
 import { TabsContext } from "../../contexts/tabsContext";
 import { getBuildStatus } from "../../controllers/API";
-import FormModal from "../../modals/formModal";
 import { NodeType } from "../../types/flow";
+
 export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpen, flow }: {
   open:boolean;
   setOpen: (open: boolean) => void;
@@ -25,16 +25,14 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
   const { tabsState } = useContext(TabsContext);
 
   // check is there has AINote 
-  let isAINote:boolean=false;
-  if (!flow.data || !flow.data.nodes) return;
-    flow.data.nodes.forEach((node: NodeType) => {
-      if(node.data.type=="AINote"&&(node.data.node.runnable==undefined||node.data.node.runnable)){
-        isAINote=true;
-        return;
-      }
-      // console.log("------1:"+node.data.type);
-  });  
-  //  console.log("------:"+isAINote);
+  // let isAINote:boolean=false;
+  // if (!flow.data || !flow.data.nodes) return;
+  //   flow.data.nodes.forEach((node: NodeType) => {
+  //     if(node.data.type=="AINote"&&(node.data.node.runnable==undefined||node.data.node.runnable)){
+  //       isAINote=true;
+  //       return;
+  //     }
+  // });  
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -103,19 +101,20 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
           setIsBuilt={setIsBuilt}
           isBuilt={isBuilt}
         />
-        {isBuilt &&
+        {/* {isBuilt &&
           tabsState[flow.id] &&
           tabsState[flow.id].formKeysData &&
-          canOpen && !isAINote && (
+          // !isAINote && 
+          canOpen && (
             <FormModal
               key={flow.id}
               flow={flow}
               open={open}
               setOpen={setOpen}
             />
-          )}
+          )} */}
         <ChatTrigger
-          canOpen={canOpen}
+          canOpen={true}
           open={open}
           setOpen={setOpen}
           isBuilt={isBuilt}

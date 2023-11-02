@@ -1,7 +1,7 @@
 import { IDomEditor, IEditorConfig, IToolbarConfig } from "@wangeditor/core";
 import { Boot } from "@wangeditor/editor";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Handle, NodeResizer, NodeToolbar, Position, useReactFlow, useStore, useStoreApi, useUpdateNodeInternals } from "reactflow";
 import markdownModule from '@wangeditor/plugin-md'
 import { TabsContext } from "../../contexts/tabsContext";
@@ -9,6 +9,9 @@ import ShadTooltip from "../../components/ShadTooltipComponent";
 import IconComponent from "../../components/genericIconComponent";
 import { cloneDeep } from "lodash";
 import { typesContext } from "../../contexts/typesContext";
+import { darkContext } from "../../contexts/darkContext";
+import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
+import BorderColorComponent from "../../pages/FlowPage/components/borderColorComponent";
 
 const connectionNodeIdSelector = (state) => state.connectionNodeId;
 const sourceStyle = { zIndex: 1 };
@@ -21,7 +24,7 @@ export default function NoteNode({
   yPos,
 }: {
   id:string,
-  data: {id:string,value:string,type:string}; 
+  data: {id:string,value:string,type:string,borderColor?:string,update_at?:Date}; 
   selected: boolean;
   xPos:number;
   yPos:number;
@@ -29,10 +32,9 @@ export default function NoteNode({
   const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
   const { flows, tabId,updateFlow } =useContext(TabsContext);
-  const {  reactFlowInstances } = useContext(typesContext);
-
-  const updateNodeInternals = useUpdateNodeInternals();
-
+  const { reactFlowInstances } = useContext(typesContext);
+  const {dark} =useContext(darkContext);
+  const [borderColour,setBorderColour] =useState(data.borderColor??"inherit");
   // editor 实例
   const [editor, setEditor] = useState<IDomEditor | null>(null)  
   // 工具栏配置
@@ -51,46 +53,36 @@ export default function NoteNode({
         iconSvg:'<svg viewBox="0 0 1024 1024"><path d="M959.877 128l0.123 0.123v767.775l-0.123 0.122H64.102l-0.122-0.122V128.123l0.122-0.123h895.775zM960 64H64C28.795 64 0 92.795 0 128v768c0 35.205 28.795 64 64 64h896c35.205 0 64-28.795 64-64V128c0-35.205-28.795-64-64-64zM832 288.01c0 53.023-42.988 96.01-96.01 96.01s-96.01-42.987-96.01-96.01S682.967 192 735.99 192 832 234.988 832 288.01zM896 832H128V704l224.01-384 256 320h64l224.01-192z"></path></svg>',
         menuKeys:['insertImage','uploadImage',]
       },
+      {
+        key: "video",
+        title: "Video",
+        iconSvg:'<svg viewBox="0 0 1024 1024"><path d="M981.184 160.096C837.568 139.456 678.848 128 512 128S186.432 139.456 42.816 160.096C15.296 267.808 0 386.848 0 512s15.264 244.16 42.816 351.904C186.464 884.544 345.152 896 512 896s325.568-11.456 469.184-32.096C1008.704 756.192 1024 637.152 1024 512s-15.264-244.16-42.816-351.904zM384 704V320l320 192-320 192z"></path></svg>',
+        menuKeys:['insertVideo','uploadVideo',]
+      },
     ];
 
   // 编辑器配置
-  // const [focusEditor,setFocusEditor] =useState(false);
-  const focusEditorRef = useRef(false);
-
-  // useEffect(() => {
-  //   focusEditorRef.current = focusEditor;
-  // }, [focusEditor]);
-  // useEffect(() => {
-  //   if(!selected &&toolbarOn){
-  //     setToolbarOn(false);
-  //   }
-  // }, [selected]);
-
-
   function handleChange(content){
     // if(focusEditorRef.current){
     //   onChange(content);
     // }
     data.value=content;
+    data.update_at=new Date();
+    refreshCurrentFlow();
   }
+  useEffect(()=>{
+    data.borderColor=borderColour;
+    data.update_at=new Date();
+  },[borderColour]);
+
   const editorConfig: Partial<IEditorConfig> = {   
       placeholder: 'Type something...',
       autoFocus:false,
       MENU_CONF: {},
       onChange :(editor:IDomEditor)=>{
           handleChange(editor.getHtml());
-          // setToolbarOn(true);
       },
-      onBlur:(editor:IDomEditor)=>{
-        // setToolbarOn(false);
-        // setFocusEditor(false)
-        // setToolbarOn(false);
-      },
-      onFocus:(editor:IDomEditor)=>{
-        // setFocusEditor(true)
-        // setToolbarOn(true);
-        // setToolbarOn(true);
-      }
+
   }
   editorConfig.MENU_CONF['uploadImage'] = {
     server: '/api/v1/upload/'+tabId,
@@ -157,11 +149,8 @@ export default function NoteNode({
     event.stopPropagation();
   };
   const connectionNodeId = useStore(connectionNodeIdSelector);
-  // console.log("connectionNodeId:%s,id:%s",connectionNodeId,id);
   const isConnecting = !!connectionNodeId;
-  const isTarget = connectionNodeId && connectionNodeId !== id;
-  // const label = isTarget ? 'Drop here' : 'Drag to connect';
-
+  const isTarget = connectionNodeId && connectionNodeId !== id&&(connectionNodeId&&connectionNodeId.toString().startsWith("noteNode"));
   const { setCenter,fitView } = useReactFlow();
   function focusNode() {
     let flow = flows.find((flow) => flow.id === tabId);
@@ -172,33 +161,20 @@ export default function NoteNode({
     fitView({nodes:[node],duration:1000,padding:0.1})
     // setCenter(x, y, { zoom:0.8, duration: 1000 });
   }
-  // const [toolbarOn,setToolbarOn] =useState(false);
-  // useEffect(()=>{
-  //   setToolbarOn(selected);
-
-  // },[selected])
 
   function focusNextNode(){
     let flow = flows.find((flow) => flow.id === tabId);
     let ed=flow.data?.edges.find((edge)=>(edge.source===id&&edge.source!=edge.target));
-    // console.log("edge:",ed);
     if(ed){
-      let node=flow.data?.nodes.find((node)=>node.id===ed.target);
-      // const x = node.position.x + node.width / 2;
-      // const y = node.position.y + node.height / 2;
-      // setCenter(x, y, { zoom:0.8, duration: 1000 });    
+      let node=flow.data?.nodes.find((node)=>node.id===ed.target);  
       fitView({nodes:[node],duration:1000,padding:0.1})
     }
   }
   function focusPrevNode(){
     let flow = flows.find((flow) => flow.id === tabId);
     let edge=flow.data?.edges.find((edge)=>(edge.target===id&&edge.source!=edge.target));
-    // console.log("prev-edge:",edge);
     if(edge){
-      let node=flow.data?.nodes.find((node)=>node.id===edge.source);
-      // const x = node.position.x + node.width / 2;
-      // const y = node.position.y + node.height / 2;
-      // setCenter(x, y, { zoom:0.8, duration: 1000 });   
+      let node=flow.data?.nodes.find((node)=>node.id===edge.source);  
       fitView({nodes:[node],duration:1000,padding:0.1})
     } 
   }
@@ -212,6 +188,7 @@ export default function NoteNode({
       updateFlow(flow);
     }
   }
+
   return (
     <div className={"h-full p-1 "+
         (isTarget ? "bg-status-green":"bg-background")+
@@ -221,7 +198,7 @@ export default function NoteNode({
             event.stopPropagation();
             focusNode();
         }}
-        style={{position:"relative"}}
+        style={{position:"relative",borderColor:borderColour}}
         onMouseEnter={(event)=>{
           setToolbarOn(true);
         }}
@@ -235,17 +212,14 @@ export default function NoteNode({
       <NodeResizer isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"
                    onResizeEnd={refreshCurrentFlow}/>
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
-        <NodeToolbar offset={2}>
-        <div className="flex justify-between w-full m-0">  
-          <div className="m-0">    
+        <NodeToolbar offset={2} className=" bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border">
           <Toolbar
               editor={editor}
               defaultConfig={toolbarConfig}
               mode={"simple"}
-              style={{ border: '1px solid #ccc' }}
+              // style={{ border: '1px solid #ccc' }}
+              className="m-1"
           /> 
-          </div> 
-        </div>          
         </NodeToolbar>
           <NodeToolbar offset={2} isVisible={toolbarOn}  position={Position.Left}>
           <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
@@ -264,21 +238,25 @@ export default function NoteNode({
               </button>
             </ShadTooltip>            
           </div>  
-          </NodeToolbar>          
+          </NodeToolbar>
+          <NodeToolbar offset={2} position={Position.Bottom}>
+            <BorderColorComponent
+              data={data}
+              setBorder={setBorderColour}
+              dark={dark}
+            />   
+          </NodeToolbar>       
           <Editor
             defaultConfig={editorConfig}
             value={data.value}
             onCreated={setEditor}
-              // onChange={editor => {                 
-                //onChange(editor.getHtml());
-                // console.log(editor.getHtml());
-              // }}
               mode="simple"
               style={{ height: '100%',
               minWidth:'200px',
               minHeight:'200px',
               width:'100%',
               fontSize:'20px',
+              backgroundColor:switchToBG(borderColour,dark),
               //  overflowY: 'scroll' 
             }} 
           />
@@ -290,7 +268,6 @@ export default function NoteNode({
             position={Position.Top}
             type="source"
             style={sourceStyle}
-            
           />
         )}
       <Handle type="target" position={Position.Top} id="a" className="customHandle"/>
