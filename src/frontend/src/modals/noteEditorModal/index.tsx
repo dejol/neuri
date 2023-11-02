@@ -282,7 +282,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
                   setName(event.target.value);                  
                 }}
                  />
-                 <span className="whitespace-nowrap text-sm text-muted-foreground">上次编辑时间:{moment(udpateAt).local().format("LLL")}</span>
+                 <span className="whitespace-nowrap text-sm text-muted-foreground">编辑时间:{moment(udpateAt).local().format("LLL")}</span>
             </div>
             <div className="w-full items-center">
               <Editor

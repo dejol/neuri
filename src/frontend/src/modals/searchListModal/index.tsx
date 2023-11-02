@@ -150,7 +150,7 @@ export default function SearchListModal({
             <ShadTooltip content={<p>{flow.description}<br/>
               <span className=" text-muted-foreground">
               {"ID:"+flow.id}<br/>
-              {"上次编辑时间:"+moment(flow.update_at).local().format('LLL')}<br/>
+              {"编辑时间:"+moment(flow.update_at).local().format('LLL')}<br/>
               {"创建时间:"+moment(flow.create_at).local().format('LLL')}
               </span>                
               </p>} side="right">
@@ -173,7 +173,7 @@ export default function SearchListModal({
           }
           key={flow.id}
           keyValue={flow.id}
-          open={[flow.id]}
+          open={[tabId]}
           side="left"
       >
       <List component="div" disablePadding={true}>
@@ -368,7 +368,7 @@ export default function SearchListModal({
 
 
                           <div className="file-component-badge-div justify-start h-4 ml-[0.85rem]">
-                            <ShadTooltip content={<p><span className="text-sm text-muted-foreground">{"上次编辑时间:"+moment(note.update_at).local().format('LLL')}<br/>{"创建时间:"+moment(note.create_at).local().format('LLL')}</span></p>} side="right">
+                            <ShadTooltip content={<p><span className="text-sm text-muted-foreground">{"编辑时间:"+moment(note.update_at).local().format('LLL')}<br/>{"创建时间:"+moment(note.create_at).local().format('LLL')}</span></p>} side="right">
                               <Button
                               size="small"
                               // variant="link"
