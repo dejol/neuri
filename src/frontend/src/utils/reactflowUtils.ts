@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Connection, Edge, ReactFlowInstance } from "reactflow";
 import { APITemplateType } from "../types/api";
-import { FlowType, NodeType } from "../types/flow";
+import { FlowType, FolderType, NodeType } from "../types/flow";
 import { cleanEdgesType } from "../types/utils/reactflowUtils";
 import { toNormalCase } from "./utils";
 
@@ -240,6 +240,18 @@ export function addVersionToDuplicates(flow: FlowType, flows: FlowType[]) {
 
   while (existingNames.includes(newName)) {
     newName = `${flow.name} (${count})`;
+    count++;
+  }
+
+  return newName;
+}
+export function addFolderToDuplicates(folder: FolderType, folders: FolderType[]) {
+  const existingNames = folders.map((item) => item.name);
+  let newName = folder.name;
+  let count = 1;
+
+  while (existingNames.includes(newName)) {
+    newName = `${folder.name} (${count})`;
     count++;
   }
 

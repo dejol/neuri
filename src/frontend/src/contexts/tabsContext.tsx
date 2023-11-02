@@ -34,6 +34,7 @@ import { FlowType, NodeType,FolderType, UserType, NoteType } from "../types/flow
 import { TabsContextType, TabsState } from "../types/tabs";
 import {
   addVersionToDuplicates,
+  addFolderToDuplicates,
   updateIds,
   updateTemplate,
 } from "../utils/reactflowUtils";
@@ -728,9 +729,13 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       }
       if(folder){
         newFolder.description=folder.description;
-        newFolder.name=folder.name;
+        // newFolder.name=folder.name;
+        let flowName = addFolderToDuplicates(folder, folders);
+        newFolder.name = flowName;        
         newFolder.parent_id=folder.parent_id??"";
       }
+
+
       try {
         const { id } = await saveFolderToDatabase(newFolder);
         refreshFolders();
