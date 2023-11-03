@@ -146,10 +146,9 @@ export default function SearchListModal({
     tabValues.set(id,{id:id,type:type})
     setTabId(id);
   }
-  let nn=0;
+  let itemCount=0;
   function itemList(flow:FlowType,idx:number){
-    nn=idx;
-    // console.log("fininsh:%s/%s",idx,flowList.length);
+    itemCount=idx;
     return(
       <div className="mr-4 w-full">
       <AccordionComponent
@@ -401,8 +400,8 @@ export default function SearchListModal({
                        itemList(flow,id)
                     ))}
                     {
-                     (nn+1!==flowList.length)&&(
-                      <div>Loading...</div>
+                     (itemCount+1!==flowList.length)&&(
+                      <div className="animate-pulse">...</div>
                      )
                     }
                     </>
