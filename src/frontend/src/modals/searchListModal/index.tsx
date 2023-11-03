@@ -40,7 +40,7 @@ export default function SearchListModal({
    } =useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { setErrorData, setSuccessData } = useContext(alertContext);
-  
+  // const [loading,setLoading] = useState(false);
 
   useEffect(() => {
     if(folderId){
@@ -60,7 +60,11 @@ export default function SearchListModal({
         });        
       }
     }
+    
   }, [notes,flows]);
+  // useEffect(() => {
+  //   setLoading(true);
+  // }, []);
 
   useEffect(() => {
     isOpen.current = open;
@@ -142,7 +146,10 @@ export default function SearchListModal({
     tabValues.set(id,{id:id,type:type})
     setTabId(id);
   }
-  function itemList(flow:FlowType){
+  let nn=0;
+  function itemList(flow:FlowType,idx:number){
+    nn=idx;
+    // console.log("fininsh:%s/%s",idx,flowList.length);
     return(
       <div className="mr-4 w-full">
       <AccordionComponent
@@ -286,6 +293,7 @@ export default function SearchListModal({
       </div>
     );
   }
+
   return (
           <div className="left-form-modal-iv-box mt-1">
             <div className="eraser-column-arrangement">
@@ -390,8 +398,13 @@ export default function SearchListModal({
                     </List>
                     {
                     flowList.map((flow, id) => (
-                      <>{itemList(flow)}</>
+                       itemList(flow,id)
                     ))}
+                    {
+                     (nn+1!==flowList.length)&&(
+                      <div>Loading...</div>
+                     )
+                    }
                     </>
                   ):(
                     

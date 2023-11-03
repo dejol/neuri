@@ -21,17 +21,17 @@ export async function getAll(): Promise<AxiosResponse<APIObjectType>> {
   return await api.get(`/api/v1/all`);
 }
 
-const GITHUB_API_URL = "https://api.github.com";
+// const GITHUB_API_URL = "https://api.github.com";
 
-export async function getRepoStars(owner, repo) {
-  try {
-    const response = await api.get(`${GITHUB_API_URL}/repos/${owner}/${repo}`);
-    return response.data.stargazers_count;
-  } catch (error) {
-    console.error("Error fetching repository data:", error);
-    return null;
-  }
-}
+// export async function getRepoStars(owner, repo) {
+//   try {
+//     const response = await api.get(`${GITHUB_API_URL}/repos/${owner}/${repo}`);
+//     return response.data.stargazers_count;
+//   } catch (error) {
+//     console.error("Error fetching repository data:", error);
+//     return null;
+//   }
+// }
 
 /**
  * Sends data to the API for prediction.

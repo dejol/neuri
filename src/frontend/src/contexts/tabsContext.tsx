@@ -49,7 +49,7 @@ const TabsContextInitialValue: TabsContextType = {
   tabId: "",
   pageTitle:"",
   setTabId: (index: string) => { },
-  setPageTitle: (index: string) => { },
+  setPageTitle: (title: string) => { },
   // tabValues: [""], //临时使用，来测试一下tabs功能
   // setTabValues: (values: Array<string>) => { },//临时使用，来测试一下tabs功能
   tabValues: new Map<"",{id:"",type:"",viewport?:Viewport}>(),
