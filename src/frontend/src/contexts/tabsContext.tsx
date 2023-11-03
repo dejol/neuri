@@ -79,6 +79,8 @@ const TabsContextInitialValue: TabsContextType = {
   uploadFlow: () => { },
   isBuilt: false,
   setIsBuilt: (state: boolean) => { },
+  isEMBuilt: false,
+  setIsEMBuilt: (state: boolean) => { },  
   isLogin: false,
   setIsLogin: (state: boolean) => { },
   openFolderList:false,
@@ -974,6 +976,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   }
 
   const [isBuilt, setIsBuilt] = useState(false);
+  const [isEMBuilt, setIsEMBuilt] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [openFolderList, setOpenFolderList] = useState(JSON.parse(window.localStorage.getItem("openFolder")) ?? false);
 
@@ -1002,6 +1005,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         saveFlow,
         isBuilt,
         setIsBuilt,
+        isEMBuilt,
+        setIsEMBuilt,
         isLogin,
         setIsLogin, 
         openFolderList,

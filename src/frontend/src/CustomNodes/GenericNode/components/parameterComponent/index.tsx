@@ -57,7 +57,7 @@ export default function ParameterComponent({
   const updateNodeInternals = useUpdateNodeInternals();
   const [position, setPosition] = useState(0);
   const { setTabsState, tabId, save, flows } = useContext(TabsContext);
-  const {isBuilt, setIsBuilt } = useContext(TabsContext);
+  const {isEMBuilt, setIsEMBuilt } = useContext(TabsContext);
   const { tabsState } = useContext(TabsContext);
 
   const flow = flows.find((flow) => flow.id === tabId)?.data?.nodes ?? null;
@@ -310,7 +310,7 @@ export default function ParameterComponent({
               ) : data.node?.template[name].chat_view ? (
                   <div className="input-full-node-wrap input-note dark:input-note-dark">
                     {
-                    (isBuilt && tabsState[currentFlow.id+"-"+data.id] &&
+                    (isEMBuilt && tabsState[currentFlow.id+"-"+data.id] &&
                     tabsState[currentFlow.id+"-"+data.id].formKeysData &&
                     tabsState[currentFlow.id+"-"+data.id].formKeysData.input_keys!==null)? (
                     <EmbeddedModal

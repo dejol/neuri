@@ -31,7 +31,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
     ).length
   );
 
-  const { flows, paste,openWebEditor,setOpenWebEditor,tabId,setEditFlowId,setEditNodeId,setIsBuilt } = useContext(TabsContext);
+  const { flows, paste,openWebEditor,setOpenWebEditor,tabId,setEditFlowId,setEditNodeId,setIsEMBuilt } = useContext(TabsContext);
   // const reactFlowInstance = useReactFlow();
   const {reactFlowInstances} =useContext(typesContext);
   const {dark} =useContext(darkContext);
@@ -157,7 +157,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             </ShadTooltip>
             <BuildTrigger 
               flow={flows.find((flow)=>flow.id==tabId)}
-              setIsBuilt={setIsBuilt}
+              setIsBuilt={setIsEMBuilt}
               nodeId={data.id}
             />
           </>

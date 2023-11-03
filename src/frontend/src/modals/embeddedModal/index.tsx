@@ -24,7 +24,7 @@ export default function EmbeddedModal({
   flow: FlowType;
 }) {
   // console.log("--------:::",sourceData);
-  const { tabsState, setTabsState,tabId } = useContext(TabsContext);
+  const { tabsState, setTabsState,tabId,setIsEMBuilt } = useContext(TabsContext);
   const [responseId,setResponseId] = useState(flow.id+"-"+sourceData.id);
   const [chatValue, setChatValue] = useState(() => {
     try {
@@ -213,6 +213,7 @@ export default function EmbeddedModal({
       let newData = cloneDeep(sourceData);
       newData.node!.template[name].value = data.message;
       setSourceData(newData);
+      setIsEMBuilt(false);
       if (ws.current) {
         try{
           // clearChat();

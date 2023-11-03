@@ -42,6 +42,8 @@ export type TabsContextType = {
   restore: () => void;
   isBuilt: boolean;
   setIsBuilt: (state: boolean) => void;
+  isEMBuilt: boolean;
+  setIsEMBuilt: (state: boolean) => void;  
   isLogin: boolean;
   setIsLogin: (state: boolean) => void;
   openFolderList:boolean;
