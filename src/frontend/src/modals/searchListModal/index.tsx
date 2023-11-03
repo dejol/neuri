@@ -294,9 +294,9 @@ export default function SearchListModal({
   }
 
   return (
-          <div className="left-form-modal-iv-box mt-1">
+          <div className="left-form-modal-iv-box mt-0">
             <div className="eraser-column-arrangement">
-              <div className="eraser-size group/closeButton">
+              <div className="eraser-size group/closeButton border-l-0">
               {/* <div className={"side-bar-search-div-placement"}>
                 <div className="header-end-display my-1 ">
                       <ShadTooltip content="New note" side="bottom">
@@ -343,7 +343,7 @@ export default function SearchListModal({
                     />
                   </button>
                 </div>
-                <div ref={messagesRef} className="chat-message-div">
+                <div ref={messagesRef} className="chat-message-div mt-1">
                   {searchKeyword&&searchKeyword.length>0&&(!folderId)&&(
                     <>
                     <div ref={ref} className="my-2">{flowList.length+noteList.length} {(flowList.length+noteList.length)>1?"Results":"Result"}</div>

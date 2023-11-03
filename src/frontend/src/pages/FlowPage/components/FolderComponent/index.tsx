@@ -763,7 +763,7 @@ export default function FolderPopover() {
   );
 
   return (
-    <div className={"left-side-folder-arrangement"}>
+    <div className={"left-side-folder-arrangement border-r-0"}>
       {/* <div className={"side-bar-search-div-placement"}>
         <div className="header-end-display">
               <ShadTooltip content="New note" side="bottom">
@@ -809,45 +809,45 @@ export default function FolderPopover() {
         </div>
       </div> */}
     <div className="side-bar-components-div-arrangement pb-0">
-    <div className="left-form-modal-iv-box mt-0">
-      <div className="eraser-column-arrangement">
-        <div className="eraser-size">
-        <div className="side-bar-search-div-placement">
-          <div className="ml-1 mt-1 ">
-          <Input
-          type="text"
-          name="search"
-          id="search-node"
-          placeholder="Search note"
-          className="nopan nodrag noundo nocopy input-search"
-          onKeyUp={(event)=>{
-            // console.log("event.key:",event.key);
-            // console.log("value:",event);
-            if(event.key=="Enter"){
-              searchNode();
-            }
-            
-          }}
-          onChange={(event) => {
-              setSearchKeyword(event.target.value);
-          }}
-        />
-        <div className="search-icon right-5">
-          <IconComponent
-            name="Search"
-            className={"h-5 w-5 stroke-[1.5] text-primary"}
-            aria-hidden="true"
-          
+      <div className="left-form-modal-iv-box mt-0">
+        <div className="eraser-column-arrangement">
+          <div className="eraser-size">
+          <div className="side-bar-search-div-placement">
+            <div className="ml-1 mt-1 ">
+            <Input
+            type="text"
+            name="search"
+            id="search-node"
+            placeholder="Search note"
+            className="nopan nodrag noundo nocopy input-search"
+            onKeyUp={(event)=>{
+              // console.log("event.key:",event.key);
+              // console.log("value:",event);
+              if(event.key=="Enter"){
+                searchNode();
+              }
+              
+            }}
+            onChange={(event) => {
+                setSearchKeyword(event.target.value);
+            }}
           />
-        </div>
-        </div>
-        </div>    
-          <div className="chat-message-div">
-            {list()}
+          <div className="search-icon right-5">
+            <IconComponent
+              name="Search"
+              className={"h-5 w-5 stroke-[1.5] text-primary"}
+              aria-hidden="true"
+            
+            />
+          </div>
+          </div>
+          </div>    
+            <div className="chat-message-div">
+              {list()}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
         {/* <FlowSettingsModal
           open={open}

@@ -213,6 +213,18 @@ export default function EmbeddedModal({
       let newData = cloneDeep(sourceData);
       newData.node!.template[name].value = data.message;
       setSourceData(newData);
+      if (ws.current) {
+        try{
+          // clearChat();
+          console.log("close connection");
+          ws.current.close(1000,"User closed the connection");
+        }catch (error) {
+
+        }
+        //isOpen.current=null;
+        ws.current=null;
+      }
+
       }
       if (data.intermediate_steps) {
         updateLastMessage({
@@ -256,28 +268,28 @@ export default function EmbeddedModal({
         //get chat history
       };
       newWs.onclose = (event) => {
-        handleOnClose(event);
+        // handleOnClose(event);
       };
       
       newWs.onerror = (ev) => {
         console.log(ev, "error");
         if (flow.id === "") {
-          connectWS();
+          // connectWS();
         } else {
-          setErrorData({
-            title: "There was an error on web connection, please: ",
-            list: [
-              "Refresh the page",
-              "Use a new flow tab",
-              "Check if the backend is up",
-            ],
-          });
+          // setErrorData({
+          //   title: "There was an error on web connection, please: ",
+          //   list: [
+          //     "Refresh the page",
+          //     "Use a new flow tab",
+          //     "Check if the backend is up",
+          //   ],
+          // });
         }
       };
       ws.current = newWs;
     } catch (error) {
       if (flow.id === "") {
-        connectWS();
+        // connectWS();
       }
       console.log(error);
     }

@@ -142,15 +142,10 @@ export default function GenericNode({
           setBorder={setBorderColor}
         ></NodeToolbarComponent>
       </NodeToolbar>
-      {(data.type=="Note" || data.type=="AINote") &&(
-        <NodeResizer isVisible={selected} minWidth={255} minHeight={290} handleClassName="w-5 h-5"
-                    onResizeEnd={(event)=>{
-                      refreshCurrentFlow();
-                    }}/>
-      )}
+
       <div
         className={classNames(
-          selected ? "border-4 border-ring" : "border-4",
+          selected ? "border-4 "+((data.type =="Note"||data.type =="AINote")?"":"border-ring") : "border-4",
           data.type =="Note"?"border-8 generic-resize-node-div"
           :data.type =="AINote"?"border-8 generic-resize-node-div"
           :" generic-node-div"
@@ -162,6 +157,12 @@ export default function GenericNode({
         style={{borderColor:data.borderColor}}
 
       >
+      {(data.type=="Note" || data.type=="AINote") &&(
+        <NodeResizer isVisible={selected} minWidth={255} minHeight={290} handleClassName="w-5 h-5"
+                    onResizeEnd={(event)=>{
+                      refreshCurrentFlow();
+                    }}/>
+      )}        
         {!(data.type=="Note" || data.type=="AINote") &&(
           <>
         {data.node.beta && (
