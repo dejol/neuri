@@ -401,7 +401,7 @@ export default function SearchListModal({
                     ))}
                     {
                      (itemCount+1!==flowList.length)&&(
-                      <div className="animate-pulse">...</div>
+                      <IconComponent name="MoreHorizontal" className="main-page-nav-button animate-pulse" />
                      )
                     }
                     </>
