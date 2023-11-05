@@ -259,7 +259,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           </>
           ):(
             
-          <ShadTooltip content={miniSize?"Full Size":"Mini Size"} side="top">
+          <ShadTooltip content={miniSize?"Expand":"Minimize"} side="top">
             <button
               className={classNames(
                 "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10" 
@@ -272,9 +272,9 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
               }}
             >
             {miniSize?(
-              <IconComponent name="Menu" className="h-4 w-4" />
+              <IconComponent name="Maximize2" className="h-4 w-4" />
             ):(
-              <IconComponent name="Minus" className="h-4 w-4 " />
+              <IconComponent name="Minimize2" className="h-4 w-4 " />
             )}
             </button>
           </ShadTooltip>        

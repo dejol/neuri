@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type,Any
 
 from langchain import SQLDatabase, utilities
 from langchain.schema import Document

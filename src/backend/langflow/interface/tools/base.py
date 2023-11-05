@@ -128,24 +128,26 @@ class ToolCreator(LangChainTypeCreator):
             params = self.type_to_loader_dict[name]["params"]  # type: ignore
             base_classes += [name]
         elif tool_type in OTHER_TOOLS:
-            tool_dict = build_template_from_class(tool_type, OTHER_TOOLS)
-            fields = tool_dict["template"]
+            
+            if(tool_type!="PythonAstREPLTool" ):#TODO: 搞不清楚这里为啥不排除它的话会报错
+                tool_dict = build_template_from_class(tool_type, OTHER_TOOLS)
+                fields = tool_dict["template"]
 
-            # Pop unnecessary fields and add name
-            fields.pop("_type")  # type: ignore
-            fields.pop("return_direct")  # type: ignore
-            fields.pop("verbose")  # type: ignore
+                # Pop unnecessary fields and add name
+                fields.pop("_type")  # type: ignore
+                fields.pop("return_direct")  # type: ignore
+                fields.pop("verbose")  # type: ignore
 
-            tool_params = {
-                "name": fields.pop("name")["value"],  # type: ignore
-                "description": fields.pop("description")["value"],  # type: ignore
-            }
+                tool_params = {
+                    "name": fields.pop("name")["value"],  # type: ignore
+                    "description": fields.pop("description")["value"],  # type: ignore
+                }
 
-            fields = [
-                TemplateField(name=name, field_type=field["type"], **field)
-                for name, field in fields.items()  # type: ignore
-            ]
-            base_classes += tool_dict["base_classes"]
+                fields = [
+                    TemplateField(name=name, field_type=field["type"], **field)
+                    for name, field in fields.items()  # type: ignore
+                ]
+                base_classes += tool_dict["base_classes"]
 
         # Copy the field and add the name
         for param in params:
