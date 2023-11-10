@@ -7,9 +7,9 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { alertContext } from "../../contexts/alertContext";
 import { useNavigate } from "react-router-dom";
-
+// 本组件由 AdminPage/LoginPage替换，不再使用本组件
 const LoginModal = forwardRef((props: { children: ReactNode }, ref) => {
-  const {isLogin,setIsLogin,login,setLoginUserId  } =useContext(TabsContext);
+  const {login } =useContext(TabsContext);
   const { setErrorData } = useContext(alertContext);
 
     const [username, setUsername] = useState('');
@@ -18,12 +18,11 @@ const LoginModal = forwardRef((props: { children: ReactNode }, ref) => {
     const handleSubmit = async (event) => {
       event.preventDefault();
       try {
-        login({name:username, password:password }).then((response)=>{
+        login({username:username, password:password }).then((response)=>{
           // console.log("return response:",response);
-          setIsLogin(response!="");
-          setLoginUserId(response['id']);
+          // setLoginUserId(response['id']);
           localStorage.setItem('login',response['id']);
-          localStorage.setItem('userName',response['name']);
+          localStorage.setItem('userName',response['username']);
           if(response!=""){
             let url="/flow/"; //+response['id'];
             navigate(url);

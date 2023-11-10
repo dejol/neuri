@@ -99,7 +99,6 @@ export default function Page({ flow }: { flow: FlowType }) {
     saveFlow,
     setTabsState,
     tabId,
-    loginUserId,
   } = useContext(TabsContext);
   const { types, 
     // reactFlowInstance,
@@ -221,7 +220,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           // reactFlowInstances.get(tabId).setViewport(tabValues.get(tabId).viewport);
         // }
         // if(tabId==flow.id)
-          updateFlow(flow,"nodes refresh");
+          updateFlow(flow);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

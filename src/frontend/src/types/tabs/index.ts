@@ -15,8 +15,8 @@ export type TabsContextType = {
   tabValues: Map<string,{id:string,type:string,viewport?:Viewport}>;
   setTabValues: {};  
 
-  loginUserId: string,
-  setLoginUserId: (index: string) => void,
+  // loginUserId: string,
+  // setLoginUserId: (index: string) => void,
   flows: Array<FlowType>;
   folders:Array<FolderType>;
   notes:Array<NoteType>;
@@ -44,8 +44,6 @@ export type TabsContextType = {
   setIsBuilt: (state: boolean) => void;
   isEMBuilt: boolean;
   setIsEMBuilt: (state: boolean) => void;  
-  isLogin: boolean;
-  setIsLogin: (state: boolean) => void;
   openFolderList:boolean;
   setOpenFolderList: (state: boolean) => void;
   openModelList:boolean;

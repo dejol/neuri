@@ -62,7 +62,7 @@ export type TweaksType = Array<
 >;
 
 export type UserType = {
-  name: string;
+  username: string;
   id?: string;
   password?: string;
 };

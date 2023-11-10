@@ -5,6 +5,8 @@ import _ from "lodash";
 
 //types for alertContextType
 type alertContextType = {
+  loading: boolean;
+  setLoading: (newState: boolean) => void;
   errorData: { title: string; list?: Array<string> };
   setErrorData: (newState: { title: string; list?: Array<string> }) => void;
   errorOpen: boolean;
@@ -27,6 +29,8 @@ type alertContextType = {
 
 //initial values to alertContextType
 const initialValue: alertContextType = {
+  loading: true,
+  setLoading: () => {},
   errorData: { title: "", list: [] },
   setErrorData: () => {},
   errorOpen: false,
@@ -54,6 +58,8 @@ export function AlertProvider({ children }: { children: ReactNode }) {
     title: string;
     list?: Array<string>;
   }>({ title: "", list: [] });
+  const [loading, setLoading] = useState(true);
+
   const [errorOpen, setErrorOpen] = useState(false);
   const [noticeData, setNoticeDataState] = useState<{
     title: string;
@@ -138,6 +144,8 @@ export function AlertProvider({ children }: { children: ReactNode }) {
   return (
     <alertContext.Provider
       value={{
+        loading,
+        setLoading,
         removeFromNotificationList,
         clearNotificationList,
         notificationList,

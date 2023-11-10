@@ -156,13 +156,14 @@ export default function SearchListModal({
             <ShadTooltip content={<p>{flow.description}<br/>
               <span className=" text-muted-foreground">
               {"ID:"+flow.id}<br/>
-              {"编辑时间:"+moment(flow.update_at).local().format('LLL')}<br/>
-              {"创建时间:"+moment(flow.create_at).local().format('LLL')}
+              {"编辑时间:"+moment(flow.update_at).local().format('YYYY-MM-DD HH:mm:ss')}<br/>
+              {"创建时间:"+moment(flow.create_at).local().format('YYYY-MM-DD HH:mm:ss')}
               </span>                
               </p>} side="right">
               <div className="file-component-badge-div justify-start h-4 ml-1">
               <Button
               size="small"
+              className=" whitespace-nowrap"
               // variant="link"
               style={{textTransform:"none"}}
               disableRipple
@@ -172,7 +173,8 @@ export default function SearchListModal({
               }}
               startIcon={<IconComponent name="FileText" className="main-page-nav-button" />}
               >
-                {flow.name}
+                {flow.name.substring(0,10)+(flow.name.length>10?"...":"")}
+                
               </Button>                          
             </div>
             </ShadTooltip>
@@ -217,7 +219,7 @@ export default function SearchListModal({
              )}
             {node.data.update_at!=undefined&&(
               <span className="text-sm text-ring"><br/>
-              {moment(node.data.update_at).format('LL')}
+              {moment(node.data.update_at).format('YYYY-MM-DD')}
               </span>
               )}
             </div>
@@ -265,7 +267,7 @@ export default function SearchListModal({
                 )}
                 {node.data.update_at!=undefined&&(
                     <span className="text-sm text-ring"><br/>
-                    {moment(node.data.update_at).format('LL')}
+                    {moment(node.data.update_at).format('YYYY-MM-DD')}
                     </span>
                   )}                      
                 </div>               
@@ -346,7 +348,7 @@ export default function SearchListModal({
                 <div ref={messagesRef} className="chat-message-div mt-1">
                   {searchKeyword&&searchKeyword.length>0&&(!folderId)&&(
                     <>
-                    <div ref={ref} className="my-2">{flowList.length+noteList.length} {(flowList.length+noteList.length)>1?"Results":"Result"}</div>
+                    <div ref={ref} className="my-2">{flowList.length+noteList.length} {(flowList.length+noteList.length)>1?"结果":"结果"}</div>
                     <Separator orientation="horizontal" />
                     </>
                   )}
@@ -375,10 +377,11 @@ export default function SearchListModal({
 
 
                           <div className="file-component-badge-div justify-start h-4 ml-[0.85rem]">
-                            <ShadTooltip content={<p><span className="text-sm text-muted-foreground">{"编辑时间:"+moment(note.update_at).local().format('LLL')}<br/>{"创建时间:"+moment(note.create_at).local().format('LLL')}</span></p>} side="right">
+                            <ShadTooltip content={<p><span className="text-sm text-muted-foreground">{"编辑时间:"+moment(note.update_at).local().format('YYYY-MM-DD HH:mm:ss')}<br/>{"创建时间:"+moment(note.create_at).local().format('YYYY-MM-DD HH:mm:ss')}</span></p>} side="right">
                               <Button
                               size="small"
                               // variant="link"
+                              className=" whitespace-nowrap"
                               style={{textTransform:"none"}}
                               disableRipple
                               onClick={() => {
@@ -387,7 +390,7 @@ export default function SearchListModal({
                               }}
                               startIcon={<IconComponent name="Square" className="main-page-nav-button" />}
                               >
-                              {filterHTML(note.name).substring(0,20)}
+                              {filterHTML(note.name).substring(0,10)+(filterHTML(note.name).length>10?"...":"")}
                               </Button>        
                               
                             </ShadTooltip>                  

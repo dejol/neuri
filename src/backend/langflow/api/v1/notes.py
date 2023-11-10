@@ -2,10 +2,14 @@ from typing import List
 from uuid import UUID
 from langflow.api.utils import remove_api_keys
 from langflow.api.v1.schemas import NoteListCreate, NoteListRead
+from langflow.services.auth.utils import get_current_active_user
 
 from langflow.services.database.models.note import (
     Note,
     NoteModel,
+)
+from langflow.services.database.models.user import (
+    User
 )
 from langflow.services.utils import get_session
 from langflow.services.utils import get_settings_manager
@@ -27,8 +31,9 @@ NOTE_DELETED = "Note deleted"
 router = APIRouter(prefix="/notes", tags=["Notes"])
 
 @router.post("/", response_model=Note)
-def create_note(note: NoteModel, db: Session = Depends(get_session)):
+def create_note(note: NoteModel, db: Session = Depends(get_session),current_user: User = Depends(get_current_active_user)):
     db_note = Note(**note.dict())
+    db_note.user_id=str(current_user.id)
     try:
         db.add(db_note)
         db.commit()
@@ -43,13 +48,13 @@ def create_note(note: NoteModel, db: Session = Depends(get_session)):
     return db_note
 
 
-@router.get("/all/{user_id}", response_model=List[Note])
-def read_notes(user_id:str, db: Session = Depends(get_session)):
+@router.get("/", response_model=List[Note])
+def read_notes(*, db: Session = Depends(get_session),current_user: User = Depends(get_current_active_user)):
     """Get all notes"""
     try:
         # notes = db.exec(select(Folder)).all()
         # print("user_id:",user_id)
-        notes = db.query(Note).filter(Note.user_id ==user_id ).all()
+        notes = db.query(Note).filter(Note.user_id ==str(current_user.id) ).all()
         # print("notes:",notes)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -83,16 +88,18 @@ def delete_note(note_id: UUID, db: Session = Depends(get_session)):
     db.commit()
     return {"detail":NOTE_DELETED}
 
-@router.get("/download/{user_id}", response_model=NoteListRead, status_code=200)
-async def download_file(user_id:str, db: Session = Depends(get_session)):
+@router.get("/download/", response_model=NoteListRead, status_code=200)
+async def download_file(*, db: Session = Depends(get_session),current_user: User = Depends(get_current_active_user)):
     """Download all notes as a file."""
-    notes = read_notes(user_id,db=db)
+    notes = read_notes(db=db,current_user=current_user)
     return NoteListRead(notes=notes)
 
-def create_notes(*, session: Session = Depends(get_session), note_list: NoteListCreate):
+def create_notes(*, session: Session = Depends(get_session), note_list: NoteListCreate
+                 ,current_user: User = Depends(get_current_active_user)):
     """Create multiple new notes."""
     db_notes = []
     for note in note_list.notes:
+        note.user_id=str(current_user.id)
         db_note = Note.from_orm(note)
         session.add(db_note)
         db_notes.append(db_note)

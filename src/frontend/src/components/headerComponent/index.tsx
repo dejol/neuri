@@ -42,16 +42,19 @@ import { typesContext } from "../../contexts/typesContext";
 import DocumentTitle from 'react-document-title';
 import ToggleShadComponent from "../toggleShadComponent";
 import {StyledMenu} from './components/menuBar'
+import { AuthContext } from "../../contexts/authContext";
 
 export default function Header() {
-  const { flows,notes, tabId,setTabId,isLogin,setIsLogin,setOpenFolderList,
-    openFolderList,setLoginUserId,setOpenMiniMap,openMiniMap,openAssistant,
+  const { flows,notes, tabId,setTabId,setOpenFolderList,
+    openFolderList,setOpenMiniMap,openMiniMap,openAssistant,
     setOpenAssistant,tabValues,setTabValues,setNotes,setPageTitle,pageTitle,
     backup,restore,getNodeId,addFlow,getSearchResult } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter,setNoticeData,setSuccessData } = useContext(alertContext);
   const {  reactFlowInstances, setReactFlowInstances } = useContext(typesContext);
   const curPath=useLocation().pathname;
+  const { userData,logout } = useContext(AuthContext);
+
   // const location = useLocation();
 
   // let current_flow = flows.find((flow) => flow.id === tabId);
@@ -73,13 +76,6 @@ export default function Header() {
   // }, []);
   const navigate = useNavigate();
 
-  function logout(){
-    setLoginUserId("");
-    setIsLogin(false);
-    localStorage.setItem('login',"");
-    localStorage.setItem('userName',"");
-    navigate("/flow/");
-  }
 
   // const store = useStoreApi();
   // const [searchKeyword,setSearchKeyword] =useState('');
@@ -187,7 +183,7 @@ export default function Header() {
   };
 
   useEffect(()=>{
-    let title="Welcome"; //default page title
+    let title="欢迎您"; //default page title
     if(tabId&&tabId.length>0){
       let tabObj=tabValues.get(tabId);
       if(tabObj){
@@ -215,6 +211,7 @@ export default function Header() {
       return "";
     }
   }
+  
   return (
     <div className="header-arrangement">
       <DocumentTitle title={pageTitle+" - Neuri"}/>
@@ -236,9 +233,9 @@ export default function Header() {
             </Link>
           </div>
           <div className="flex justify-start">
-            {curPath.startsWith("/flow")&&(
+            {curPath.startsWith("/app")&&(
             <div className="header-menu-bar w-full space-x-8">
-              <ShadTooltip content="Folder" side="bottom">
+              <ShadTooltip content="目录" side="bottom">
                 <button 
                 className="extra-side-bar-save-disable"
                 onClick={()=>{setOpenFolderList(!openFolderList);}}
@@ -246,7 +243,7 @@ export default function Header() {
                   <IconComponent name={"Sidebar"} className={"side-bar-button-size "+(openFolderList?"remind-blue":"" )} />
                 </button>
               </ShadTooltip>
-              <ShadTooltip content="New" side="bottom">
+              <ShadTooltip content="创建" side="bottom">
                   <button
                     className={"extra-side-bar-save-disable"}
                     onClick={handleClick}
@@ -275,11 +272,12 @@ export default function Header() {
                           let noteId=getNodeId("NewNote");
                           setTabId(noteId);
                           tabValues.set(noteId,{id:noteId,type:"note"})
-                          notes.push({id:noteId,name:"",folder_id:"",content:{id:noteId,value:""}})
+                          let folderId=getSearchResult?getSearchResult.folderId:"";
+                          notes.push({id:noteId,name:"",folder_id:folderId,content:{id:noteId,value:""}})
                         }}
                     disableRipple>
                     <IconComponent name="PlusSquare" className={ "side-bar-button-size mr-2" } />
-                     Note
+                    笔记
                     </MenuItem>                      
                     <MenuItem onClick={() => {
                           handleClose();
@@ -292,7 +290,7 @@ export default function Header() {
                           });                        }}
                     disableRipple>
                     <IconComponent name="FilePlus" className={ "side-bar-button-size mr-2" } />
-                     Notebook
+                     白板
                     </MenuItem>                        
 
                     </StyledMenu>
@@ -318,7 +316,7 @@ export default function Header() {
     {/* )} */}
   
       <div className="round-button-div">
-      {curPath.startsWith("/flow")&&(
+      {curPath.startsWith("/app")&&(
         <Box sx={{ height:"2.8rem" }}>
           <Tabs value={tabId} onChange={handleChange} aria-label="neuri tabs"
           sx={{height:"45px",minHeight:"45px",maxWidth:"600px",minWidth:"200px"}} 
@@ -326,7 +324,7 @@ export default function Header() {
               <Tab 
                 className="p-3 mt-1"
                 style={{borderTop: 1,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
-                label={(<div className="flex">Welcome</div>)}  
+                label={(<div className="flex">欢迎您</div>)}  
                 value={""} 
                 sx={{color:"unset"}}
               />
@@ -480,6 +478,24 @@ export default function Header() {
         { tabId !== "" && (
           <MenuBar tabId={tabId} />
         )}
+        {!curPath.startsWith("/app")&&userData&&(
+           <ShadTooltip content="Back to APP" side="bottom">
+           <button
+            className="extra-side-bar-save-disable" 
+             onClick={(event) => {
+               navigate("/app");
+             }}
+             
+           >
+             <IconComponent
+               name="ArrowLeft"
+               className={
+                 "side-bar-button-size remind-blue"
+               }
+             />
+           </button>
+         </ShadTooltip> 
+        )}
           <Separator orientation="vertical" />
           <AlertDropdown>
             <div className="extra-side-bar-save-disable relative">
@@ -494,10 +510,10 @@ export default function Header() {
             </div>
           </AlertDropdown>
 
-            {(isLogin) ? (
+            {(userData) ? (
               <ThemeProvider theme={muiTheme}>
               <Fragment>
-                <ShadTooltip content="Account" side="bottom">
+                <ShadTooltip content="账号" side="bottom">
                 <IconButton
                   onClick={(event: React.MouseEvent<HTMLElement>) => {
                     setAnchorEl(event.currentTarget);}}
@@ -507,9 +523,9 @@ export default function Header() {
                   aria-haspopup="true"
                   aria-expanded={open ? 'true' : undefined}
                 >
-                  <Avatar sx={{ width: 32, height: 32 }}>
-                  {localStorage.getItem('userName').charAt(0).toUpperCase()}
-                    </Avatar>
+                  <Avatar sx={{ width: 32, height: 32, }} className={userData.profile_image}>
+                    {userData.username.charAt(0).toUpperCase()}
+                  </Avatar>
                 </IconButton>
               </ShadTooltip>
 
@@ -549,12 +565,21 @@ export default function Header() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem onClick={()=>{
-                  //
+                  navigate("/account/settings");
                   }
                 }>
                   <IconComponent name="User" className="side-bar-button-size mr-2" />
-                  {localStorage.getItem('userName')}
+                  {userData.username}
                 </MenuItem>
+                {(userData&&userData.is_superuser&&(
+                  <MenuItem onClick={()=>{
+                    navigate("/admin");
+                    }
+                  }>
+                    <IconComponent name="Users2" className="side-bar-button-size mr-2" />
+                    账号管理
+                  </MenuItem>
+                ))}
                 <MenuItem onClick={()=>{
                     setDark(!dark);    
                   }
@@ -564,75 +589,79 @@ export default function Header() {
                   ) : (
                     <IconComponent name="MoonIcon" className="side-bar-button-size mr-2" />
                   )}
-                    Model
+                    显示模式
                 </MenuItem>
-                <MenuItem onClick={()=>{
-                    setOpenAssistant(!openAssistant);  
-                  }
-                }
-                  className="px-0 pr-1"
-                >
-                  {/* {openAssistant ? (
-                    <IconComponent name="MicOff" className="side-bar-button-size mr-2" />
-                  ) : (
-                    <IconComponent name="Mic" className="side-bar-button-size mr-2" />
-                  )} */}
-                  <ToggleShadComponent
-                  disabled={false}
-                  enabled={openAssistant}
-                  setEnabled={setOpenAssistant}
-                  size="small"
+                {tabValues.get(tabId)&&tabValues.get(tabId).type=="flow"&&(
+                  <>
+                    <MenuItem onClick={()=>{
+                        setOpenAssistant(!openAssistant);  
+                      }
+                    }
+                      className="px-0 pr-1"
+                    >
+                      {/* {openAssistant ? (
+                        <IconComponent name="MicOff" className="side-bar-button-size mr-2" />
+                      ) : (
+                        <IconComponent name="Mic" className="side-bar-button-size mr-2" />
+                      )} */}
+                      <ToggleShadComponent
+                      disabled={false}
+                      enabled={openAssistant}
+                      setEnabled={setOpenAssistant}
+                      size="small"
 
-                />
-                AI Assistant
-                  
-                </MenuItem>                
-                <MenuItem onClick={()=>{
-                    setOpenMiniMap(!openMiniMap);    
-                  }
-                }
-                className="px-0 pr-1"
-                >
-                  
-                  <ToggleShadComponent
-                    disabled={false}
-                    enabled={openMiniMap}
-                    setEnabled={setOpenMiniMap}
-                    size="small"
-                  />
-                  Mini Map
-                </MenuItem>
+                    />
+                    AI助理
+                    </MenuItem>                
+                    <MenuItem onClick={()=>{
+                        setOpenMiniMap(!openMiniMap);    
+                      }
+                    }
+                    className="px-0 pr-1"
+                    >
+                      
+                      <ToggleShadComponent
+                        disabled={false}
+                        enabled={openMiniMap}
+                        setEnabled={setOpenMiniMap}
+                        size="small"
+                      />
+                      全览地图
+                    </MenuItem>
+                </>
+                )}
                 <Divider sx={{ my: 0.5 }} />  
                 <MenuItem onClick={()=>{
                   backup();
                   }
                 }>
                   <IconComponent name="Download" className="side-bar-button-size mr-2" />
-                  Backup
+                  备份笔记数据
                 </MenuItem>
                 <MenuItem onClick={()=>{
                   restore();
                   }
                 }>
                   <IconComponent name="Upload" className="side-bar-button-size mr-2" />
-                  Restore
+                  恢复笔记数据
                 </MenuItem>                
               <Divider sx={{ my: 0.5 }} /> 
                 <MenuItem onClick={()=>{
                     logout();    
+                    navigate("/login");
                   }
                 }>
-                  <IconComponent name="LogOut" className="side-bar-button-size mr-2" />Logout
+                  <IconComponent name="LogOut" className="side-bar-button-size mr-2" />退出账号
                 </MenuItem>
               </Menu>
               </Fragment>
               </ThemeProvider>
             ) : (
-              <ShadTooltip content="Login" side="bottom"> 
+              <ShadTooltip content="登陆" side="bottom"> 
               <button
               className="extra-side-bar-save-disable"
               onClick={() => {
-                logout();      
+                navigate("/login");     
               }}
             >
               <IconComponent name="LogIn" className="side-bar-button-size" />

@@ -129,7 +129,7 @@ class ToolCreator(LangChainTypeCreator):
             base_classes += [name]
         elif tool_type in OTHER_TOOLS:
             
-            if(tool_type!="PythonAstREPLTool" ):#TODO: 搞不清楚这里为啥不排除它的话会报错
+            if(tool_type!="PythonAstREPLTool" ):#TODO: 不理解这里为啥不排除它的话会报错
                 tool_dict = build_template_from_class(tool_type, OTHER_TOOLS)
                 fields = tool_dict["template"]
 

@@ -17,10 +17,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <ContextWrapper>
-    <BrowserRouter>
+    {/* <BrowserRouter> */}
       <App />
-      <ApiInterceptor />
-    </BrowserRouter>
+      {/* <ApiInterceptor /> */}
+    {/* </BrowserRouter> */}
   </ContextWrapper>
 );
 reportWebVitals();

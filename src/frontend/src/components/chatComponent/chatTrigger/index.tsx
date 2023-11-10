@@ -35,7 +35,7 @@ export default function ChatTrigger({ open, setOpen, isBuilt, canOpen }) {
   return (
     <Transition
       // show={!open}
-      show={true}
+      show={isBuilt!=null}
       appear={true}
       enter="transition ease-out duration-300"
       enterFrom="translate-y-96"

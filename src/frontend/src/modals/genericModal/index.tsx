@@ -142,7 +142,7 @@ export default function GenericModal({
           } else {
             setIsEdit(false);
             setSuccessData({
-              title: "Prompt is ready",
+              title: "Prompt 已准备好",
             });
             setNodeClass(apiReturn.data?.frontend_node);
             setModalOpen(closeModal);

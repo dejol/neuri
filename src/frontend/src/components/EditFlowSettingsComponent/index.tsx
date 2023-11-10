@@ -4,6 +4,7 @@ import { Label } from "../../components/ui/label";
 import { Textarea } from "../../components/ui/textarea";
 import { readFlowsFromDatabase } from "../../controllers/API";
 import { TabsContext } from "../../contexts/tabsContext";
+import { AuthContext } from "../../contexts/authContext";
 
 type InputProps = {
   name: string | null;
@@ -31,11 +32,11 @@ export const EditFlowSettings: React.FC<InputProps> = ({
   updateFlow,
 }) => {
   const [isMaxLength, setIsMaxLength] = useState(false);
-  const {loginUserId } = useContext(TabsContext);
+  const { userData } = useContext(AuthContext);
 
   const nameLists = useRef([]);
   useEffect(() => {
-    readFlowsFromDatabase(loginUserId).then((flows) => {
+    readFlowsFromDatabase().then((flows) => {
       flows.forEach((flow) => {
         nameLists.current.push(flow.name);
       });
@@ -71,12 +72,12 @@ export const EditFlowSettings: React.FC<InputProps> = ({
     <>
       <Label>
         <div className="edit-flow-arrangement">
-          <span className="font-medium">Name</span>{" "}
+          <span className="font-medium">名称</span>{" "}
           {isMaxLength && (
-            <span className="edit-flow-span">Character limit reached</span>
+            <span className="edit-flow-span">字符超过最大限制</span>
           )}
           {invalidName && (
-            <span className="edit-flow-span">Name already in use</span>
+            <span className="edit-flow-span">名称已经被使用了</span>
           )}
         </div>
         <Input
@@ -92,7 +93,7 @@ export const EditFlowSettings: React.FC<InputProps> = ({
       </Label>
       <Label>
         <div className="edit-flow-arrangement mt-3">
-          <span className="font-medium ">Description (optional)</span>
+          <span className="font-medium ">描述 (可选)</span>
         </div>
 
         <Textarea

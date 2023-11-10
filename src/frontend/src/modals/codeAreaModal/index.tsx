@@ -57,7 +57,7 @@ export default function CodeAreaModal({
           let funcErrors = apiReturn.data.function.errors;
           if (funcErrors.length === 0 && importsErrors.length === 0) {
             setSuccessData({
-              title: "Code is ready to run",
+              title: "代码已经为运行准备好了",
             });
             setOpen(false);
             setValue(code);
@@ -189,7 +189,7 @@ export default function CodeAreaModal({
           </div>
           <div className="flex h-fit w-full justify-end">
             <Button className="mt-3" onClick={handleClick} type="submit">
-              Check & Save
+              检查并保存
             </Button>
           </div>
         </div>

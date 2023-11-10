@@ -53,7 +53,7 @@ export default function GenericNode({
   useEffect(() => {
     olddata.node = data.node;
     olddata.node.mini_size=miniSize;
-    olddata.update_at=new Date();
+    // olddata.update_at=new Date();
     olddata.borderColor=data.borderColor;
     let myFlow = flows.find((flow) => flow.id === tabId);
     
@@ -82,6 +82,7 @@ export default function GenericNode({
       updateFlow(flow);
     }
   }, [data]);
+
   // New useEffect to watch for changes in sseData and update validation status
   useEffect(() => {
     const relevantData = sseData[data.id];
@@ -128,6 +129,7 @@ export default function GenericNode({
       updateFlow(flow);
     }
   }    
+  
   return (
     <>
       <NodeToolbar offset={(data.type=="Note" || data.type=="AINote")?2:-5} position={(data.type=="Note" || data.type=="AINote")?Position.Bottom:Position.Top}>

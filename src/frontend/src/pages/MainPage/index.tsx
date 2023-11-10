@@ -5,21 +5,20 @@ import IconComponent from "../../components/genericIconComponent";
 import { USER_PROJECTS_HEADER } from "../../constants/constants";
 import { TabsContext } from "../../contexts/tabsContext";
 
-import LoginModal from "../../modals/loginModal";
 import { Button } from "../../components/ui/button";
+import { AuthContext } from "../../contexts/authContext";
 
 
 export default function HomePage() {
-  const { login, isLogin,setIsLogin,flows,loginUserId, setTabId, downloadFlows, uploadFlows, setLoginUserId, removeFlow,folders,addFolder,removeFolder } =
+  const { login,flows, setTabId, downloadFlows, uploadFlows, removeFlow,folders,addFolder,removeFolder } =
     useContext(TabsContext);
-
+  const {userData} =  useContext(AuthContext);
   // Set a null id
   useEffect(() => {
     setTabId("");
-    if(localStorage.getItem('login')){
-      setIsLogin(true);
-      setLoginUserId(localStorage.getItem('login'));
-    }
+    // if(userData&&userData.id){
+    //   setLoginUserId(userData.id);
+    // }
   }, []);
 
 
@@ -35,10 +34,10 @@ export default function HomePage() {
       {/* <span className="main-page-description-text">
         Manage your NoteBooks. 
       </span> */}
-      {(!localStorage.getItem('login'))&&(
+      {/* {(!localStorage.getItem('login'))&&(
         <LoginModal>
         </LoginModal>
-     )}
+     )} */}
     <div className="main-page-nav-arrangement justify-center align-middle w-full">
       <div 
       // className="main-page-flows-display "
@@ -50,7 +49,7 @@ export default function HomePage() {
             flow={flows[0]}
             id={flows[0].id}
             button={
-              <Link to={"/flow/" + flows[0].id}>
+              <Link to={"/app"}>
                 <Button
                   variant="outline"
                   size="sm"
@@ -63,7 +62,7 @@ export default function HomePage() {
             
           />
           ):(
-            <Link to={"/flow/"+loginUserId}>
+            <Link to={"/app"}>
                 <Button
                   variant="outline"
                   size="sm"

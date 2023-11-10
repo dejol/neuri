@@ -10,6 +10,15 @@ export type InputComponentType = {
   editNode?: boolean;
   onChangePass?: (value: boolean | boolean) => void;
   showPass?: boolean;
+  isForm?:boolean;
+  placeholder?:string;
+  required?:boolean;
+  id?: string;
+  blurOnEnter?: boolean;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  autoFocus?: boolean;
+  className?: string;
+
 };
 export type ToggleComponentType = {
   enabled: boolean;
@@ -176,5 +185,70 @@ export interface languageMap {
   [key: string]: string | undefined;
 }
 
+export type UserInputType = {
+  username: string;
+  password: string;
+  is_active?: boolean;
+  is_superuser?: boolean;
+  id?: string;
+  create_at?: string;
+  update_at?: string;
+};
+export type loginInputStateType = {
+  username: string;
+  password: string;
+};
+export type inputHandlerEventType = {
+  target: {
+    value: string | boolean;
+    name: string;
+  };
+};
+export type UserManagementType = {
+  title: string;
+  titleHeader: string;
+  cancelText: string;
+  confirmationText: string;
+  children: ReactElement;
+  icon: string;
+  data?: any;
+  index?: number;
+  asChild?: boolean;
+  onConfirm: (index, data) => void;
+};
+
+export type PaginatorComponentType = {
+  pageSize: number;
+  pageIndex: number;
+  rowsCount?: number[];
+  totalRowsCount: number;
+  paginate: (pageIndex: number, pageSize: number) => void;
+};
+export type ConfirmationModalType = {
+  title: string;
+  titleHeader: string;
+  asChild?: boolean;
+  modalContent: string;
+  modalContentTitle: string;
+  cancelText: string;
+  confirmationText: string;
+  children: ReactElement;
+  icon: string;
+  data: any;
+  index: number;
+  onConfirm: (index, data) => void;
+};
 // for wangEditor upload image
 // export type InsertFnType = (url: string, alt: string, href: string) => void
+
+export type signUpInputStateType = {
+  password: string;
+  cnfPassword: string;
+  username: string;
+};
+
+export type patchUserInputStateType = {
+  password: string;
+  cnfPassword: string;
+  gradient: string;
+};

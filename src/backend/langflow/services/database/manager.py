@@ -17,7 +17,12 @@ class DatabaseManager(Service):
         langflow_dir = Path(__file__).parent.parent.parent
         self.script_location = langflow_dir / "alembic"
         self.alembic_cfg_path = langflow_dir / "alembic.ini"
-        self.engine = create_engine(database_url)
+
+        if (database_url.startswith("sqlite")):
+            connect_args = {"check_same_thread": False}
+        else:
+            connect_args = {}            
+        self.engine = create_engine(database_url,connect_args=connect_args)
 
     def __enter__(self):
         self._session = Session(self.engine)

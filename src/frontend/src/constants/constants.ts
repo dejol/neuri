@@ -78,13 +78,13 @@ export const limitScrollFieldsModal = 10;
  * The base text for subtitle of Export Dialog (Toolbar)
  * @constant
  */
-export const EXPORT_DIALOG_SUBTITLE = "Export flow as JSON file.";
+export const EXPORT_DIALOG_SUBTITLE = "以JSON格式导出白板数据.";
 
 /**
  * The base text for subtitle of Flow Settings (Menubar)
  * @constant
  */
-export const SETTINGS_DIALOG_SUBTITLE = "More details about your Notebook.";
+export const SETTINGS_DIALOG_SUBTITLE = "修改白板的配置";
 
 /**
  * The base text for subtitle of Code Dialog (Toolbar)
@@ -132,7 +132,7 @@ export const CHAT_CANNOT_OPEN_TITLE = "Chat Cannot Open";
 
 export const CHAT_CANNOT_OPEN_DESCRIPTION = "This is not a chat flow.";
 
-export const FLOW_NOT_BUILT_TITLE = "Flow not built";
+export const FLOW_NOT_BUILT_TITLE = "白板还没运行成功";
 
 export const FLOW_NOT_BUILT_DESCRIPTION =
   "Please build the flow before chatting.";
@@ -505,13 +505,56 @@ export const NOUNS: string[] = [
  */
 export const USER_PROJECTS_HEADER = "Neuri NoteBooks";
 
+
+export const BASE_URL_API = "/api/v1/";
+export const CONTROL_LOGIN_STATE = {
+  username: "",
+  password: "",
+};
+
 /**
  * URLs excluded from error retries.
  * @constant
  *
  */
 export const URL_EXCLUDED_FROM_ERROR_RETRIES = [
-  "/api/v1/validate/code",
-  "/api/v1/custom_component",
-  "/api/v1/validate/prompt",
+  `${BASE_URL_API}validate/code`,
+  `${BASE_URL_API}custom_component`,
+  `${BASE_URL_API}validate/prompt`,
 ];
+
+/**
+ * Header text for admin page
+ * @constant
+ *
+ */
+export const ADMIN_HEADER_TITLE = "管理用户";
+
+/**
+ * Header description for admin page
+ * @constant
+ *
+ */
+export const ADMIN_HEADER_DESCRIPTION =
+  "Navigate through this section to efficiently oversee all application users. From here, you can seamlessly manage user accounts.";
+
+export const CONTROL_NEW_USER = {
+  username: "",
+  password: "",
+  is_active: false,
+  is_superuser: false,
+};
+
+export const CONTROL_INPUT_STATE = {
+  password: "",
+  cnfPassword: "",
+  username: "",
+};
+
+export const SIGN_UP_SUCCESS = "您的账号已经注册成功，请耐心等待我们的管理员审核。 ";
+
+export const CONTROL_PATCH_USER_STATE = {
+  password: "",
+  cnfPassword: "",
+  gradient: "",
+};  

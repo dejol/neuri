@@ -31,7 +31,7 @@ export default function FolderModal({
 }) {
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const ref = useRef();
-  const { flows, notes,tabId,loginUserId, updateFlow, setTabsState, saveFlow,addFolder,saveFolder,removeFolder } =
+  const { flows, notes,tabId, updateFlow, setTabsState, saveFlow,addFolder,saveFolder,removeFolder } =
     useContext(TabsContext);
   const maxLength = 50;
   const navigate = useNavigate();
@@ -87,11 +87,11 @@ export default function FolderModal({
   return (
     <>
     <BaseModal open={open} setOpen={setOpen} size="small">
-      <BaseModal.Header description="Detail about Folder">
+      <BaseModal.Header description="文件夹详情">
         {isNew?(
-          <span className="pr-2">New Folder</span>
+          <span className="pr-2">创建新的文件夹</span>
         ):(
-          <span className="pr-2">Edit Folder</span>
+          <span className="pr-2">编辑</span>
         )}
         <IconComponent name="Folder" className="mr-2 h-4 w-4 " />
       </BaseModal.Header>
@@ -111,7 +111,7 @@ export default function FolderModal({
 
       <BaseModal.Footer>
         <Button disabled={invalidName} onClick={handleClick} type="submit">
-          Save
+          保存
         </Button>
         {!isNew&&(
           <Button onClick={()=>{
@@ -119,25 +119,25 @@ export default function FolderModal({
               setOpenConfirm(true);
             }} type="button" className="mx-2" variant={"secondary"}>
               <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
-            Delete
+            删除
           </Button>  
         )}        
       </BaseModal.Footer>
     </BaseModal>
       <ConfirmDialogModal
-        title="Confirm your operation"
-        content="Delete Folder will be NOT redo. Are you sure?"
+        title="确认操作"
+        content="删除操作是不可恢复的，确认是否继续？"
         confirm={()=>{
           let index = flows.findIndex((flow) => flow.folder_id === folderId);
           let indexFolder = folders.findIndex((folder) => folder.parent_id === folderId);
           let indexNote = notes.findIndex((note) => note.folder_id === folderId);
           if (index >= 0||indexFolder>=0||indexNote>=0) {
-            setErrorData({title:"These is a notbook/folder upder it, the Folder can't be deleted. "});
+            setErrorData({title:"删除操作失败，可能有白板/笔记/文件夹在本文件夹下面，请检查。 "});
           }else{
             removeFolder(folderId);
             setName("");
             setDescription("");
-            setSuccessData({ title: "Delete Folder successfully" })
+            setSuccessData({ title: "删除文件夹成功" })
           }          
           setOpenConfirm(false);
         }}

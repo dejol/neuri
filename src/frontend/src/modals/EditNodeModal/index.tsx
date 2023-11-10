@@ -382,7 +382,7 @@ const EditNodeModal = forwardRef(
             }}
             type="submit"
           >
-            Save Changes
+           保存变更
           </Button>
         </BaseModal.Footer>
       </BaseModal>

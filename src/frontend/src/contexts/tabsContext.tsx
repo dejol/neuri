@@ -41,7 +41,7 @@ import {
 import { getRandomDescription, getRandomName } from "../utils/utils";
 import { alertContext } from "./alertContext";
 import { typesContext } from "./typesContext";
-
+import { AuthContext } from "./authContext";
 const uid = new ShortUniqueId({ length: 5 });
 
 const TabsContextInitialValue: TabsContextType = {
@@ -55,8 +55,8 @@ const TabsContextInitialValue: TabsContextType = {
   tabValues: new Map<"",{id:"",type:"",viewport?:Viewport}>(),
   setTabValues: () => {},
 
-  loginUserId: "",
-  setLoginUserId: (index: string) => { },
+  // loginUserId: "",
+  // setLoginUserId: (index: string) => { },
   flows: [],
   folders: [],
   notes:[],
@@ -81,8 +81,6 @@ const TabsContextInitialValue: TabsContextType = {
   setIsBuilt: (state: boolean) => { },
   isEMBuilt: false,
   setIsEMBuilt: (state: boolean) => { },  
-  isLogin: false,
-  setIsLogin: (state: boolean) => { },
   openFolderList:false,
   setOpenFolderList: (state: boolean) => { },
   openModelList:false,
@@ -122,9 +120,10 @@ export const TabsContext = createContext<TabsContextType>(
 
 export function TabsProvider({ children }: { children: ReactNode }) {
   const { setErrorData, setNoticeData,setSuccessData } = useContext(alertContext);
+  const { getAuthentication, isAuthenticated,userData } = useContext(AuthContext);
 
   const [tabId, setTabId] = useState("");
-  const [loginUserId, setLoginUserId] = useState("");
+  // const [loginUserId, setLoginUserId] = useState("");
 
   const [flows, setFlows] = useState<Array<FlowType>>([]);
   
@@ -210,40 +209,48 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     // get data from db
     //get tabs locally saved
     // let tabsData = getLocalStorageTabsData();
-    if(loginUserId){
-      refreshFlows();
-    }
-  }, [templates]);
-
-  useEffect(() => {
-    // get data from db
-    //get tabs locally saved
-    setLoginUserId(localStorage.getItem('login'));    
-
-  }, []);
-  useEffect(() => {
-    if(loginUserId){
+    // console.log("getAuthentication:",getAuthentication());
+    if (getAuthentication() === true) {
       refreshFolders();
       refreshFlows();
       refreshNotes();
     }
-  }, [loginUserId]);
+  }, [templates,getAuthentication()]);
+
+  useEffect(() => {
+    // get data from db
+    //get tabs locally saved
+    // setLoginUserId(localStorage.getItem('login'));    
+    // if(userData){
+    //   setLoginUserId(userData.id);
+
+    // }
+
+  }, []);
+  // useEffect(() => {
+  //   console.log("loginUserId:",loginUserId);
+  //   if(loginUserId){
+  //     refreshFolders();
+  //     refreshFlows();
+  //     refreshNotes();
+  //   }
+  // }, [loginUserId]);
 
   function getTabsDataFromDB() {
     //get tabs from db
-    return readFlowsFromDatabase(loginUserId);
+    return readFlowsFromDatabase();
   }
   function getFoldersDataFromDB() {
     //get folders from db
 
     // if(loginUserId){
-      return readFoldersFromDatabase(loginUserId);
+      return readFoldersFromDatabase();
     // }
     // return;
   }
   function getNotesDataFromDB() {
     //get notes from db
-      return readNotesFromDatabase(loginUserId);
+      return readNotesFromDatabase();
   }
   function processDBData(DbData) {
     DbData.forEach((flow) => {
@@ -371,7 +378,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   }
 
   function downloadFlows() {
-    downloadFlowsFromDatabase(loginUserId).then((flows) => {
+    downloadFlowsFromDatabase().then((flows) => {
       const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
         JSON.stringify(flows)
       )}`;
@@ -387,12 +394,12 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   }
   function backup() {
     let backupTime=new Date();
-    let backup={backupTime:new Date(),userId:loginUserId}
-    downloadFlowsFromDatabase(loginUserId).then((flows) => {
+    let backup={backupTime:new Date(),userId:userData.id}
+    downloadFlowsFromDatabase().then((flows) => {
       backup['flows']=flows.flows;
-      downloadNotesFromDatabase(loginUserId).then((notes)=>{
+      downloadNotesFromDatabase().then((notes)=>{
         backup['notes']=notes.notes;
-        downloadFoldersFromDatabase(loginUserId).then((folders)=>{
+        downloadFoldersFromDatabase().then((folders)=>{
           backup['folders']=folders.folders;
           const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
             JSON.stringify(backup)
@@ -494,7 +501,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         const formData = new FormData();
         formData.append("file", file); 
         try {
-          uploadAllToDatabase(formData,loginUserId).then((res) => {
+          uploadAllToDatabase(formData).then((res) => {
             if(res&&res['status']==201){
               refreshFolders();
               refreshNotes();
@@ -725,7 +732,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       let newFolder = {
         description: "NOT DESC",
         name: getRandomName(),
-        user_id:folder?.user_id ?? loginUserId,
+        user_id:folder?.user_id ?? userData.id,
         parent_id:"",
         id: "",
       }
@@ -756,7 +763,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       let newNote = {
         content:{id:"",value:""},
         name: "NO-NAME",
-        user_id:note?.user_id ?? loginUserId,
+        user_id:note?.user_id ?? userData.id,
         folder_id:"",
         id: "",
       }
@@ -834,7 +841,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     name: flow?.name ?? getRandomName(),
     data: flowData.data?? {"nodes": [], "edges": []},
     folder_id: flow?.folder_id ?? "",
-    user_id: flow?.user_id ?? loginUserId,
+    user_id: flow?.user_id ?? userData.id,
     id: "",
   });
 
@@ -860,7 +867,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         // newFlows[index].data.viewport = newFlow.data.viewport;
 
         newFlows[index].name = newFlow.name;
-        newFlows[index].user_id = loginUserId;
+        newFlows[index].user_id = userData.id;
 
         // console.log("afterUpdated:",newFlows[index]);
       }
@@ -873,7 +880,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   async function saveFlow(newFlow: FlowType) {
     try {
       // updates flow in db
-      newFlow.user_id=loginUserId;
+      newFlow.user_id=userData.id;
       const updatedFlow = await updateFlowInDatabase(newFlow);
       if (updatedFlow) {
         // updates flow in state
@@ -885,7 +892,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
             newFlows[index].folder_id = newFlow.folder_id ?? "";
             newFlows[index].data = newFlow.data;
             newFlows[index].name = newFlow.name;
-            newFlows[index].user_id = loginUserId;
+            newFlows[index].user_id = userData.id;
             newFlows[index].update_at = updatedFlow.update_at;
           }
           
@@ -910,7 +917,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     try {
       // updates folder in db
       if(!newFolder.user_id){
-        newFolder.user_id=loginUserId;
+        newFolder.user_id=userData.id;
       }
       const updatedFolder = await updateFolderInDatabase(newFolder);
       if (updatedFolder) {
@@ -943,7 +950,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     try {
       // updates note in db
       if(!newNote.user_id){
-        newNote.user_id=loginUserId;
+        newNote.user_id=userData.id;
       }
       const updatedNote = await updateNoteInDatabase(newNote);
       if (updatedNote) {
@@ -977,7 +984,6 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const [isBuilt, setIsBuilt] = useState(false);
   const [isEMBuilt, setIsEMBuilt] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
   const [openFolderList, setOpenFolderList] = useState(JSON.parse(window.localStorage.getItem("openFolder")) ?? false);
 
   const [openModelList, setOpenModelList] = useState(JSON.parse(window.localStorage.getItem("openModel")) ?? false);
@@ -1007,8 +1013,6 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setIsBuilt,
         isEMBuilt,
         setIsEMBuilt,
-        isLogin,
-        setIsLogin, 
         openFolderList,
         setOpenFolderList,    
         openModelList,
@@ -1056,8 +1060,8 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setSearchResult,
         getSearchResult,
         login,
-        loginUserId,
-        setLoginUserId,
+        // loginUserId,
+        // setLoginUserId,
         editFlowId,
         editNodeId,
         setEditFlowId,

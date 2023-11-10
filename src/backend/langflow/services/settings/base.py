@@ -30,12 +30,38 @@ class Settings(BaseSettings):
     CUSTOM_COMPONENTS: dict = {}
     NOTES:dict={}
 
+    # Define the default LANGFLOW_DIR
+    CONFIG_DIR: Optional[str] = None
+
     DEV: bool = False
     DATABASE_URL: Optional[str] = None
     CACHE: str = "InMemoryCache"
     REMOVE_API_KEYS: bool = False
     COMPONENTS_PATH: List[str] = []
 
+    @validator("CONFIG_DIR", pre=True, allow_reuse=True)
+    def set_langflow_dir(cls, value):
+        if not value:
+            from platformdirs import user_cache_dir
+
+            # Define the app name and author
+            app_name = "neuri"
+            app_author = "king"
+
+            # Get the cache directory for the application
+            cache_dir = user_cache_dir(app_name, app_author)
+
+            # Create a .langflow directory inside the cache directory
+            value = Path(cache_dir)
+            value.mkdir(parents=True, exist_ok=True)
+
+        if isinstance(value, str):
+            value = Path(value)
+        if not value.exists():
+            value.mkdir(parents=True, exist_ok=True)
+
+        return str(value)
+    
     @validator("DATABASE_URL", pre=True)
     def set_database_url(cls, value):
         if not value:

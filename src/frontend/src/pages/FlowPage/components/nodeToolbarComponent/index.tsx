@@ -93,7 +93,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
     <>
       <div className="w-26 h-10">
         <span className="isolate inline-flex rounded-md shadow-sm">
-          <ShadTooltip content="Delete" side="top">
+          <ShadTooltip content="删除" side="top">
             <button
               className="relative inline-flex items-center rounded-l-md  bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
               onClick={() => {
@@ -104,7 +104,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             </button>
           </ShadTooltip>
           
-          <ShadTooltip content="Duplicate" side="top">
+          <ShadTooltip content="复制" side="top">
             <button
               className={classNames(
                 "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
@@ -131,7 +131,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           </ShadTooltip>
           {reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"&&(
             <>
-            <ShadTooltip content="Copy as Note" side="top">
+            <ShadTooltip content="复制成笔记" side="top">
               <button
                 className={classNames(
                   "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
@@ -164,7 +164,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           )}
           <ShadTooltip
             content={
-              data.node.documentation === "" ? "Coming Soon" : "Documentation"
+              data.node.documentation === "" ? "请期待" : "说明文档"
             }
             side="top"
           >
@@ -190,7 +190,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           </ShadTooltip>
           {(data.type=="Note" || data.type=="AINote")?(
             <>
-            <ShadTooltip content="Runnable" side="top">
+            <ShadTooltip content="可运行" side="top">
                 <div
                   className={
                     "relative -ml-px inline-flex items-center bg-background p-0 text-foreground shadow-md ring-1 ring-inset  ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
@@ -207,7 +207,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
                 </div>
             </div>
           </ShadTooltip>
-          <ShadTooltip content="Full editor" side="top">
+          <ShadTooltip content="全能编辑" side="top">
             
             <button
               className={classNames(
@@ -223,7 +223,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             </button>
           </ShadTooltip>
           {(data.type=="Note")&&(
-            <ShadTooltip content="Border Color" side="top">
+            <ShadTooltip content="选择色彩" side="top">
             <>
             <button
               className={classNames(
@@ -259,7 +259,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           </>
           ):(
             
-          <ShadTooltip content={miniSize?"Expand":"Minimize"} side="top">
+          <ShadTooltip content={miniSize?"展开":"最小化"} side="top">
             <button
               className={classNames(
                 "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10" 
@@ -280,7 +280,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           </ShadTooltip>        
              
           )}           
-          <ShadTooltip content="Edit" side="top">
+          <ShadTooltip content="设置" side="top">
             <div>
               <EditNodeModal
                 data={data}

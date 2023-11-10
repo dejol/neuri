@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
 from langflow.api.utils import remove_api_keys
-
+from langflow.services.auth.utils import get_current_active_user
 from langflow.services.database.models.folder import (
     Folder,
     FolderModel,FolderRead
@@ -9,6 +9,8 @@ from langflow.services.database.models.folder import (
 from langflow.api.v1.schemas import  FolderListCreate, FolderListRead
 from langflow.services.utils import get_session
 from langflow.services.utils import get_settings_manager
+from langflow.services.database.models.user.user import User
+
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -27,8 +29,9 @@ FOLDER_DELETED = "Folder deleted"
 router = APIRouter(prefix="/folders", tags=["Folders"])
 
 @router.post("/", response_model=Folder)
-def create_folder(folder: FolderModel, db: Session = Depends(get_session)):
+def create_folder(folder: FolderModel, db: Session = Depends(get_session),current_user: User = Depends(get_current_active_user)):
     db_folder = Folder(**folder.dict())
+    db_folder.user_id=str(current_user.id)
     try:
         db.add(db_folder)
         db.commit()
@@ -43,15 +46,17 @@ def create_folder(folder: FolderModel, db: Session = Depends(get_session)):
     return db_folder
 
 
-@router.get("/all/{user_id}", response_model=List[Folder])
-def read_folders(user_id:str, db: Session = Depends(get_session)):
+@router.get("/", response_model=List[Folder])
+def read_folders(*, db: Session = Depends(get_session),
+                 current_user: User = Depends(get_current_active_user)):
     """Get all folders"""
     try:
         # folders = db.exec(select(Folder)).all()
-        # print("user_id:",user_id)
-        folders = db.query(Folder).filter(Folder.user_id ==user_id ).all()
+        
+        folders = db.query(Folder).filter(Folder.user_id ==str(current_user.id) ).all()
         # print("folders:",folders)
     except Exception as e:
+        # print("FolderError:",e)
         raise HTTPException(status_code=500, detail=str(e)) from e
     return [jsonable_encoder(folder) for folder in folders]
 
@@ -82,16 +87,19 @@ def delete_folder(folder_id: UUID, db: Session = Depends(get_session)):
     db.commit()
     return {"detail":FOLDER_DELETED}
 
-@router.get("/download/{user_id}", response_model=FolderListRead, status_code=200)
-async def download_file(user_id:str, db: Session = Depends(get_session)):
+@router.get("/download/", response_model=FolderListRead, status_code=200)
+async def download_file( db: Session = Depends(get_session),
+                        current_user: User = Depends(get_current_active_user)):
     """Download all folders as a file."""
-    folders = read_folders(user_id,db=db)
+    folders = read_folders(db=db,current_user=current_user)
     return FolderListRead(folders=folders)
 
-def create_folders(*, session: Session = Depends(get_session), folder_list: FolderListCreate):
+def create_folders(*, session: Session = Depends(get_session), folder_list: FolderListCreate
+                   ,current_user: User = Depends(get_current_active_user)):
     """Create multiple new folders."""
     db_folders = []
     for folder in folder_list.folders:
+        folder.user_id=str(current_user.id)
         db_folder = Folder.from_orm(folder)
         session.add(db_folder)
         db_folders.append(db_folder)

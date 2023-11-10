@@ -257,7 +257,7 @@ export default function FolderPopover() {
                         let index = flows.findIndex((flow) => flow.folder_id === id);
                         let indexNote = notes.findIndex((folder) => folder.folder_id === id);
                         if (index >= 0||indexNote>=0) {
-                          setErrorData({title:`These is a notbook/folder upder it, the Folder(${id}) can't be deleted. `});
+                          setErrorData({title:`删除${id}操作失败，可能有白板/笔记/文件夹在本文件夹下面，请检查。`});
                         }else{
                           removeFolder(id);
                           deleted=true;
@@ -267,14 +267,14 @@ export default function FolderPopover() {
                       let index = flows.findIndex((flow) => flow.folder_id === folder.id);
                       let indexNote = notes.findIndex((folder) => folder.folder_id === folder.id);
                       if (index >= 0||indexNote>=0) {
-                        setErrorData({title:`These is a notbook/folder upder it, the Folder(${folder.name}) can't be deleted. `});
+                        setErrorData({title:`删除${folder.name}操作失败，可能有白板/笔记/文件夹在本文件夹下面，请检查。 `});
                       }else{
                         removeFolder(folder.id);
                         deleted=true;
                       } 
 
                       if(deleted)
-                        setSuccessData({ title: "Delete Folder(s) successfully" });                                  
+                        setSuccessData({ title: "一个或多个文件夹删除成功" });                                  
                   }}
               >
                 <IconComponent name="Trash2" className="main-page-nav-button" />
@@ -571,7 +571,7 @@ export default function FolderPopover() {
             >
             <div className={"file-component-badge-div justify-start "+(getSearchResult.folderId==""?"text-blue-500/80":"")}>
             <IconComponent name="Folder" className="main-page-nav-button" />
-            Unclassified
+            暂未分类
             </div>
             <div className="mr-2">
               <span className="text-sm text-muted-foreground">{flows.filter((flow)=>!flow.folder_id).length+
@@ -818,7 +818,7 @@ export default function FolderPopover() {
             type="text"
             name="search"
             id="search-node"
-            placeholder="Search note"
+            placeholder="查找笔记"
             className="nopan nodrag noundo nocopy input-search"
             onKeyUp={(event)=>{
               // console.log("event.key:",event.key);
@@ -869,7 +869,7 @@ export default function FolderPopover() {
     </div>  
     <div className={"side-bar-search-div-placement justify-end"}>
         <div className="header-end-display">
-        <ShadTooltip content="New folder" side="right">
+        <ShadTooltip content="创建新的文件夹" side="right">
               <button
                 className={"extra-side-bar-save-disable"}
                 onClick={(event) => {  

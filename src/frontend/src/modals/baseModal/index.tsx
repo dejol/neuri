@@ -13,13 +13,25 @@ import {
 type ContentProps = { children: ReactNode };
 type HeaderProps = { children: ReactNode; description: string };
 type FooterProps = { children: ReactNode };
-type TriggerProps = { children: ReactNode };
-
+type TriggerProps = {
+  children: ReactNode;
+  asChild?: boolean;
+  disable?: boolean;
+};
 const Content: React.FC<ContentProps> = ({ children }) => {
   return <div className="h-full w-full">{children}</div>;
 };
-const Trigger: React.FC<ContentProps> = ({ children }) => {
-  return <>{children}</>;
+
+const Trigger: React.FC<TriggerProps> = ({ children, asChild, disable }) => {
+  return (
+    <DialogTrigger
+      className={asChild ? "" : "w-full"}
+      hidden={children ? false : true}
+      asChild={asChild}
+    >
+      {children}
+    </DialogTrigger>
+  );
 };
 
 const Header: React.FC<{ children: ReactNode; description: string }> = ({
@@ -47,7 +59,7 @@ interface BaseModalProps {
   open?: boolean;
   setOpen?: (open: boolean) => void;
   disable?: boolean;
-  size?: "smaller" | "small" | "medium" | "large" | "large-h-full";
+  size?: "x-small"|"smaller" | "small" | "medium" | "large" | "large-h-full"|"medium-h-full"| "small-h-full";
 }
 function BaseModal({
   open,
@@ -73,6 +85,10 @@ function BaseModal({
   let height: string;
 
   switch (size) {
+    case "x-small":
+      minWidth = "min-w-[20vw]";
+      height = "h-[10vh]";
+      break;    
     case "smaller":
       minWidth = "min-w-[40vw]";
       height = "h-[27vh]";
@@ -81,6 +97,9 @@ function BaseModal({
       minWidth = "min-w-[40vw]";
       height = "h-[40vh]";
       break;
+    case "small-h-full":
+      minWidth = "min-w-[40vw]";
+      break;      
     case "medium":
       minWidth = "min-w-[60vw]";
       height = "h-[60vh]";
@@ -89,6 +108,9 @@ function BaseModal({
       minWidth = "min-w-[80vw]";
       height = "h-[80vh]";
       break;
+    case "medium-h-full":
+      minWidth = "min-w-[60vw]";
+      break;      
     case "large-h-full":
       minWidth = "min-w-[80vw]";
       break;

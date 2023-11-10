@@ -15,16 +15,15 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 
 export default function HomePage() {
-  const { login, isLogin,setIsLogin,flows, setTabId, downloadFlows, uploadFlows, setLoginUserId, removeFlow,folders,addFolder,removeFolder } =
+  const { login,flows, setTabId, downloadFlows, uploadFlows, removeFlow,folders,addFolder,removeFolder } =
     useContext(TabsContext);
 
   // Set a null id
   useEffect(() => {
     setTabId("");
-    if(localStorage.getItem('login')){
-      setIsLogin(true);
-      setLoginUserId(localStorage.getItem('login'));
-    }
+    // if(localStorage.getItem('login')){
+    //   setLoginUserId(localStorage.getItem('login'));
+    // }
   }, []);
 
   // const navigate = useNavigate();
@@ -110,7 +109,7 @@ export default function HomePage() {
                         setErrorData({title:"These is a notbook belong it, the Folder can't be deleted. "});
                       }else{
                         removeFolder(folder.id);
-                        setSuccessData({ title: "Delete Folder successfully" })
+                        setSuccessData({ title: "删除文件夹成功" })
                       }
                     
                   }}

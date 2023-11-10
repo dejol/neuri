@@ -366,10 +366,10 @@ useEffect(() => {
           </div>
           <div className="flex h-fit w-full justify-end">
           <Button className="mt-0  mr-4" onClick={cancelChange} type="button" variant={"secondary"}>
-              Cancel
+              取消
             </Button>
             <Button className="mt-0 mr-6" onClick={handleClick} type="submit">
-              Save
+              保存
             </Button>
           </div>
         </div>

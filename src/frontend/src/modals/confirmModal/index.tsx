@@ -38,9 +38,9 @@ export function ConfirmDialogModal({title,content,confirm,open,setOpen}:{
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>NOT Sure</Button>
+          <Button onClick={handleClose}>不确定</Button>
           <Button onClick={confirm} autoFocus>
-            Sure
+            确定
           </Button>
         </DialogActions>
       </Dialog>

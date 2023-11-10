@@ -94,13 +94,13 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
   return (
     <>
       <div>
-        <BuildTrigger
+        {/* <BuildTrigger
           open={open}
           setOpen={setOpen}
           flow={flow}
           setIsBuilt={setIsBuilt}
           isBuilt={isBuilt}
-        />
+        /> */}
         {/* {isBuilt &&
           tabsState[flow.id] &&
           tabsState[flow.id].formKeysData &&

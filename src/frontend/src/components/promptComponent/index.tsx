@@ -37,8 +37,8 @@ export default function PromptAreaComponent({
       <GenericModal
         type={TypeModal.PROMPT}
         value={value}
-        buttonText="Check & Save"
-        modalTitle="Edit Prompt"
+        buttonText="检查和保存"
+        modalTitle="修改 Prompt"
         setValue={(value: string) => {
           onChange(value);
         }}

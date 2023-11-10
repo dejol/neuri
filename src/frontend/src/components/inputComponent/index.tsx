@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InputComponentType } from "../../types/components";
 import { classNames } from "../../utils/utils";
 import { Input } from "../ui/input";
+import * as Form  from "@radix-ui/react-form";
+import { handleKeyDown } from "../../utils/reactflowUtils";
 
 export default function InputComponent({
   value,
@@ -9,8 +11,17 @@ export default function InputComponent({
   disabled,
   password,
   editNode = false,
+  isForm=false,
+  required= false,
+  placeholder="",
+  onBlur,
+  blurOnEnter=false,
+  autoFocus=false,
+  id="",
+  className,
 }: InputComponentType) {
   const [pwdVisible, setPwdVisible] = useState(false);
+  const refInput = useRef<HTMLInputElement>(null);
 
   // Clear component state
   useEffect(() => {
@@ -21,6 +32,37 @@ export default function InputComponent({
 
   return (
     <div className="relative w-full">
+      {isForm ? (
+        <Form.Control asChild>
+          <Input
+            id={"form-" + id}
+            ref={refInput}
+            onBlur={onBlur}
+            autoFocus={autoFocus}
+            type={password && !pwdVisible ? "password" : "text"}
+            value={value}
+            disabled={disabled}
+            required={required}
+            className={classNames(
+              password && !pwdVisible && value !== ""
+                ? " text-clip password "
+                : "",
+              editNode ? " input-edit-node " : "",
+              password && editNode ? "pr-8" : "",
+              password && !editNode ? "pr-10" : "",
+              className!
+            )}
+            placeholder={password && editNode ? "Key" : placeholder}
+            onChange={(e) => {
+              onChange(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              handleKeyDown(e, value, "");
+              if (blurOnEnter && e.key === "Enter") refInput.current?.blur();
+            }}
+          />
+        </Form.Control>
+      ) : (
       <Input
         value={value}
         disabled={disabled}
@@ -35,14 +77,19 @@ export default function InputComponent({
           onChange(event.target.value);
         }}
       />
+      )}
+      
       {password && (
         <button
+          type="button"
           className={classNames(
             editNode
               ? "input-component-true-button"
               : "input-component-false-button"
           )}
-          onClick={() => {
+          tabIndex={-1}
+          onClick={(event) => {
+            event.preventDefault();
             setPwdVisible(!pwdVisible);
           }}
         >

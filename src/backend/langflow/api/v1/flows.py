@@ -3,11 +3,15 @@ from typing import List
 from uuid import UUID
 from langflow.api.utils import remove_api_keys
 from langflow.api.v1.schemas import FlowListCreate, FlowListRead
+from langflow.services.auth.utils import get_current_active_user
 from langflow.services.database.models.flow import (
     Flow,
     FlowCreate,
     FlowRead,
     FlowUpdate,
+)
+from langflow.services.database.models.user import (
+    User
 )
 from langflow.services.utils import get_session
 from langflow.services.utils import get_settings_manager
@@ -23,8 +27,10 @@ router = APIRouter(prefix="/flows", tags=["Flows"])
 
 
 @router.post("/", response_model=FlowRead, status_code=201)
-def create_flow(*, session: Session = Depends(get_session), flow: FlowCreate):
+def create_flow(*, session: Session = Depends(get_session), flow: FlowCreate,
+                current_user: User = Depends(get_current_active_user)):
     """Create a new flow."""
+    flow.user_id=str(current_user.id)
     db_flow = Flow.from_orm(flow)
     session.add(db_flow)
     session.commit()
@@ -32,12 +38,13 @@ def create_flow(*, session: Session = Depends(get_session), flow: FlowCreate):
     return db_flow
 
 
-@router.get("/all/{user_id}", response_model=list[FlowRead], status_code=200)
-def read_flows(user_id:str, session: Session = Depends(get_session)):
+@router.get("/", response_model=list[FlowRead], status_code=200)
+def read_flows(*, session: Session = Depends(get_session),current_user: User = Depends(get_current_active_user)):
     """Read all flows."""
     try:
         # flows = session.exec(select(Flow)).all()
-        flows = session.query(Flow).filter(Flow.user_id ==user_id ).all()
+        flows = session.query(Flow).filter(Flow.user_id ==str(current_user.id) ).all()
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     return [jsonable_encoder(flow) for flow in flows]
@@ -89,10 +96,12 @@ def delete_flow(*, session: Session = Depends(get_session), flow_id: UUID):
 
 
 @router.post("/batch/", response_model=List[FlowRead], status_code=201)
-def create_flows(*, session: Session = Depends(get_session), flow_list: FlowListCreate):
+def create_flows(*, session: Session = Depends(get_session), flow_list: FlowListCreate
+                 ,current_user: User = Depends(get_current_active_user)):
     """Create multiple new flows."""
     db_flows = []
     for flow in flow_list.flows:
+        flow.user_id=str(current_user.id)
         db_flow = Flow.from_orm(flow)
         session.add(db_flow)
         db_flows.append(db_flow)
@@ -116,8 +125,8 @@ async def upload_file(
     return create_flows(session=session, flow_list=flow_list)
 
 
-@router.get("/download/{user_id}", response_model=FlowListRead, status_code=200)
-async def download_file(user_id:str, session: Session = Depends(get_session)):
+@router.get("/download/", response_model=FlowListRead, status_code=200)
+async def download_file(*, session: Session = Depends(get_session),current_user: User = Depends(get_current_active_user),):
     """Download all flows as a file."""
-    flows = read_flows(user_id,session=session)
+    flows = read_flows(session=session,current_user=current_user)
     return FlowListRead(flows=flows)

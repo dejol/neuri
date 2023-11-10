@@ -20,6 +20,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { darkContext } from "../../../../contexts/darkContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../../ui/dropdown-menu";
 import { ConfirmDialogModal } from "../../../../modals/confirmModal";
+import BuildTrigger from "../../buildTrigger";
 
 export const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -64,11 +65,13 @@ export const StyledMenu = styled((props: MenuProps) => (
 
 export const MenuBar = ({ tabId }) => {
   const { setTabId,addFlow,saveFlow,uploadFlow,tabsState,flows,tabValues,notes,
-    folders,addNote,saveNote,removeNote,setNotes } = useContext(TabsContext);
+    folders,addNote,saveNote,removeNote,setNotes,isBuilt,setIsBuilt } = useContext(TabsContext);
   const { setSuccessData, setErrorData } = useContext(alertContext);
   const { dark, setDark } = useContext(darkContext);
   const { undo, redo } = useContext(undoRedoContext);
   const [openSettings, setOpenSettings] = useState(false);
+  // const [openBuilder, setOpenBuilder] = useState(false);
+
   const isPending = tabsState[tabId]?.isPending;
   const flow = flows.find((flow) => flow.id === tabId);
   const [folderId,setFolderId]= useState(notes.find((note) => note.id === tabId)?notes.find((note) => note.id === tabId).folder_id:""); // for NoteEditor
@@ -120,13 +123,13 @@ export const MenuBar = ({ tabId }) => {
           savedNote.content.id=id.toString();
           tabValues.set(id.toString(),{id:id.toString(),type:"note"});
           setTabId(id.toString());
-          setSuccessData({ title: "Add Note successfully" });
+          setSuccessData({ title: "创建笔记成功" });
           
         });
         }else{
           saveNote(savedNote).then((res)=>{
             // tabValues.delete(tabId);
-            setSuccessData({ title: "Note saved successfully" });
+            setSuccessData({ title: "笔记保存成功" });
           });
         }
       // setTabId("")
@@ -167,14 +170,21 @@ export const MenuBar = ({ tabId }) => {
       </Link> */}
       {tabValues.get(tabId)&&tabValues.get(tabId).type=="flow"?(
         <>
-        <ShadTooltip content="Save" side="bottom">
+          <BuildTrigger
+            // open={true}
+            // setOpen={setOpenBuilder}
+            isBuilt={isBuilt}
+            setIsBuilt={setIsBuilt}
+            flow={flow}
+          />
+        <ShadTooltip content="保存" side="bottom">
           <button
             className={
               "extra-side-bar-buttons " + (isPending ? "" : "button-disable")
             }
             onClick={(event) => {
               saveFlow(flow).then(()=>{
-                setSuccessData({ title: "Notebook saved successfully" });
+                setSuccessData({ title: "成功保存白板数据" });
 
               });
             }}
@@ -188,7 +198,7 @@ export const MenuBar = ({ tabId }) => {
             />
           </button>
         </ShadTooltip>          
-        <ShadTooltip content="Undo" side="bottom">
+        <ShadTooltip content="撤销" side="bottom">
           <button
             className={
               "extra-side-bar-buttons " 
@@ -205,7 +215,7 @@ export const MenuBar = ({ tabId }) => {
             />
           </button>
         </ShadTooltip>
-        <ShadTooltip content="Redo" side="bottom">
+        <ShadTooltip content="重做" side="bottom">
           <button
             className={
               "extra-side-bar-buttons " 
@@ -265,12 +275,12 @@ export const MenuBar = ({ tabId }) => {
                 }}
             disableRipple>
             <IconComponent name="FileUp" className={ "side-bar-button-size mr-2" } />
-            Import
+            导入
             </MenuItem>
             <ExportModal>
               <MenuItem disableRipple>
               <IconComponent name="FileDown" className={ "side-bar-button-size mr-2" } />
-              Export
+              导出
               </MenuItem>
             </ExportModal>
             <Divider sx={{ my: 0.5 }} />        
@@ -280,7 +290,7 @@ export const MenuBar = ({ tabId }) => {
                 }}
             disableRipple>
             <IconComponent name="Settings2" className={ "side-bar-button-size mr-2" } />
-            Settings
+            设置
             </MenuItem>
             </StyledMenu>
           </ThemeProvider>
@@ -305,7 +315,7 @@ export const MenuBar = ({ tabId }) => {
                       )
                     ))}
                     {!folderId&&(
-                      <div key="unclass">Unclassified</div>
+                      <div key="unclass">暂未分类</div>
                     )}
                     </div>
                     <IconComponent name="ChevronDown" className="h-4 w-4" />
@@ -334,7 +344,7 @@ export const MenuBar = ({ tabId }) => {
                 >
                   <div className={"file-component-badge-div justify-start "}>
                     <IconComponent name="Folder" className="main-page-nav-button" />
-                    Unclassified
+                    暂未分类
                   </div>
                   {/* <div className="mr-0">
                     {flows.filter((flow)=>!flow.folder_id).length+
@@ -343,7 +353,7 @@ export const MenuBar = ({ tabId }) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu> 
-          <ShadTooltip content="Save" side="bottom">
+          <ShadTooltip content="保存" side="bottom">
           <button
             className={
               "extra-side-bar-buttons " 
@@ -420,7 +430,7 @@ export const MenuBar = ({ tabId }) => {
                 }}
             disableRipple>
             <IconComponent name="Trash2" className={ "side-bar-button-size mr-2" } />
-            Delete
+            删除
             </MenuItem>
             </StyledMenu>
           </ThemeProvider>
@@ -429,8 +439,8 @@ export const MenuBar = ({ tabId }) => {
         )
       )}
     <ConfirmDialogModal
-      title="Confirm your operation"
-      content="Delete Note will be NOT redo. Are you sure?"
+      title="确认操作"
+      content="删除操作是不可恢复，您是否确认"
       confirm={()=>{
         let note=notes.find((note) => note.id === tabId);
         if(note){
@@ -440,7 +450,7 @@ export const MenuBar = ({ tabId }) => {
           }else{
             removeNote(tabId);
           }
-          setSuccessData({ title: "Delete Note successfully" });
+          setSuccessData({ title: "成功删除笔记" });
           tabValues.delete(tabId);
         }
       }}

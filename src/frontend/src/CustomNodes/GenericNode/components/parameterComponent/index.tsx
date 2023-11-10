@@ -82,15 +82,15 @@ export default function ParameterComponent({
   const { data: myData } = useContext(typesContext);
 
   const handleOnNewValue = (newValue: string | string[] | boolean): void => {
-
     let oldRunnable=data.node.runnable;
     // console.log("runnable data:",oldRunnable);
 
     let newData = cloneDeep(data);
     newData.node!.runnable = oldRunnable;
     newData.node!.template[name].value = newValue;
+    data.update_at=new Date();
     setData(newData);
-    // console.log("new data:",newData)
+    
     // console.log("name data:",name)
 
     // Set state to pending

@@ -7,6 +7,7 @@ import { Transition } from "@headlessui/react";
 import FolderPopover from "./components/FolderComponent";
 import NoteEditorModal from "../../modals/noteEditorModal";
 import SearchListModal from "../../modals/searchListModal";
+import { AuthContext } from "../../contexts/authContext";
 
 
 interface TabPanelProps {
@@ -34,11 +35,13 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function FlowPage() {
-  const { flows, tabId, setTabId,setIsLogin,setLoginUserId,loginUserId,
+  const { flows, tabId, setTabId,
     tabValues,openFolderList,notes,getSearchResult } = useContext(TabsContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const [openSearch,setOpenSearch]=useState(false);
+  const {userData} = useContext(AuthContext);
+
   useEffect(() => {
     // if(getSearchResult&&(getSearchResult.flows.length>0||getSearchResult.notes.length>0)){
       setOpenSearch(true);
@@ -46,15 +49,16 @@ export default function FlowPage() {
   },[getSearchResult]);
   // Set flow tab id
   useEffect(() => {
-    if(localStorage.getItem('login')){
-      setIsLogin(true);
-      setLoginUserId(localStorage.getItem('login'));
-    }else{
-      navigate("/");
-    }
+    // if(userData && userData.id){
+    //   setLoginUserId(userData.id);
+    // }
+    // else{
+    //   navigate("/");
+    // }
+
     if(flows){
       let flow=flows.find((flow) => flow.id === id);
-      if(flow&&flow.user_id!=loginUserId){
+      if(flow&&userData&&flow.user_id!=userData.id){
         navigate("/");
       }
     }
@@ -76,7 +80,6 @@ export default function FlowPage() {
 
   return (
     <div className="flow-page-positioning flex">
-      
         <Transition
           show={openFolderList}
           enter="transition-transform duration-500 ease-out"

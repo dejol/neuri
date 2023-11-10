@@ -27,7 +27,7 @@ export default function FlowSettingsModal({
 }) {
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const ref = useRef();
-  const { flows, tabId,loginUserId, updateFlow, setTabsState, saveFlow,folders,addFlow,removeFlow,setTabValues,setTabId,tabValues } =
+  const { flows, tabId,updateFlow, setTabsState, saveFlow,folders,addFlow,removeFlow,setTabValues,setTabId,tabValues } =
     useContext(TabsContext);
   const maxLength = 50;
   
@@ -123,16 +123,16 @@ export default function FlowSettingsModal({
     <BaseModal open={open} setOpen={setOpen} size="medium">
       <BaseModal.Header description={SETTINGS_DIALOG_SUBTITLE}>
         {isNew?(
-          <span className="pr-2">New notebook</span>
+          <span className="pr-2">新的白板</span>
         ):(
-          <span className="pr-2">Settings</span>
+          <span className="pr-2">设置</span>
         )}
         <IconComponent name={isNew?"File":"Settings2"} className="mr-2 h-4 w-4 " />
       </BaseModal.Header>
       <BaseModal.Content>
       <Label>
         <div className="edit-flow-arrangement">
-          <span className="font-medium">Folder:</span>{" "}
+          <span className="font-medium">文件夹:</span>{" "}
         </div>
         <div className="mb-2 mt-2">
         <DropdownMenu>
@@ -147,7 +147,7 @@ export default function FlowSettingsModal({
                       )
                     ))}
                     {!folderId&&(
-                      <div key="unclass">Unclassified</div>
+                      <div key="unclass">暂未分类</div>
                     )}
                     </div>
                     <IconComponent name="ChevronDown" className="h-4 w-4" />
@@ -164,7 +164,7 @@ export default function FlowSettingsModal({
                 >
                   <div className={"file-component-badge-div justify-start "}>
                     <IconComponent name="Folder" className="main-page-nav-button" />
-                    Unclassified
+                    暂未分类
                   </div>                  
                   </DropdownMenuItem>                
               </DropdownMenuContent>
@@ -186,37 +186,27 @@ export default function FlowSettingsModal({
 
       <BaseModal.Footer>
         <Button  onClick={handleSave} type="submit">
-          Save
+          保存设置
         </Button>
         {(!isNew)&&(
           <Button  onClick={()=>{
-              // let flow=flows.find((flow) => flow.id === tabId);
-              // removeFlow(flow.id);
-              // setSuccessData({ title: "Delete Notebook successfully" });
-              // setOpen(false);
-              // setDescription("");
-              // setName("");
-              // // let url="/flow/"+loginUserId;
-              // // navigate(url);
-              // tabValues.delete(flow.id);
-              // setTabId("");
               setOpenConfirm(true);
               setOpen(false);
             }} type="button" className="mx-2" variant={"secondary"}>
               <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
-            Delete
+            删除白板
           </Button>  
         )}
        
       </BaseModal.Footer>
     </BaseModal>
     <ConfirmDialogModal
-      title="Confirm your operation"
-      content="Delete Notebook will be NOT redo, Are you sure?"
+      title="确认"
+      content="本次操作是不可恢复的，是否确认要做?"
       confirm={()=>{
         let flow=flows.find((flow) => flow.id === tabId);
         removeFlow(flow.id);
-        setSuccessData({ title: "Delete Notebook successfully" });
+        setSuccessData({ title: "删除白板成功" });
         setOpen(false);
         setDescription("");
         setName("");
