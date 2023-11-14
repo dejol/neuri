@@ -171,7 +171,7 @@ export const MenuBar = ({ tabId }) => {
       </Link> */}
       {tabValues.get(tabId)&&tabValues.get(tabId).type=="flow"?(
         <>
-        {screenWidth>1024&&(
+        {/* {screenWidth>1024&&( */}
           <BuildTrigger
             // open={true}
             // setOpen={setOpenBuilder}
@@ -179,7 +179,7 @@ export const MenuBar = ({ tabId }) => {
             setIsBuilt={setIsBuilt}
             flow={flow}
           />
-        )}
+        {/* )} */}
         <ShadTooltip content="保存" side="bottom">
           <button
             className={
