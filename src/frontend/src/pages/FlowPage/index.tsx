@@ -8,6 +8,7 @@ import FolderPopover from "./components/FolderComponent";
 import NoteEditorModal from "../../modals/noteEditorModal";
 import SearchListModal from "../../modals/searchListModal";
 import { AuthContext } from "../../contexts/authContext";
+import { locationContext } from "../../contexts/locationContext";
 
 
 interface TabPanelProps {
@@ -36,17 +37,17 @@ function TabPanel(props: TabPanelProps) {
 
 export default function FlowPage() {
   const { flows, tabId, setTabId,
-    tabValues,openFolderList,notes,getSearchResult } = useContext(TabsContext);
+    tabValues,notes,getSearchResult,setSearchResult } = useContext(TabsContext);
+  const {openFolderList,openSearchList,setOpenSearchList} = useContext(locationContext);
   const { id } = useParams();
   const navigate = useNavigate();
-  const [openSearch,setOpenSearch]=useState(false);
   const {userData} = useContext(AuthContext);
 
-  useEffect(() => {
+  // useEffect(() => {
     // if(getSearchResult&&(getSearchResult.flows.length>0||getSearchResult.notes.length>0)){
-      setOpenSearch(true);
+      // setOpenSearchList(true);
     // }
-  },[getSearchResult]);
+  // },[getSearchResult.folderId,getSearchResult.keyword]);
   // Set flow tab id
   useEffect(() => {
     // if(userData && userData.id){
@@ -59,7 +60,7 @@ export default function FlowPage() {
     if(flows){
       let flow=flows.find((flow) => flow.id === id);
       if(flow&&userData&&flow.user_id!=userData.id){
-        navigate("/");
+        navigate("/login");
       }
     }
     if(!id){
@@ -96,7 +97,7 @@ export default function FlowPage() {
           
         </Transition>
         <Transition
-            show={openSearch}
+            show={openSearchList}
             enter="transition-transform duration-500 ease-out"
             enterFrom={"transform translate-x-[-100%]"}
             enterTo={"transform translate-x-0"}
@@ -109,8 +110,8 @@ export default function FlowPage() {
             <div className="flex h-full overflow-hidden">
               <div className="search-list-bar-arrangement">
               <SearchListModal
-                open={openSearch}
-                setOpen={setOpenSearch}
+                open={openSearchList}
+                setOpen={setOpenSearchList}
                 flowList={getSearchResult.flows}
                 noteList={getSearchResult.notes}
                 searchKeyword={getSearchResult.keyword}
@@ -132,9 +133,9 @@ export default function FlowPage() {
             {value.type=="flow"?(
               <>
               {flows.length > 0 && tabId !== "" &&
-              flows.findIndex((flow) => flow.id === tabId) !== -1 && (
-                <Page flow={flows.find((flow) => flow.id === tabId)} />
-              )
+                flows.findIndex((flow) => flow.id === tabId) !== -1 && (
+                  <Page flow={flows.find((flow) => flow.id === tabId)} />
+                )
               }
               </>
             ):(

@@ -216,7 +216,7 @@ export default function AdminPage() {
           <div className="flex w-full justify-between px-4">
             <div className="flex w-96 items-center gap-4">
               <Input
-                placeholder="Search Username"
+                placeholder="搜索用户名"
                 value={inputValue}
                 onChange={(e) => handleFilterUsers(e.target.value)}
               />
@@ -281,11 +281,11 @@ export default function AdminPage() {
                   >
                     <TableRow>
                       {/* <TableHead className="h-10">Id</TableHead> */}
-                      <TableHead className="h-10">Username</TableHead>
-                      <TableHead className="h-10">Active</TableHead>
-                      <TableHead className="h-10">Superuser</TableHead>
-                      <TableHead className="h-10">Created At</TableHead>
-                      <TableHead className="h-10">Updated At</TableHead>
+                      <TableHead className="h-10">用户名</TableHead>
+                      <TableHead className="h-10">是否可用</TableHead>
+                      <TableHead className="h-10">是否超级用户</TableHead>
+                      <TableHead className="h-10">创建时间</TableHead>
+                      <TableHead className="h-10">更新时间</TableHead>
                       <TableHead className="h-10 w-[100px]  text-right"></TableHead>
                     </TableRow>
                   </TableHeader>

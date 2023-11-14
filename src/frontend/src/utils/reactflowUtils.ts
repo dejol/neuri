@@ -39,7 +39,7 @@ export function cleanEdges({
       //     newEdges = newEdges.filter((e) => e.id !== edge.id);//不理解，在什么情况会需要清除这个链接
       //   }
       // }
-      if (sourceHandle) {
+      if (sourceHandle&&sourceNode.data.type=="genericNode") {
         const id = [
           sourceNode.data.type,
           sourceNode.data.id,
@@ -183,7 +183,8 @@ export function validateNode(
   if(node.type=="noteNode") return [];
   if (!node.data?.node?.template || !Object.keys(node.data.node.template)) {
     return [
-      "We've noticed a potential issue with a node in the flow. Please review it and, if necessary, submit a bug report with your exported flow file. Thank you for your help!",
+      "遇到了我们未知的问题，请检查一下。如您方便请将具体情况告知我们，谢谢您的帮助！",
+      //We've noticed a potential issue with a node in the flow. Please review it and, if necessary, submit a bug report with your exported flow file. Thank you for your help!
     ];
   }
 
@@ -225,8 +226,14 @@ export function validateNodes(reactFlowInstance: ReactFlowInstance) {
 
   if (reactFlowInstance.getNodes().length === 0) {
     return [
-      "No nodes found in the flow. Please add at least one node to the flow.",
+      "白板没有找到节点，至少需要一个可运行节点才能开始执行。",
     ];
+  }else{
+    if(reactFlowInstance.getNodes().findIndex((node)=>node.type==="genericNode")<0){
+      return [
+        "没有找到可以运行的节点，请打开右边模块栏添加。",
+      ];
+    }
   }
   return reactFlowInstance
     .getNodes()

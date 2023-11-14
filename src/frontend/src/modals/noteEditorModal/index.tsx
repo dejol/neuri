@@ -22,6 +22,7 @@ import { Editor, Toolbar } from "@wangeditor/editor-for-react";
 import { IButtonMenu,Boot, IDomEditor, IEditorConfig, IToolbarConfig, IModuleConf } from "@wangeditor/editor";
 import markdownModule from '@wangeditor/plugin-md';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
+import { locationContext } from "../../contexts/locationContext";
 
 export default function NoteEditorModal({
   note_id,
@@ -42,6 +43,8 @@ export default function NoteEditorModal({
   const [udpateAt, setUpdateAt] = useState(new Date());
 
   const { setErrorData, setSuccessData } = useContext(alertContext);
+  const { screenWidth } = useContext(locationContext);
+
   const [error, setError] = useState<{
     detail: { error: string; traceback: string };
   }>(null);
@@ -125,10 +128,19 @@ export default function NoteEditorModal({
 
   const [editor, setEditor] = useState<IDomEditor | null>(null);
   const toolbarConfig: Partial<IToolbarConfig> = { };
-  toolbarConfig.excludeKeys = [
-    'fullScreen',
+  if(screenWidth>1024){
+    toolbarConfig.excludeKeys = [
+      'fullScreen'
+  
+    ];
+  }else{
+    toolbarConfig.excludeKeys = [
+      'fullScreen','insertTable','codeBlock','emotion','lineHeight','fontFamily','fontSize',
+      'headerSelect','blockquote','color','bgColor','insertLink'
+  
+    ];
+  }
 
-  ];
 
   const editorConfig: Partial<IEditorConfig> = {   
     placeholder: 'Type something...',
@@ -256,7 +268,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 
   return (
         <div className="flex h-full w-full flex-col transition-all overflow-hidden " >
-          <div className="w-full m-2">
+          <div className="w-full m-1 mb-0">
             <Toolbar
                 editor={editor}
                 defaultConfig={toolbarConfig}
@@ -266,7 +278,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
             </div>
             <div className=" w-full border"  
             style={{alignItems:"center",overflowY: 'auto',height:"calc(100% - 10px)",
-                    padding:"20px 50px 50px 50px",margin:"10px auto 15px auto",
+                    padding:"2% 2% 2% 2%",margin:"10px auto 15px auto",
                     boxShadow:"box-shadow: 0 2px 10px rgb(0 0 0 / 12%)",
                     // backgroundColor:"#fff"
             }}

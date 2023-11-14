@@ -15,6 +15,7 @@ import { typesContext } from "../../contexts/typesContext";
 import { postCustomComponent, postValidateCode } from "../../controllers/API";
 import { APIClassType } from "../../types/api";
 import BaseModal from "../baseModal";
+import { TabsContext } from "../../contexts/tabsContext";
 
 export default function CodeAreaModal({
   value,
@@ -34,6 +35,7 @@ export default function CodeAreaModal({
   const [code, setCode] = useState(value);
   const { dark } = useContext(darkContext);
   // const { reactFlowInstance } = useContext(typesContext);
+  const { flows,tabId } = useContext(TabsContext);
   const [height, setHeight] = useState(null);
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const [error, setError] = useState<{
@@ -50,6 +52,7 @@ export default function CodeAreaModal({
   }, []);
 
   function processNonDynamicField() {
+    let flow= flows.find((flow)=>flow.id==tabId);
     postValidateCode(code)
       .then((apiReturn) => {
         if (apiReturn.data) {
@@ -57,7 +60,7 @@ export default function CodeAreaModal({
           let funcErrors = apiReturn.data.function.errors;
           if (funcErrors.length === 0 && importsErrors.length === 0) {
             setSuccessData({
-              title: "代码已经为运行准备好了",
+              title: `${flow.name}的代码已经为运行准备好了`,
             });
             setOpen(false);
             setValue(code);

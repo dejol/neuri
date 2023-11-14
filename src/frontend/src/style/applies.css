@@ -531,7 +531,7 @@
   }
 
   .header-arrangement {
-    @apply grid h-12 items-center border-border bg-muted;grid-template-columns: 64px 100px auto 260px;
+    @apply grid h-12 items-center border-border bg-muted;grid-template-columns: 64px 100px auto 236px;
   }
   .header-start-display {
     @apply flex w-[64px] items-center justify-start gap-2;

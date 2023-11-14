@@ -21,6 +21,7 @@ import { darkContext } from "../../../../contexts/darkContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../../ui/dropdown-menu";
 import { ConfirmDialogModal } from "../../../../modals/confirmModal";
 import BuildTrigger from "../../buildTrigger";
+import { locationContext } from "../../../../contexts/locationContext";
 
 export const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -71,7 +72,7 @@ export const MenuBar = ({ tabId }) => {
   const { undo, redo } = useContext(undoRedoContext);
   const [openSettings, setOpenSettings] = useState(false);
   // const [openBuilder, setOpenBuilder] = useState(false);
-
+  const{screenWidth} =useContext(locationContext);
   const isPending = tabsState[tabId]?.isPending;
   const flow = flows.find((flow) => flow.id === tabId);
   const [folderId,setFolderId]= useState(notes.find((note) => note.id === tabId)?notes.find((note) => note.id === tabId).folder_id:""); // for NoteEditor
@@ -170,6 +171,7 @@ export const MenuBar = ({ tabId }) => {
       </Link> */}
       {tabValues.get(tabId)&&tabValues.get(tabId).type=="flow"?(
         <>
+        {screenWidth>1024&&(
           <BuildTrigger
             // open={true}
             // setOpen={setOpenBuilder}
@@ -177,6 +179,7 @@ export const MenuBar = ({ tabId }) => {
             setIsBuilt={setIsBuilt}
             flow={flow}
           />
+        )}
         <ShadTooltip content="保存" side="bottom">
           <button
             className={
@@ -197,42 +200,45 @@ export const MenuBar = ({ tabId }) => {
               }
             />
           </button>
-        </ShadTooltip>          
-        <ShadTooltip content="撤销" side="bottom">
-          <button
-            className={
-              "extra-side-bar-buttons " 
-            }
-            onClick={() => {
-              undo();
-            }}
-          >
-            <IconComponent
-              name="Undo"
+        </ShadTooltip>    
+        {screenWidth>1024&&(      
+          <>
+          <ShadTooltip content="撤销" side="bottom">
+            <button
               className={
-                "side-bar-button-size" 
+                "extra-side-bar-buttons " 
               }
-            />
-          </button>
-        </ShadTooltip>
-        <ShadTooltip content="重做" side="bottom">
-          <button
-            className={
-              "extra-side-bar-buttons " 
-            }
-            onClick={() => {
-              redo();
-            }}
-          >
-            <IconComponent
-              name="Redo"
+              onClick={() => {
+                undo();
+              }}
+            >
+              <IconComponent
+                name="Undo"
+                className={
+                  "side-bar-button-size" 
+                }
+              />
+            </button>
+          </ShadTooltip>
+          <ShadTooltip content="重做" side="bottom">
+            <button
               className={
-                "side-bar-button-size" 
+                "extra-side-bar-buttons " 
               }
-            />
-          </button>
-        </ShadTooltip>
-
+              onClick={() => {
+                redo();
+              }}
+            >
+              <IconComponent
+                name="Redo"
+                className={
+                  "side-bar-button-size" 
+                }
+              />
+            </button>
+          </ShadTooltip>
+          </>
+        )}
         <div className="mt-1">
             <button
               className={
@@ -303,6 +309,7 @@ export const MenuBar = ({ tabId }) => {
       ):(
         tabValues.get(tabId)&&tabValues.get(tabId).type=="note"&&(
           <>
+            {screenWidth>1024&&(
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button asChild variant="primary" size="sm">
@@ -353,6 +360,7 @@ export const MenuBar = ({ tabId }) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu> 
+            )}
           <ShadTooltip content="保存" side="bottom">
           <button
             className={

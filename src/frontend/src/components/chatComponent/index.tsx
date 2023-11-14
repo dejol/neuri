@@ -114,7 +114,7 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
             />
           )} */}
         <ChatTrigger
-          canOpen={true}
+          canOpen={canOpen}
           open={open}
           setOpen={setOpen}
           isBuilt={isBuilt}

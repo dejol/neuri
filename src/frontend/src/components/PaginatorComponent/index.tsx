@@ -32,7 +32,7 @@ export default function PaginatorComponent({
         <div className="flex-1 text-sm text-muted-foreground"></div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
+            <p className="text-sm font-medium">每页行数</p>
             <Select
               onValueChange={(pageSize: string) => {
                 setPageSize(Number(pageSize));
@@ -54,7 +54,7 @@ export default function PaginatorComponent({
             </Select>
           </div>
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {pageIndex} of {maxIndex}
+            第 {pageIndex} 页/共 {maxIndex} 页
           </div>
           <div className="flex items-center space-x-2">
             <Button

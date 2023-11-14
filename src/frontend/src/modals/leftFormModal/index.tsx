@@ -284,8 +284,8 @@ export default function LeftFormModal({
   useEffect(() => {
     connectWS();
     return () => {
-      console.log("unmount");
-      console.log(ws);
+      // console.log("unmount");
+      // console.log(ws);
       if (ws.current) {
                 ws.current.close();
       }

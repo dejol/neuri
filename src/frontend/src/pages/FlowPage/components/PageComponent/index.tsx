@@ -52,8 +52,8 @@ import { useSSE } from "../../../../contexts/SSEContext";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
-  // const { setOpenFolderList,openFolderList } = useContext(TabsContext);
-  const { setOpenModelList,openModelList } = useContext(TabsContext);
+  const { setOpenModelList,openModelList } = useContext(locationContext);
+
   return (
     <>
     {/* <Panel position="top-left" className="m-0 mt-6">
@@ -104,8 +104,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     // reactFlowInstance,
      reactFlowInstances,
     // setReactFlowInstance,
-     templates,data } =
-    useContext(typesContext);
+     templates,data } = useContext(typesContext);
     const { dark } = useContext(darkContext);
 
   const reactFlowWrapper = useRef(null);
@@ -119,9 +118,10 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {tabValues,isBuilt, setIsBuilt,getSearchResult,openFolderList,
-    openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,
+  const {tabValues,isBuilt, setIsBuilt,getSearchResult,
     editNodeId } = useContext(TabsContext);
+  const {openFolderList,
+      openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor } = useContext(locationContext);    
   // const [openSearch,setOpenSearch]=useState(false);
   const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
   // useEffect(() => {
@@ -588,7 +588,7 @@ function createNoteNode(newValue,newPosition){
               postNotesAssistant(flow).then((resp)=>{
                 if(resp){
                   // setNoticeData({title:resp.data.result.msg})
-                  console.log("resp:",resp);
+                  // console.log("resp:",resp);
                   handleBuild(getAssistantFlow(flow.id,resp.data.result.msg));
                      
                 }
@@ -612,6 +612,7 @@ function createNoteNode(newValue,newPosition){
 
   function initFlowInstance(reactFlowIns:ReactFlowInstance){
     // setReactFlowInstance(reactFlowIns);
+    
     reactFlowInstances.set(tabId,reactFlowIns);
     if(flow.id==tabId && flow.data?.viewport){
 
@@ -741,7 +742,6 @@ function createNoteNode(newValue,newPosition){
     return parsedData.valid;
   }
 
-
   return (
     <div className="flex h-full overflow-hidden">
       {/* {
@@ -812,12 +812,12 @@ function createNoteNode(newValue,newPosition){
                                 edges:reactFlowInstances.get(tabId).toObject().edges,
                                 viewport:flow.data.viewport
                               } ,
-                            },"onMove 1");
+                            });
                           }else{
                             updateFlow({
                               ...flow,
                               data: reactFlowInstances.get(tabId).toObject(),
-                            },"onMove 2");
+                            });
                           }
                           
 

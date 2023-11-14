@@ -503,7 +503,7 @@ export const NOUNS: string[] = [
  * @constant
  *
  */
-export const USER_PROJECTS_HEADER = "Neuri NoteBooks";
+export const USER_PROJECTS_HEADER = "Neuri 视觉网络笔记";
 
 
 export const BASE_URL_API = "/api/v1/";
@@ -536,7 +536,7 @@ export const ADMIN_HEADER_TITLE = "管理用户";
  *
  */
 export const ADMIN_HEADER_DESCRIPTION =
-  "Navigate through this section to efficiently oversee all application users. From here, you can seamlessly manage user accounts.";
+  "这里显示所有本系统的用户信息，密码等内容。";
 
 export const CONTROL_NEW_USER = {
   username: "",

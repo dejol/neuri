@@ -9,7 +9,7 @@ export default function GradientChooserComponent({ value, onChange }) {
             onChange(gradient);
           }}
           className={
-            "duration-400 h-12 w-12 cursor-pointer rounded-full transition-all " +
+            "duration-400 h-8 w-8 cursor-pointer rounded-full transition-all " +
             gradient +
             (value === gradient ? " shadow-lg ring-2 ring-primary" : "")
           }

@@ -81,16 +81,18 @@ const TabsContextInitialValue: TabsContextType = {
   setIsBuilt: (state: boolean) => { },
   isEMBuilt: false,
   setIsEMBuilt: (state: boolean) => { },  
-  openFolderList:false,
-  setOpenFolderList: (state: boolean) => { },
-  openModelList:false,
-  setOpenModelList: (state: boolean) => { },
-  openWebEditor:false,
-  setOpenWebEditor: (state: boolean) => { },
-  openMiniMap:false,
-  setOpenMiniMap: (state: boolean) => { },
-  openAssistant:false,
-  setOpenAssistant: (state: boolean) => { },  
+
+  // openFolderList:false,
+  // setOpenFolderList: (state: boolean) => { },
+  // openModelList:false,
+  // setOpenModelList: (state: boolean) => { },
+  // openWebEditor:false,
+  // setOpenWebEditor: (state: boolean) => { },
+  // openMiniMap:false,
+  // setOpenMiniMap: (state: boolean) => { },
+  // openAssistant:false,
+  // setOpenAssistant: (state: boolean) => { },  
+
   hardReset: () => { },
   saveFlow: async (flow: FlowType) => { },
   lastCopiedSelection: null,
@@ -984,22 +986,22 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const [isBuilt, setIsBuilt] = useState(false);
   const [isEMBuilt, setIsEMBuilt] = useState(false);
-  const [openFolderList, setOpenFolderList] = useState(JSON.parse(window.localStorage.getItem("openFolder")) ?? false);
 
-  const [openModelList, setOpenModelList] = useState(JSON.parse(window.localStorage.getItem("openModel")) ?? false);
-  const [openWebEditor, setOpenWebEditor] = useState(false);
-  const [openMiniMap, setOpenMiniMap] = useState(JSON.parse(window.localStorage.getItem("openMiniMap")) ?? false);
-  const [openAssistant, setOpenAssistant] = useState(false);
+  // const [openFolderList, setOpenFolderList] = useState(JSON.parse(window.localStorage.getItem("openFolder")) ?? false);
+  // const [openModelList, setOpenModelList] = useState(JSON.parse(window.localStorage.getItem("openModel")) ?? false);
+  // const [openWebEditor, setOpenWebEditor] = useState(false);
+  // const [openMiniMap, setOpenMiniMap] = useState(JSON.parse(window.localStorage.getItem("openMiniMap")) ?? false);
+  // const [openAssistant, setOpenAssistant] = useState(false);
 
-  useEffect(() => {
-    window.localStorage.setItem("openFolder", openFolderList.toString());
-  }, [openFolderList]);
-  useEffect(() => {
-    window.localStorage.setItem("openModel", openModelList.toString());
-  }, [openModelList]);
-  useEffect(() => {
-    window.localStorage.setItem("openMiniMap", openMiniMap.toString());
-  }, [openMiniMap]);
+  // useEffect(() => {
+  //   window.localStorage.setItem("openFolder", openFolderList.toString());
+  // }, [openFolderList]);
+  // useEffect(() => {
+  //   window.localStorage.setItem("openModel", openModelList.toString());
+  // }, [openModelList]);
+  // useEffect(() => {
+  //   window.localStorage.setItem("openMiniMap", openMiniMap.toString());
+  // }, [openMiniMap]);
 
   const [tabValues, setTabValues] = useState(new Map);
 
@@ -1013,16 +1015,16 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setIsBuilt,
         isEMBuilt,
         setIsEMBuilt,
-        openFolderList,
-        setOpenFolderList,    
-        openModelList,
-        setOpenModelList,
-        openWebEditor,
-        setOpenWebEditor,   
-        openMiniMap,
-        setOpenMiniMap,           
-        openAssistant,
-        setOpenAssistant,
+        // openFolderList,
+        // setOpenFolderList,    
+        // openModelList,
+        // setOpenModelList,
+        // openWebEditor,
+        // setOpenWebEditor,   
+        // openMiniMap,
+        // setOpenMiniMap,           
+        // openAssistant,
+        // setOpenAssistant,
         lastCopiedSelection,
         setLastCopiedSelection,
         hardReset,

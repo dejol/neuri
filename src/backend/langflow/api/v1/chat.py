@@ -248,7 +248,7 @@ async def stream_build(flow_id: str):
 
 @router.post("/assistant/{flow_id}", response_model=ProcessResponse, status_code=201)
 async def assistant(graph_data: dict, flow_id: str):
-    logger.debug("total number_of_nodes:%s",len(graph_data['data']['nodes']))
+    # logger.debug("total number_of_nodes:%s",len(graph_data['data']['nodes']))
     contents=""
     i=0
     while i< len(graph_data['data']['nodes']):

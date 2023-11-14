@@ -22,6 +22,7 @@ import {
   varHighlightHTML,
 } from "../../utils/utils";
 import BaseModal from "../baseModal";
+import { TabsContext } from "../../contexts/tabsContext";
 
 export default function GenericModal({
   field_name = "",
@@ -52,6 +53,8 @@ export default function GenericModal({
   const [wordsHighlight, setWordsHighlight] = useState([]);
   const { setErrorData, setSuccessData, setNoticeData } =
     useContext(alertContext);
+  const { flows,tabId } = useContext(TabsContext);
+
   const ref = useRef();
   const divRef = useRef(null);
   const divRefPrompt = useRef(null);
@@ -130,6 +133,8 @@ export default function GenericModal({
   }
 
   function validatePrompt(closeModal: boolean) {
+    let flow= flows.find((flow)=>flow.id==tabId);
+
     postValidatePrompt(field_name, inputValue, nodeClass)
       .then((apiReturn) => {
         if (apiReturn.data) {
@@ -137,12 +142,12 @@ export default function GenericModal({
           if (inputVariables && inputVariables.length === 0) {
             setIsEdit(true);
             setNoticeData({
-              title: "Your template does not have any variables.",
+              title: `Your template does not have any variables. @${flow.name}`,
             });
           } else {
             setIsEdit(false);
             setSuccessData({
-              title: "Prompt 已准备好",
+              title: `Prompt 已准备好 @${flow.name}`,
             });
             setNodeClass(apiReturn.data?.frontend_node);
             setModalOpen(closeModal);
@@ -151,7 +156,7 @@ export default function GenericModal({
         } else {
           setIsEdit(true);
           setErrorData({
-            title: "Something went wrong, please try again",
+            title: `Something went wrong, please try again @${flow.name}`,
           });
         }
       })
@@ -159,7 +164,7 @@ export default function GenericModal({
         console.log(error);
         setIsEdit(true);
         return setErrorData({
-          title: "There is something wrong with this prompt, please review it",
+          title: `There is something wrong with this prompt, please review it@${flow.name}`,
           list: [error?.response?.data?.detail],
         });
       });

@@ -43,17 +43,20 @@ import DocumentTitle from 'react-document-title';
 import ToggleShadComponent from "../toggleShadComponent";
 import {StyledMenu} from './components/menuBar'
 import { AuthContext } from "../../contexts/authContext";
+import { locationContext } from "../../contexts/locationContext";
 
 export default function Header() {
-  const { flows,notes, tabId,setTabId,setOpenFolderList,
-    openFolderList,setOpenMiniMap,openMiniMap,openAssistant,
-    setOpenAssistant,tabValues,setTabValues,setNotes,setPageTitle,pageTitle,
+  const { flows,notes, tabId,setTabId,tabValues,setTabValues,setNotes,setPageTitle,pageTitle,
     backup,restore,getNodeId,addFlow,getSearchResult } = useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { notificationCenter,setNoticeData,setSuccessData } = useContext(alertContext);
   const {  reactFlowInstances, setReactFlowInstances } = useContext(typesContext);
   const curPath=useLocation().pathname;
   const { userData,logout } = useContext(AuthContext);
+  const { screenWidth,setOpenFolderList,
+    openFolderList,setOpenMiniMap,openMiniMap,openAssistant,
+    setOpenAssistant,setOpenSearchList,openSearchList,noteOnly } = useContext(locationContext);
+
 
   // const location = useLocation();
 
@@ -162,7 +165,22 @@ export default function Header() {
           mode: dark?'dark':'light',
         },
       });
-   
+  const fullScreen =()=>{
+    if (!document.fullscreenElement) {
+      let de=document.documentElement;
+      if(de.requestFullscreen){
+        de.requestFullscreen()
+      }
+      // else if(de.mozRequestFullscreen){
+      //   de.mozRequestFullscreen();
+      // }else if(de.webkitRequestFullscreen){
+      //   de.webkitRequestFullscreen();
+      // }
+
+    } else {
+      document.exitFullscreen();
+    }
+  }
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     // if(reactFlowInstances.get(tabId)){
@@ -183,8 +201,8 @@ export default function Header() {
   };
 
   useEffect(()=>{
-    let title="欢迎您"; //default page title
-    if(tabId&&tabId.length>0){
+    let title="欢迎"; //default page title
+    // if(tabId&&tabId.length>0){
       let tabObj=tabValues.get(tabId);
       if(tabObj){
         if(tabObj.type=="note"){
@@ -197,7 +215,7 @@ export default function Header() {
         }
         
       }
-    }
+    // }
     setPageTitle(title);
   },[tabId]);
 
@@ -211,7 +229,6 @@ export default function Header() {
       return "";
     }
   }
-  
   return (
     <div className="header-arrangement">
       <DocumentTitle title={pageTitle+" - Neuri"}/>
@@ -238,63 +255,90 @@ export default function Header() {
               <ShadTooltip content="目录" side="bottom">
                 <button 
                 className="extra-side-bar-save-disable"
-                onClick={()=>{setOpenFolderList(!openFolderList);}}
+                onClick={()=>{
+                  let tempValue=openFolderList;
+                  setOpenFolderList(!tempValue);
+                  if(screenWidth<=1024){
+                    setOpenSearchList(!tempValue);
+                  }
+                }}
                 >
                   <IconComponent name={"Sidebar"} className={"side-bar-button-size "+(openFolderList?"remind-blue":"" )} />
                 </button>
               </ShadTooltip>
-              <ShadTooltip content="创建" side="bottom">
+              {noteOnly?(
+                <ShadTooltip content="创建新笔记" side="bottom">
                   <button
                     className={"extra-side-bar-save-disable"}
-                    onClick={handleClick}
+                    onClick={()=>{
+                      handleClose();
+                      let noteId=getNodeId("NewNote");
+                      setTabId(noteId);
+                      tabValues.set(noteId,{id:noteId,type:"note"})
+                      let folderId=getSearchResult?getSearchResult.folderId:"";
+                      notes.push({id:noteId,name:"",folder_id:folderId,content:{id:noteId,value:""}})                      
+                    }}
                   >
-                    <IconComponent
-                      name="Edit"
-                      className={
-                        "side-bar-button-size"
-                      }
-                    />
+                    <IconComponent name="PlusSquare" className={"side-bar-button-size"} />
                   </button>
                 </ShadTooltip>
-                  <ThemeProvider theme={muiTheme}>
-                    <StyledMenu
-                        id="new-menu"
-                        MenuListProps={{
-                          'aria-labelledby': 'demo-customized-button',
-                        }}
-                        anchorEl={anchorNew}
-                        open={openNew}
-                        onClose={handleClose}
-                        
-                    >
-                    <MenuItem onClick={() => {
-                          handleClose();
-                          let noteId=getNodeId("NewNote");
-                          setTabId(noteId);
-                          tabValues.set(noteId,{id:noteId,type:"note"})
-                          let folderId=getSearchResult?getSearchResult.folderId:"";
-                          notes.push({id:noteId,name:"",folder_id:folderId,content:{id:noteId,value:""}})
-                        }}
-                    disableRipple>
-                    <IconComponent name="PlusSquare" className={ "side-bar-button-size mr-2" } />
-                    笔记
-                    </MenuItem>                      
-                    <MenuItem onClick={() => {
-                          handleClose();
-                          let folderId=getSearchResult?getSearchResult.folderId:"";
-                          addFlow({name:"未命名",description:"",id:"",data:null,folder_id:folderId},true,folderId)
-                          .then((id) => {
-                            tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
-                            setTabId(id.toString());
-                            setSuccessData({ title: "New notebook successfully" });    
-                          });                        }}
-                    disableRipple>
-                    <IconComponent name="FilePlus" className={ "side-bar-button-size mr-2" } />
-                     白板
-                    </MenuItem>                        
+              ):(
+                <>
+                <ShadTooltip content="创建" side="bottom">
+                <button
+                  className={"extra-side-bar-save-disable"}
+                  onClick={handleClick}
+                >
+                  <IconComponent
+                    name="Edit"
+                    className={
+                      "side-bar-button-size"
+                    }
+                  />
+                </button>
+              </ShadTooltip>
+                <ThemeProvider theme={muiTheme}>
+                  <StyledMenu
+                      id="new-menu"
+                      MenuListProps={{
+                        'aria-labelledby': 'demo-customized-button',
+                      }}
+                      anchorEl={anchorNew}
+                      open={openNew}
+                      onClose={handleClose}
+                      
+                  >
+                  <MenuItem onClick={() => {
+                        handleClose();
+                        let noteId=getNodeId("NewNote");
+                        setTabId(noteId);
+                        tabValues.set(noteId,{id:noteId,type:"note"})
+                        let folderId=getSearchResult?getSearchResult.folderId:"";
+                        notes.push({id:noteId,name:"",folder_id:folderId,content:{id:noteId,value:""}})
+                      }}
+                  disableRipple>
+                  <IconComponent name="PlusSquare" className={ "side-bar-button-size mr-2" } />
+                  笔记
+                  </MenuItem>                      
+                  <MenuItem onClick={() => {
+                        handleClose();
+                        let folderId=getSearchResult?getSearchResult.folderId:"";
+                        addFlow({name:"未命名",description:"",id:"",data:null,folder_id:folderId},true,folderId)
+                        .then((id) => {
+                          tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
+                          setTabId(id.toString());
+                          setSuccessData({ title: "新的白板已创建" });    
+                        });                        }}
+                  disableRipple>
+                  <IconComponent name="FilePlus" className={ "side-bar-button-size mr-2" } />
+                   白板
+                  </MenuItem>                        
 
-                    </StyledMenu>
-                  </ThemeProvider>                  
+                  </StyledMenu>
+                </ThemeProvider>  
+                </>
+              )}
+                
               {/* <Link to="/" className="gap-2">          
               <div className="flex-1">Home</div>
               </Link>
@@ -316,7 +360,7 @@ export default function Header() {
     {/* )} */}
   
       <div className="round-button-div">
-      {curPath.startsWith("/app")&&(
+      {curPath.startsWith("/app")&&screenWidth>1024&&(
         <Box sx={{ height:"2.8rem" }}>
           <Tabs value={tabId} onChange={handleChange} aria-label="neuri tabs"
           sx={{height:"45px",minHeight:"45px",maxWidth:"600px",minWidth:"200px"}} 
@@ -324,7 +368,7 @@ export default function Header() {
               <Tab 
                 className="p-3 mt-1"
                 style={{borderTop: 1,borderTopRightRadius:10,borderTopLeftRadius:10,borderStyle:"inset"}}
-                label={(<div className="flex">欢迎您</div>)}  
+                label={(<div className="flex">欢迎</div>)}  
                 value={""} 
                 sx={{color:"unset"}}
               />
@@ -513,7 +557,7 @@ export default function Header() {
             {(userData) ? (
               <ThemeProvider theme={muiTheme}>
               <Fragment>
-                <ShadTooltip content="账号" side="bottom">
+                <ShadTooltip content={userData.username} side="bottom">
                 <IconButton
                   onClick={(event: React.MouseEvent<HTMLElement>) => {
                     setAnchorEl(event.currentTarget);}}
@@ -569,7 +613,7 @@ export default function Header() {
                   }
                 }>
                   <IconComponent name="User" className="side-bar-button-size mr-2" />
-                  {userData.username}
+                  个人偏好
                 </MenuItem>
                 {(userData&&userData.is_superuser&&(
                   <MenuItem onClick={()=>{
@@ -628,8 +672,14 @@ export default function Header() {
                       />
                       全览地图
                     </MenuItem>
+            
                 </>
                 )}
+                                      
+                <MenuItem onClick={fullScreen}>
+                  <IconComponent name="Maximize" className="side-bar-button-size mr-2" />
+                  {(document.fullscreenElement)?"退出":"进入"}全屏
+                </MenuItem>                  
                 <Divider sx={{ my: 0.5 }} />  
                 <MenuItem onClick={()=>{
                   backup();

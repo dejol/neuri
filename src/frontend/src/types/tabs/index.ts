@@ -44,16 +44,16 @@ export type TabsContextType = {
   setIsBuilt: (state: boolean) => void;
   isEMBuilt: boolean;
   setIsEMBuilt: (state: boolean) => void;  
-  openFolderList:boolean;
-  setOpenFolderList: (state: boolean) => void;
-  openModelList:boolean;
-  setOpenModelList: (state: boolean) => void;  
-  openWebEditor:boolean,
-  setOpenWebEditor: (state: boolean) => void;
-  openMiniMap:boolean,
-  setOpenMiniMap: (state: boolean) => void;  
-  openAssistant:boolean,
-  setOpenAssistant: (state: boolean) => void;
+  // openFolderList:boolean;
+  // setOpenFolderList: (state: boolean) => void;
+  // openModelList:boolean;
+  // setOpenModelList: (state: boolean) => void;  
+  // openWebEditor:boolean,
+  // setOpenWebEditor: (state: boolean) => void;
+  // openMiniMap:boolean,
+  // setOpenMiniMap: (state: boolean) => void;  
+  // openAssistant:boolean,
+  // setOpenAssistant: (state: boolean) => void;
   uploadFlow: (newFlow?: boolean, file?: File) => void;
   hardReset: () => void;
   getNodeId: (nodeType: string) => string;

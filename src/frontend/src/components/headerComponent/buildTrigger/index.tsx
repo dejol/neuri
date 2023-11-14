@@ -28,7 +28,7 @@ export default function BuildTrigger({
 }) {
   const { updateSSEData, isBuilding, setIsBuilding, sseData } = useSSE();
   const { reactFlowInstances } = useContext(typesContext);
-  const { setTabsState,tabId } = useContext(TabsContext);
+  const { setTabsState,tabId,flows } = useContext(TabsContext);
   const { setErrorData, setSuccessData } = useContext(alertContext);
   const [isIconTouched, setIsIconTouched] = useState(false);
   const eventClick = isBuilding ? "pointer-events-none" : "";
@@ -39,10 +39,12 @@ export default function BuildTrigger({
       if (isBuilding) {
         return;
       }
+      
       const errors = validateNodes(reactFlowInstances.get(tabId));
       if (errors.length > 0) {
+        let flow = flows.find((flow)=>flow.id==tabId);
         setErrorData({
-          title: "Oops! Looks like you missed something",
+          title: `哦！看来运行'${flow.name}'有些异常情况`,
           list: errors,
         });
         return;
@@ -55,10 +57,12 @@ export default function BuildTrigger({
       await enforceMinimumLoadingTime(startTime, minimumLoadingTime);
       setIsBuilt(allNodesValid);
       if (!allNodesValid) {
+        let flow = flows.find((flow)=>flow.id==tabId);
+
         setErrorData({
-          title: "Oops! Looks like you missed something",
+          title: `哦！'${flow.name}'遇到问题了`,
           list: [
-            "Check components and retry. Hover over component status icon 🔴 to inspect.",
+            "请检查节点让尝试，特别留意图标是 🔴 的.",
           ],
         });
       }

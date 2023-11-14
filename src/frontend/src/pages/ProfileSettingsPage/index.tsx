@@ -16,13 +16,15 @@ import {
 } from "../../types/components";
 import { gradients } from "../../utils/styleUtils";
 import { TabsContext } from "../../contexts/tabsContext";
+import ToggleShadComponent from "../../components/toggleShadComponent";
+import { locationContext } from "../../contexts/locationContext";
 export default function ProfileSettingsPage(): JSX.Element {
   const { setTabId } = useContext(TabsContext);
 
   const [inputState, setInputState] = useState<patchUserInputStateType>(
     CONTROL_PATCH_USER_STATE
   );
-
+  const {setNoteOnly,noteOnly} =useContext(locationContext);
   // set null id
   useEffect(() => {
     setTabId("");
@@ -71,12 +73,11 @@ export default function ProfileSettingsPage(): JSX.Element {
         <div className="community-page-nav-arrangement">
           <span className="community-page-nav-title">
             <IconComponent name="User" className="w-6" />
-            Profile Settings
+            个人偏好
           </span>
         </div>
         <span className="community-page-description-text">
-          Change your profile settings like your password and your profile
-          picture.
+          在这里可以修改您的个人喜好，密码等信息。
         </span>
         <Form.Root
           onSubmit={(event) => {
@@ -91,7 +92,7 @@ export default function ProfileSettingsPage(): JSX.Element {
               <div className="mb-3 w-96">
                 <Form.Field name="password">
                   <Form.Label className="data-[invalid]:label-invalid">
-                    Password{" "}
+                    密码{" "}
                   </Form.Label>
                   <InputComponent
                     onChange={(value) => {
@@ -100,18 +101,18 @@ export default function ProfileSettingsPage(): JSX.Element {
                     value={password}
                     isForm
                     password={true}
-                    placeholder="Password"
+                    placeholder="新的密码"
                     className="w-full"
                   />
                   <Form.Message match="valueMissing" className="field-invalid">
-                    Please enter your password
+                    请输入您的登陆密码
                   </Form.Message>
                 </Form.Field>
               </div>
               <div className="mb-3 w-96">
                 <Form.Field name="cnfPassword">
                   <Form.Label className="data-[invalid]:label-invalid">
-                    Confirm Password{" "}
+                    确认密码{" "}
                   </Form.Label>
 
                   <InputComponent
@@ -121,7 +122,7 @@ export default function ProfileSettingsPage(): JSX.Element {
                     value={cnfPassword}
                     isForm
                     password={true}
-                    placeholder="Confirm Password"
+                    placeholder="再次输入新的密码"
                     className="w-full"
                   />
 
@@ -133,10 +134,10 @@ export default function ProfileSettingsPage(): JSX.Element {
             </div>
             <Form.Field name="gradient">
               <Form.Label className="data-[invalid]:label-invalid">
-                Profile Gradient{" "}
+                个人偏好样式{" "}
               </Form.Label>
 
-              <div className="mt-4 w-[1010px]">
+              <div className="mt-4 w-full">
                 <GradientChooserComponent
                   value={
                     gradient == ""
@@ -153,7 +154,20 @@ export default function ProfileSettingsPage(): JSX.Element {
               </div>
             </Form.Field>
           </div>
-
+          <div className="ml-0 mt-4">
+            <div className="flex">
+            <ToggleShadComponent
+                disabled={false}
+                enabled={noteOnly}
+                setEnabled={setNoteOnly}
+                size="small"
+              />
+                仅查看笔记    
+            </div>            
+          <span className="community-page-description-text w-full">
+            选择是否仅修改和查看笔记，白板内容将隐藏，但不会删除；该项不需要保存，效果是及时生效的。
+          </span>
+        </div>
           <div className="flex w-full justify-end">
             <div className="w-32">
               <Form.Submit asChild>

@@ -45,6 +45,7 @@ import FolderModal from "../../../../modals/folderModal";
 import AccordionComponent from "../../../../components/AccordionComponent";
 import { cloneDeep, transform } from "lodash";
 import { filterHTML } from "../../../../utils/utils";
+import { locationContext } from "../../../../contexts/locationContext";
 // import moment from 'moment';
 // import { switchToBG } from "../borderColorComponent"
 // import { FolderType } from "../../../../types/flow";
@@ -53,12 +54,9 @@ import { filterHTML } from "../../../../utils/utils";
 export default function FolderPopover() {
   // const { data, templates } = useContext(typesContext);
   const { flows, tabId, setTabId, 
-    // tabsState, isBuilt,
-    // backup,restore,setOpenFolderList,setOpenWebEditor,openWebEditor,
-    // setEditFlowId,setEditNodeId,setTabValues,getNodeId,
     setSearchResult,getSearchResult,addFolder,removeFolder,tabValues,notes,folders
    } =useContext(TabsContext);
-  // const { dark, setDark } = useContext(darkContext);
+  const { setOpenSearchList,noteOnly } = useContext(locationContext);
   const flow = flows.find((flow) => flow.id === tabId);
   // const [popoverState, setPopoverState] = useState(false);
   // const [open, setOpen] = useState(false);
@@ -126,7 +124,7 @@ export default function FolderPopover() {
     //   setSearch([]);
     //   return;
     // }
-    if (flows.length > 0) {
+    if (flows.length > 0 && !noteOnly) {
       flows.forEach((flow) => {
         if(!flow.data){return;}
         let nodes=flow.data.nodes;
@@ -171,6 +169,7 @@ export default function FolderPopover() {
       });
     }
     setSearchResult({folderId:"",keyword:searchKeyword,notes:tempNotes,flows:results});
+    setOpenSearchList(true);
     
     // }
   };  
@@ -211,8 +210,13 @@ export default function FolderPopover() {
     findSubId(folderIds,folderId);
     let totalNum=0;
     folderIds.map((id)=>{
-      totalNum+=flows.filter((flow)=>flow.folder_id==id).length+
-      notes.filter((note)=>note.folder_id==id).length;
+      if(noteOnly){
+        totalNum+=notes.filter((note)=>note.folder_id==id).length;
+      }else{
+        totalNum+=flows.filter((flow)=>flow.folder_id==id).length+
+        notes.filter((note)=>note.folder_id==id).length;
+      }
+
     })
     return totalNum;
   }
@@ -237,9 +241,10 @@ export default function FolderPopover() {
                 setSearchResult({
                   folderId:folder.id,
                   keyword:searchKeyword,
-                  flows:flows.filter((flow)=>flow.folder_id==folder.id),
-                  notes:notes.filter((note)=>note.folder_id==folder.id)
+                  flows:flows.filter((flow)=>flow.folder_id===folder.id),
+                  notes:notes.filter((note)=>note.folder_id===folder.id)
                 });
+                setOpenSearchList(true);
               }}
             > 
               <div className={"file-component-badge-div justify-start "+(getSearchResult.folderId==folder.id?"text-blue-500":"")}>
@@ -567,6 +572,7 @@ export default function FolderPopover() {
                   flows:flows.filter((flow)=>!flow.folder_id),
                   notes:notes.filter((note)=>!note.folder_id)
                 });
+                setOpenSearchList(true);
               }}
             >
             <div className={"file-component-badge-div justify-start "+(getSearchResult.folderId==""?"text-blue-500/80":"")}>
@@ -574,7 +580,8 @@ export default function FolderPopover() {
             暂未分类
             </div>
             <div className="mr-2">
-              <span className="text-sm text-muted-foreground">{flows.filter((flow)=>!flow.folder_id).length+
+              <span className="text-sm text-muted-foreground">
+                {noteOnly?notes.filter((note)=>!note.folder_id).length:flows.filter((flow)=>!flow.folder_id).length+
                     notes.filter((note)=>!note.folder_id).length}
               </span>
               </div>

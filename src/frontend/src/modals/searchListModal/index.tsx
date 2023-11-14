@@ -14,6 +14,7 @@ import { darkContext } from "../../contexts/darkContext";
 import { alertContext } from "../../contexts/alertContext";
 import { APIClassType } from "../../types/api";
 import AccordionComponent from "../../components/AccordionComponent";
+import { locationContext } from "../../contexts/locationContext";
 export default function SearchListModal({
   open,
   setOpen,
@@ -34,12 +35,14 @@ export default function SearchListModal({
   const messagesRef = useRef(null);
   
   const { flows, tabId, setTabId, tabsState, isBuilt,folders,
-    backup,restore,setOpenFolderList,setOpenWebEditor,openWebEditor,
+    backup,restore,
     setEditFlowId,setEditNodeId,setTabValues,tabValues,notes,getNodeId,
     setSearchResult,addFlow
    } =useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { setErrorData, setSuccessData } = useContext(alertContext);
+  const { screenWidth,setOpenFolderList,setOpenWebEditor,openWebEditor,noteOnly } = useContext(locationContext);
+
   // const [loading,setLoading] = useState(false);
 
   useEffect(() => {
@@ -145,6 +148,10 @@ export default function SearchListModal({
   const openNewTab=(id,type)=>{
     tabValues.set(id,{id:id,type:type})
     setTabId(id);
+    if(screenWidth<=1024){
+      setOpen(false);
+      setOpenFolderList(false);
+    }
   }
   let itemCount=0;
   function itemList(flow:FlowType,idx:number){
@@ -161,21 +168,20 @@ export default function SearchListModal({
               </span>                
               </p>} side="right">
               <div className="file-component-badge-div justify-start h-4 ml-1">
-              <Button
-              size="small"
-              className=" whitespace-nowrap"
-              // variant="link"
-              style={{textTransform:"none"}}
-              disableRipple
-              onClick={(event) => {
-                event.stopPropagation();
-                openNewTab(flow.id,"flow");
-              }}
-              startIcon={<IconComponent name="FileText" className="main-page-nav-button" />}
-              >
-                {flow.name.substring(0,10)+(flow.name.length>10?"...":"")}
-                
-              </Button>                          
+                <Button
+                  size="small"
+                  className=" whitespace-nowrap"
+                  // variant="link"
+                  style={{textTransform:"none"}}
+                  disableRipple
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    openNewTab(flow.id,"flow");
+                  }}
+                  startIcon={<IconComponent name="FileText" className="main-page-nav-button" />}
+                >
+                  {flow.name.substring(0,10)+(flow.name.length>10?"...":"")}
+                </Button>                          
             </div>
             </ShadTooltip>
           }
@@ -398,15 +404,18 @@ export default function SearchListModal({
                         </ListItem>
                     ))}                  
                     </List>
-                    {
-                    flowList.map((flow, id) => (
+                    {!noteOnly&&(
+                      <>
+                    {flowList.map((flow, id) => (
                        itemList(flow,id)
                     ))}
-                    {
-                     (itemCount+1!==flowList.length)&&(
+                    
+                     {(itemCount+1!==flowList.length)&&(
                       <IconComponent name="MoreHorizontal" className="main-page-nav-button animate-pulse" />
-                     )
-                    }
+                     )}
+                     </>
+                    )}
+
                     </>
                   ):(
                     
