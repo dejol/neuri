@@ -11,18 +11,21 @@ import { Button } from "../../components/ui/button";
 import { WEB_EDITOR_DIALOG_SUBTITLE } from "../../constants/constants";
 import { alertContext } from "../../contexts/alertContext";
 import { darkContext } from "../../contexts/darkContext";
-import { typesContext } from "../../contexts/typesContext";
-import { postCustomComponent, postValidateCode } from "../../controllers/API";
-import { APIClassType } from "../../types/api";
+import { postBuildInit, postContentAssistant } from "../../controllers/API";
 import moment from "moment";
-import { NodeDataType, NodeType, NoteType } from "../../types/flow";
+import { FlowType, NodeDataType, NodeType, NoteType } from "../../types/flow";
 import { TabsContext } from "../../contexts/tabsContext";
-import {useNodesState,useReactFlow} from "reactflow";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
 import { IButtonMenu,Boot, IDomEditor, IEditorConfig, IToolbarConfig, IModuleConf } from "@wangeditor/editor";
 import markdownModule from '@wangeditor/plugin-md';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
 import { locationContext } from "../../contexts/locationContext";
+import { useSSE } from "../../contexts/SSEContext";
+import { enforceMinimumLoadingTime, getAssistantFlow } from "../../utils/utils";
+import Chat from "../../components/chatComponent";
+import LeftFormModal from "../leftFormModal";
+import { Transition } from "@headlessui/react";
+import ChatTrigger from "../../components/chatComponent/chatTrigger";
+
 
 export default function NoteEditorModal({
   note_id,
@@ -41,15 +44,18 @@ export default function NoteEditorModal({
   const [folderId, setFolderId] = useState("");
   const [createAt, setCreateAt] = useState(new Date());
   const [udpateAt, setUpdateAt] = useState(new Date());
-
+  const [open,setOpen]=useState(false);
+  const [canOpen, setCanOpen] = useState(false);
   const { setErrorData, setSuccessData } = useContext(alertContext);
-  const { screenWidth } = useContext(locationContext);
-
+  const { screenWidth,openAssistant } = useContext(locationContext);
+  const { updateSSEData, isBuilding, setIsBuilding } = useSSE();
   const [error, setError] = useState<{
     detail: { error: string; traceback: string };
   }>(null);
+    const assistantOn = useRef(false);
 
-  const { notes,folders,saveNote,addNote,removeNote,setTabId,tabValues } = useContext(TabsContext);
+  const [tempFlow,setTempFlow] =useState({id:note_id,name:"noteEdit",description:"",data:null})
+  const { notes,folders,tabsState,tabValues,isBuilt,setIsBuilt,setTabsState, } = useContext(TabsContext);
   useEffect(()=>{
     let note=notes.find((note) => note.id === note_id);
     if(note){
@@ -148,6 +154,7 @@ export default function NoteEditorModal({
     MENU_CONF: {},
     onChange :(editor:IDomEditor)=>{
       setEditValue(editor.getHtml());
+      setConChanged(true);
     },
     onBlur:(editor:IDomEditor)=>{
     },
@@ -266,6 +273,140 @@ editorConfig.MENU_CONF['uploadVideo'] = {
       }
   }, [editor]);
 
+  const changedContent = useRef(false);
+  const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
+
+  useEffect(()=>{
+    assistantOn.current=openAssistant;
+    let delay=1000*60; //one minute
+    let intervalId = null;
+    if(assistantOn.current){
+      intervalId = setInterval(
+            ()=>{
+            
+            if(assistantOn.current&&changedContent.current&&!isBuilding){
+              // console.log("note_id:",note_id);
+              postContentAssistant(name+'\r\n'+editValue,note_id).then((resp)=>{
+                if(resp){
+                  // console.log("resp:",resp);
+                  handleBuild(getAssistantFlow(note_id,resp.data.result.msg));
+                }
+              });
+
+            }
+            changedContent.current=false;
+          }, 
+        delay);
+    }else{
+      clearInterval(intervalId);
+    }
+    return () => {
+      clearInterval(intervalId);
+    };
+  },[openAssistant]);
+
+  useEffect(()=>{
+    changedContent.current=conChanged;
+  },[conChanged]);  
+
+  async function handleBuild(flow: FlowType) {
+    
+    try {
+      if (isBuilding) {
+        return;
+      }
+      const minimumLoadingTime = 200; // in milliseconds
+      const startTime = Date.now();
+      setIsBuilding(true);
+      const allNodesValid = await streamNodeData(flow);
+      await enforceMinimumLoadingTime(startTime, minimumLoadingTime);
+      // console.log("flow:",flow,allNodesValid);
+
+      setIsBuilt(allNodesValid);
+      if (!allNodesValid) {
+        console.error( "Oops! Looks like you missed something");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsBuilding(false);
+    }
+  }
+
+  async function streamNodeData(flow: FlowType) {
+    // Step 1: Make a POST request to send the flow data and receive a unique session ID
+    const response = await postBuildInit(flow);
+    const { flowId } = response.data;
+    // Step 2: Use the session ID to establish an SSE connection using EventSource
+    let validationResults = [];
+    let finished = false;
+    const apiUrl = `/api/v1/build/stream/${flowId}`;
+    const eventSource = new EventSource(apiUrl);
+    eventSource.onmessage = (event) => {
+      // If the event is parseable, return
+      if (!event.data) {
+        return;
+      }
+      const parsedData = JSON.parse(event.data);
+      // console.log("parseData:",parsedData);
+      // if the event is the end of the stream, close the connection
+      if (parsedData.end_of_stream) {
+        // Close the connection and finish
+        finished = true;
+        eventSource.close();
+
+        return;
+      } else if (parsedData.log) {
+        // If the event is a log, log it
+        // setSuccessData({ title: parsedData.log });
+      } else if (parsedData.input_keys !== undefined) {
+        // console.log("flowId:",flowId);
+        setTabsState((old) => {
+          return {
+            ...old,
+            [flowId]: {
+              ...old[flowId],
+              formKeysData: parsedData,
+            },
+          };
+        });
+      } else {
+        // Otherwise, process the data
+        const isValid = processStreamResult(parsedData);
+        // setProgress(parsedData.progress);
+        validationResults.push(isValid);
+      }
+    };
+
+    eventSource.onerror = (error: any) => {
+      console.error("EventSource failed:", error);
+      eventSource.close();
+      if (error.data) {
+        const parsedData = JSON.parse(error.data);
+        // setErrorData({ title: parsedData.error });
+        setIsBuilding(false);
+      }
+    };
+    // Step 3: Wait for the stream to finish
+    while (!finished) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      finished = validationResults.length === flow.data.nodes.length;
+    }
+    // setOpen(finished);
+    // Step 4: Return true if all nodes are valid, false otherwise
+    return validationResults.every((result) => result);
+  }
+
+  function processStreamResult(parsedData) {
+    // Process each chunk of data here
+    // Parse the chunk and update the context
+    try {
+      updateSSEData({ [parsedData.id]: parsedData });
+    } catch (err) {
+      console.log("Error parsing stream data: ", err);
+    }
+    return parsedData.valid;
+  } 
   return (
         <div className="flex h-full w-full flex-col transition-all overflow-hidden " >
           <div className="w-full m-1 mb-0">
@@ -373,6 +514,39 @@ editorConfig.MENU_CONF['uploadVideo'] = {
               Save
             </Button> 
            </div> */}
+
+            <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} 
+              canOpen={canOpen} setCanOpen={setCanOpen} 
+              flow={tempFlow}/>
+
+              {tabsState[note_id] &&
+                tabsState[note_id].formKeysData && 
+                  canOpen&&(
+                  <Transition
+                  show={open}
+                  appear={true}
+                  // enter="transition-transform duration-500 ease-out"
+                  // enterFrom={"transform translate-x-[-100%]"}
+                  // enterTo={"transform translate-x-0"}
+                  leave="transition-transform duration-500 ease-in"
+                  leaveFrom={"transform translate-x-0"}
+                  leaveTo={"transform translate-x-[-100%]"}
+                  // className={"chat-message-modal-thought-cursor"}
+
+                > 
+                <div className="fixed bottom-12 left-2">   
+                  <div className="left-side-bar-arrangement">     
+                  <LeftFormModal
+                    key={note_id}
+                    flow={tempFlow}
+                    open={open}
+                    setOpen={setOpen}
+                    needCheckFlow={false}
+                  />
+                  </div>   
+                </div>
+                </Transition>
+                )}
         </div>
   );
 }

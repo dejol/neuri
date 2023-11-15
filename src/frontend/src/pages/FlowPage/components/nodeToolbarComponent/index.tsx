@@ -13,6 +13,7 @@ import { Popover } from "@mui/material";
 import BorderColorComponent from "../borderColorComponent";
 import { darkContext } from "../../../../contexts/darkContext";
 import BuildTrigger from "../../../../modals/embeddedModal/buildTrigger";
+import { locationContext } from "../../../../contexts/locationContext";
 
 export default function NodeToolbarComponent({ data, setData, deleteNode,runnabler,setRunnabler,miniSize,setMiniSize,setBorder }) {
   const [nodeLength, setNodeLength] = useState(
@@ -31,7 +32,8 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
     ).length
   );
 
-  const { flows, paste,openWebEditor,setOpenWebEditor,tabId,setEditFlowId,setEditNodeId,setIsEMBuilt } = useContext(TabsContext);
+  const { flows, paste,tabId,setEditFlowId,setEditNodeId,setIsEMBuilt } = useContext(TabsContext);
+  const {setOpenWebEditor} = useContext(locationContext)
   // const reactFlowInstance = useReactFlow();
   const {reactFlowInstances} =useContext(typesContext);
   const {dark} =useContext(darkContext);

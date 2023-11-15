@@ -171,11 +171,11 @@ export default function Header() {
       if(de.requestFullscreen){
         de.requestFullscreen()
       }
-      // else if(de.mozRequestFullscreen){
-      //   de.mozRequestFullscreen();
-      // }else if(de.webkitRequestFullscreen){
-      //   de.webkitRequestFullscreen();
-      // }
+      else if(de.webkitRequestFullscreen){
+        de.webkitRequestFullscreen();
+      }else if(de.mozRequestFullscreen){
+        de.mozRequestFullscreen();
+      }
 
     } else {
       document.exitFullscreen();
@@ -258,9 +258,9 @@ export default function Header() {
                 onClick={()=>{
                   let tempValue=openFolderList;
                   setOpenFolderList(!tempValue);
-                  if(screenWidth<=1024){
+                  // if(screenWidth<=1024){
                     setOpenSearchList(!tempValue);
-                  }
+                  // }
                 }}
                 >
                   <IconComponent name={"Sidebar"} className={"side-bar-button-size "+(openFolderList?"remind-blue":"" )} />
@@ -635,28 +635,28 @@ export default function Header() {
                   )}
                     显示模式
                 </MenuItem>
+                <MenuItem onClick={()=>{
+                      setOpenAssistant(!openAssistant);  
+                    }
+                  }
+                    className="px-0 pr-1"
+                  >
+                    {/* {openAssistant ? (
+                      <IconComponent name="MicOff" className="side-bar-button-size mr-2" />
+                    ) : (
+                      <IconComponent name="Mic" className="side-bar-button-size mr-2" />
+                    )} */}
+                    <ToggleShadComponent
+                    disabled={false}
+                    enabled={openAssistant}
+                    setEnabled={setOpenAssistant}
+                    size="small"
+                  />
+                  AI助理
+                </MenuItem>                  
                 {tabValues.get(tabId)&&tabValues.get(tabId).type=="flow"&&(
                   <>
-                    <MenuItem onClick={()=>{
-                        setOpenAssistant(!openAssistant);  
-                      }
-                    }
-                      className="px-0 pr-1"
-                    >
-                      {/* {openAssistant ? (
-                        <IconComponent name="MicOff" className="side-bar-button-size mr-2" />
-                      ) : (
-                        <IconComponent name="Mic" className="side-bar-button-size mr-2" />
-                      )} */}
-                      <ToggleShadComponent
-                      disabled={false}
-                      enabled={openAssistant}
-                      setEnabled={setOpenAssistant}
-                      size="small"
-
-                    />
-                    AI助理
-                    </MenuItem>                
+              
                     <MenuItem onClick={()=>{
                         setOpenMiniMap(!openMiniMap);    
                       }

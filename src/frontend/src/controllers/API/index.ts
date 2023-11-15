@@ -654,6 +654,33 @@ export async function postNotesAssistant(
 
 }
 
+/**
+ * Posts the content of note.
+ * @param {string} content -  The content to post to assistant .
+ * @returns {Promise<AssistantTypeAPI>} A promise that resolves to an AxiosResponse containing the build status.
+ *
+ */
+export async function postContentAssistant(
+  content: string,id:string
+): Promise<AxiosResponse<AssistantTypeAPI>> {
+  let flow={id:id,name:"",description:"",
+            data:{
+                nodes:[{
+                  type:"noteNode",
+                  data:{
+                    value:content
+                  }
+                }]
+            }
+          };
+  if(content.length>3){
+    return await api.post(`${BASE_URL_API}assistant/${flow.id}`, flow);
+  }
+  return null;
+  // ("result"={flowId:flow.id,msg:""});
+
+}
+
 export async function autoLogin() {
   try {
     const response = await api.get(`${BASE_URL_API}auto_login`);

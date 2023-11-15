@@ -9,7 +9,13 @@ import NoteEditorModal from "../../modals/noteEditorModal";
 import SearchListModal from "../../modals/searchListModal";
 import { AuthContext } from "../../contexts/authContext";
 import { locationContext } from "../../contexts/locationContext";
-
+import Chat from "../../components/chatComponent";
+import { useSSE } from "../../contexts/SSEContext";
+import { FlowType } from "../../types/flow";
+import { enforceMinimumLoadingTime,getAssistantFlow } from "../../utils/utils";
+import { postBuildInit, postNotesAssistant } from "../../controllers/API";
+import LeftFormModal from "../../modals/leftFormModal";
+import Welcome from "./components/WelcomeComponent";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -36,13 +42,16 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function FlowPage() {
-  const { flows, tabId, setTabId,
-    tabValues,notes,getSearchResult,setSearchResult } = useContext(TabsContext);
-  const {openFolderList,openSearchList,setOpenSearchList} = useContext(locationContext);
+  const { flows, tabId, setTabId,setTabsState,tabsState,
+    tabValues,notes,getSearchResult,isBuilt,setIsBuilt } = useContext(TabsContext);
+  const {openFolderList,openSearchList,setOpenSearchList,openAssistant} = useContext(locationContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const {userData} = useContext(AuthContext);
-
+  const [open,setOpen] = useState(true);
+  const [canOpen,setCanOpen] = useState(true);
+  const {  isBuilding, setIsBuilding,updateSSEData } = useSSE();
+  
   // useEffect(() => {
     // if(getSearchResult&&(getSearchResult.flows.length>0||getSearchResult.notes.length>0)){
       // setOpenSearchList(true);
@@ -81,6 +90,8 @@ export default function FlowPage() {
 
   return (
     <div className="flow-page-positioning flex">
+    {(tabValues.get(tabId)&&tabValues.get(tabId).type=="note")&&(
+      <>
         <Transition
           show={openFolderList}
           enter="transition-transform duration-500 ease-out"
@@ -91,7 +102,7 @@ export default function FlowPage() {
           leaveTo={"transform translate-x-[-100%]"}
           // className={"chat-message-modal-thought-cursor"}
         >
-          <div className="flex h-full overflow-hidden">
+          <div className="flex h-full overflow-hidden ">
             <FolderPopover />
           </div>
           
@@ -100,9 +111,9 @@ export default function FlowPage() {
             show={openSearchList}
             enter="transition-transform duration-500 ease-out"
             enterFrom={"transform translate-x-[-100%]"}
-            enterTo={"transform translate-x-0"}
+            enterTo={"transform translate-x-200"}
             leave="transition-transform duration-500 ease-in"
-            leaveFrom={"transform translate-x-0"}
+            leaveFrom={"transform translate-x-200"}
             leaveTo={"transform translate-x-[-100%]"}
             // className={"chat-message-modal-thought-cursor"}
 
@@ -119,13 +130,14 @@ export default function FlowPage() {
               />
             </div>
           </div>
-        </Transition>        
-
+        </Transition>    
+        </>    
+      )}
       
-        <TabPanel value={tabId} index={""}>    
-          <div className="flex w-full h-full" style={{alignItems:"center"}}>
-            <img src="/welcome.jpg"/>
-            </div>
+        <TabPanel value={tabId} index={""}>
+          {userData&&(
+            <Welcome flow={{id:userData.id,name:"welcome",description:"",data:null}} />
+          )}
         </TabPanel>       
         {Array.from(tabValues.values()).map((value,key)=>{
           return(

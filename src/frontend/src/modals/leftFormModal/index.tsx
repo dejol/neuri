@@ -20,10 +20,12 @@ export default function LeftFormModal({
   flow,
   open,
   setOpen,
+  needCheckFlow=true,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
   flow: FlowType;
+  needCheckFlow?:boolean;
 }) {
   const { tabsState, setTabsState,tabId } = useContext(TabsContext);
   const [chatValue, setChatValue] = useState(() => {
@@ -333,7 +335,7 @@ export default function LeftFormModal({
   }, [open]);
 
   function sendMessage() {
-    let nodeValidationErrors = validateNodes(reactFlowInstances.get(tabId));
+    let nodeValidationErrors = needCheckFlow?validateNodes(reactFlowInstances.get(tabId)):[];
     if (nodeValidationErrors.length === 0) {
       setLockChat(true);
       let inputs = tabsState[id.current].formKeysData.input_keys;
@@ -345,13 +347,29 @@ export default function LeftFormModal({
         chatKey,
         tabsState[flow.id].formKeysData.template
       );
-      sendAll({
-        ...reactFlowInstances.get(tabId).toObject(),
-        inputs: inputs,
-        chatHistory,
-        name: flow.name,
-        description: flow.description,
-      });
+      if(needCheckFlow){
+        sendAll({
+          ...reactFlowInstances.get(tabId).toObject(),
+          nodes:[],
+          edges:[],
+          viewport:null,
+          inputs: inputs,
+          chatHistory,
+          name: flow.name,
+          description: flow.description,
+        });
+      }else{
+        sendAll({
+          nodes:[],
+          edges:[],
+          viewport:null,
+          inputs: inputs,
+          chatHistory,
+          name: flow.name,
+          description: flow.description,
+        });
+      }
+
       setTabsState((old) => {
         if (!chatKey) return old;
         let newTabsState = _.cloneDeep(old);

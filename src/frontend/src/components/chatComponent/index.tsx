@@ -57,7 +57,7 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
       const response = await getBuildStatus(flow.id);
       setIsBuilt(response.built);
     };
-
+    // console.log("call the async funtion");
     // Call the async function
     fetchBuildStatus();
   }, [flow]);
@@ -90,7 +90,7 @@ export default function Chat({open,setOpen,isBuilt, setIsBuilt,canOpen,setCanOpe
 
     prevNodesRef.current = currentNodes;
   }, [tabsState, flow.id]);
-
+  // console.log("result:",open,canOpen,isBuilt);
   return (
     <>
       <div>

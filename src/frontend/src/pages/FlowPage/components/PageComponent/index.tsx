@@ -100,12 +100,8 @@ export default function Page({ flow }: { flow: FlowType }) {
     setTabsState,
     tabId,
   } = useContext(TabsContext);
-  const { types, 
-    // reactFlowInstance,
-     reactFlowInstances,
-    // setReactFlowInstance,
-     templates,data } = useContext(typesContext);
-    const { dark } = useContext(darkContext);
+  const { types,reactFlowInstances,templates,data } = useContext(typesContext);
+  const { dark } = useContext(darkContext);
 
   const reactFlowWrapper = useRef(null);
   const {setNoticeData } = useContext(alertContext);
@@ -121,7 +117,7 @@ export default function Page({ flow }: { flow: FlowType }) {
   const {tabValues,isBuilt, setIsBuilt,getSearchResult,
     editNodeId } = useContext(TabsContext);
   const {openFolderList,
-      openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor } = useContext(locationContext);    
+      openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,setOpenSearchList,openSearchList } = useContext(locationContext);    
   // const [openSearch,setOpenSearch]=useState(false);
   const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
   // useEffect(() => {
@@ -864,7 +860,7 @@ function createNoteNode(newValue,newPosition){
                       showZoom={false}
                       position="bottom-right"
                       >
-                        </Controls>
+                      </Controls>
                       <ExtendButton/>
                       <Background 
                       //  color="#ccc" 
@@ -873,6 +869,48 @@ function createNoteNode(newValue,newPosition){
                       id={flow.id}
                       />
                     </ReactFlow>
+                    {tabId===flow.id&&(
+                      <div>
+                      <Transition
+                        show={openFolderList}
+                        // enter="transition-transform duration-500 ease-out"
+                        // enterFrom={"transform translate-x-[-100%]"}
+                        // enterTo={"transform translate-x-0"}
+                        // leave="transition-transform duration-500 ease-in"
+                        // leaveFrom={"transform translate-x-0"}
+                        // leaveTo={"transform translate-x-[-100%]"}
+                        // className={"chat-message-modal-thought-cursor"}
+                      >
+                        <div className="fixed top-12 left-0 h-[93%]">
+                          <FolderPopover />
+                        </div>
+                      </Transition>
+                      <Transition
+                        show={openSearchList}
+                        // enter="transition-transform duration-500 ease-out"
+                        // enterFrom={"transform translate-x-[-100%]"}
+                        // enterTo={"transform translate-x-200"}
+                        // leave="transition-transform duration-500 ease-in"
+                        // leaveFrom={"transform translate-x-200"}
+                        // leaveTo={"transform translate-x-[-100%]"}
+                        // className={"chat-message-modal-thought-cursor"}
+            
+                      >
+                      <div className="fixed top-12 left-[13rem] h-[93%]">
+                        <div className="search-list-bar-arrangement">
+                        <SearchListModal
+                          open={openSearchList}
+                          setOpen={setOpenSearchList}
+                          flowList={getSearchResult.flows}
+                          noteList={getSearchResult.notes}
+                          searchKeyword={getSearchResult.keyword}
+                          folderId={getSearchResult.folderId}
+                        />
+                      </div>
+                    </div>
+                  </Transition> 
+                    </div>
+                    )}
                     <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} canOpen={canOpen} setCanOpen={setCanOpen} flow={flow}/>
                     {isBuilt &&
                       tabsState[flow.id] &&

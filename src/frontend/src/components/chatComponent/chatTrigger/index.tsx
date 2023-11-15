@@ -9,11 +9,12 @@ import {
 } from "../../../constants/constants";
 import { alertContext } from "../../../contexts/alertContext";
 import IconComponent from "../../genericIconComponent";
-import { TabsContext } from "../../../contexts/tabsContext";
+// import { TabsContext } from "../../../contexts/tabsContext";
+import { locationContext } from "../../../contexts/locationContext";
 
 export default function ChatTrigger({ open, setOpen, isBuilt, canOpen }) {
   const { setErrorData } = useContext(alertContext);
-  const { openAssistant } = useContext(TabsContext);
+  const { openAssistant } = useContext(locationContext);
   function handleClick() {
     if (isBuilt) {
       if (canOpen) {

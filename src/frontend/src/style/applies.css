@@ -69,13 +69,13 @@
     @apply flex h-full w-52 flex-col overflow-hidden border-r scrollbar-hide;
   }
   .left-side-folder-arrangement {
-    @apply grid h-full w-52  overflow-hidden border-r scrollbar-hide;grid-template-rows: auto 30px;
+    @apply grid h-full w-52  overflow-hidden border-r scrollbar-hide;
   }
   .small-side-bar-arrangement {
     @apply flex h-full w-16 flex-col overflow-hidden border-r scrollbar-hide;
   }
   .left-side-bar-arrangement {
-    @apply h-full w-[30rem] overflow-hidden border-r scrollbar-hide;
+    @apply h-full w-[30rem] overflow-hidden  scrollbar-hide;
   }
   .search-list-bar-arrangement {
     @apply h-full w-52 overflow-hidden scrollbar-hide;

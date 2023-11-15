@@ -46,6 +46,7 @@ import AccordionComponent from "../../../../components/AccordionComponent";
 import { cloneDeep, transform } from "lodash";
 import { filterHTML } from "../../../../utils/utils";
 import { locationContext } from "../../../../contexts/locationContext";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
 // import moment from 'moment';
 // import { switchToBG } from "../borderColorComponent"
 // import { FolderType } from "../../../../types/flow";
@@ -56,7 +57,7 @@ export default function FolderPopover() {
   const { flows, tabId, setTabId, 
     setSearchResult,getSearchResult,addFolder,removeFolder,tabValues,notes,folders
    } =useContext(TabsContext);
-  const { setOpenSearchList,noteOnly } = useContext(locationContext);
+  const { setOpenSearchList,noteOnly,setOpenFolderList,openFolderList } = useContext(locationContext);
   const flow = flows.find((flow) => flow.id === tabId);
   // const [popoverState, setPopoverState] = useState(false);
   // const [open, setOpen] = useState(false);
@@ -768,8 +769,9 @@ export default function FolderPopover() {
 
     </Box>
   );
-
+  
   return (
+
     <div className={"left-side-folder-arrangement border-r-0"}>
       {/* <div className={"side-bar-search-div-placement"}>
         <div className="header-end-display">
@@ -852,6 +854,27 @@ export default function FolderPopover() {
             <div className="chat-message-div">
               {list()}
             </div>
+            <div className={"side-bar-search-div-placement justify-end mb-2"}>
+              <div className="header-end-display ">
+              <ShadTooltip content="创建新的文件夹" side="right">
+                    <button
+                      className={"extra-side-bar-save-disable"}
+                      onClick={(event) => {  
+                        addFolder({id:"",parent_id:'',name:"新建文件夹",description:""}).then((id) => {
+                          setSuccessData({ title: "新建文件夹创建成功" }); 
+                        });                                 
+                      }}
+                    >
+                      <IconComponent
+                        name="FolderPlus"
+                        className={
+                          "side-bar-button-size"
+                        }
+                      />
+                    </button>
+                  </ShadTooltip>    
+              </div>
+            </div>            
           </div>
         </div>
       </div>
@@ -874,27 +897,9 @@ export default function FolderPopover() {
         ></FolderModal>
 
     </div>  
-    <div className={"side-bar-search-div-placement justify-end"}>
-        <div className="header-end-display">
-        <ShadTooltip content="创建新的文件夹" side="right">
-              <button
-                className={"extra-side-bar-save-disable"}
-                onClick={(event) => {  
-                  addFolder({id:"",parent_id:'',name:"新建文件夹",description:""}).then((id) => {
-                    setSuccessData({ title: "新建文件夹创建成功" }); 
-                  });                                 
-                }}
-              >
-                <IconComponent
-                  name="FolderPlus"
-                  className={
-                    "side-bar-button-size"
-                  }
-                />
-              </button>
-            </ShadTooltip>    
-        </div>
-      </div>
+
   </div>
+
+
   );
 }
