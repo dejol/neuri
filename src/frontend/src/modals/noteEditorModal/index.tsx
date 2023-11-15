@@ -534,8 +534,8 @@ editorConfig.MENU_CONF['uploadVideo'] = {
                   // className={"chat-message-modal-thought-cursor"}
 
                 > 
-                <div className="fixed bottom-12 left-2">   
-                  <div className={"left-side-bar-arrangement"+(screenWidth<=1024?" w-[25rem]":"")}>     
+                <div className="fixed bottom-14 left-0">   
+                  <div className={"left-side-bar-arrangement"+(screenWidth<=1024?" w-[24rem]":"")}>     
                   <LeftFormModal
                     key={note_id}
                     flow={tempFlow}
