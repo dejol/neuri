@@ -190,7 +190,7 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const [selectionMenuVisible, setSelectionMenuVisible] = useState(false);
 
-  const { setExtraComponent, setExtraNavigation } = useContext(locationContext);
+  const { setExtraComponent, setExtraNavigation,screenWidth } = useContext(locationContext);
   const { setErrorData } = useContext(alertContext);
   const [loading,setLoading] = useState(false);
   
@@ -930,7 +930,7 @@ function createNoteNode(newValue,newPosition){
 
                       > 
                       <div className="fixed bottom-12 left-2">   
-                        <div className="left-side-bar-arrangement">     
+                        <div className={"left-side-bar-arrangement"+(screenWidth<=1024?" w-[25rem]":"")}>     
                         <LeftFormModal
                           key={flow.id}
                           flow={flow}

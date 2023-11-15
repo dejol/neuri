@@ -22,7 +22,7 @@ export default function Welcome({ flow }: { flow: FlowType }) {
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
   const { setIsBuilt} = useContext(TabsContext);
-  const {openAssistant,openFolderList,openSearchList ,setOpenSearchList} = useContext(locationContext);    
+  const {openAssistant,openFolderList,openSearchList ,setOpenSearchList,screenWidth} = useContext(locationContext);    
   const assistantOn = useRef(false);
 
   useEffect(()=>{
@@ -199,7 +199,7 @@ export default function Welcome({ flow }: { flow: FlowType }) {
 
                       > 
                       <div className="fixed bottom-12 left-2">   
-                        <div className="left-side-bar-arrangement">     
+                        <div className={"left-side-bar-arrangement"+(screenWidth<=1024?" w-[25rem]":"")}>     
                         <LeftFormModal
                           key={flow.id}
                           flow={flow}

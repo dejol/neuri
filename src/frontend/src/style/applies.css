@@ -940,13 +940,13 @@
   }
 
   .form-modal-chatbot-icon {
-    @apply mb-3 ml-3 mr-6 mt-1;
+    @apply mb-3 ml-2 mr-2 mt-1;
   }
   .form-modal-chat-image {
     @apply flex flex-col items-center gap-1;
   }
   .form-modal-chat-img-box {
-    @apply relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-md p-5 text-2xl;
+    @apply relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-md p-1 text-2xl;
   }
   .form-modal-chat-bot-icon {
     @apply form-modal-chat-img-box bg-chat-bot-icon;
