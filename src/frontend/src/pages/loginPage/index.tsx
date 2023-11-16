@@ -13,6 +13,7 @@ import {
   inputHandlerEventType,
   loginInputStateType,
 } from "../../types/components";
+import { darkContext } from "../../contexts/darkContext";
 
 export default function LoginPage(): JSX.Element {
   const [inputState, setInputState] =
@@ -24,6 +25,7 @@ export default function LoginPage(): JSX.Element {
   const navigate = useNavigate();
   const { setErrorData } = useContext(alertContext);
   // const { setLoginUserId } = useContext(TabsContext);
+  const { dark, setDark } = useContext(darkContext);
 
 
   function handleInput({
@@ -80,7 +82,7 @@ export default function LoginPage(): JSX.Element {
       }}
       className="h-full w-full"
     >
-      <div className="flex h-full w-full flex-col items-center justify-center bg-muted">
+      <div className={"flex h-full w-full flex-col items-center justify-center"+(dark?"":" bg-[url('/beams-basic.png')]")}>
         <div className="flex w-72 flex-col items-center justify-center gap-2">
           <span className="mb-4 text-5xl">Neuri</span>
           <span className="mb-6 text-2xl font-semibold text-primary">

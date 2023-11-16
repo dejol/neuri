@@ -435,7 +435,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
                   setName(event.target.value);                  
                 }}
                  />
-                 <span className="whitespace-nowrap text-sm text-muted-foreground">编辑时间:{moment(udpateAt).local().format('YYYY-MM-DD HH:mm:ss')}</span>
+                 <span className="whitespace-nowrap text-sm text-muted-foreground">编辑:{moment(udpateAt).local().format('YYYY-MM-DD HH:mm:ss')}</span>
             </div>
             <div className="w-full items-center">
               <Editor

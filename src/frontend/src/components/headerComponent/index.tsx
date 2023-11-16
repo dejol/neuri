@@ -230,7 +230,7 @@ export default function Header() {
     }
   }
   return (
-    <div className="header-arrangement">
+    <div className={"header-arrangement"+(dark?"":" bg-[url('/beams-basic.png')]")}>
       <DocumentTitle title={pageTitle+" - Neuri"}/>
         {/* {tabId === "" || !tabId ? (
           <>
@@ -698,6 +698,7 @@ export default function Header() {
               <Divider sx={{ my: 0.5 }} /> 
                 <MenuItem onClick={()=>{
                     logout();    
+                    setTabId("");
                     navigate("/login");
                   }
                 }>
