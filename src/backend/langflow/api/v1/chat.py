@@ -83,7 +83,7 @@ async def init_build(graph_data: dict, flow_id: str):
     while j< len(graph_data['data']['edges']):
         source=graph_data['data']['edges'][j]['source']
         target=graph_data['data']['edges'][j]['target']
-        if(not((source in notRunnable ) and (target in notRunnable ))):
+        if(not(source in notRunnable ) and not(target in notRunnable )):
             # logger.debug("%s:%s:%s",j,source,target)
             newEdges.append(graph_data['data']['edges'][j])
         j+=1

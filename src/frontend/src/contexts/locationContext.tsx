@@ -44,6 +44,8 @@ type locationContextType = {
   setOpenAssistant: (state: boolean) => void,  
   noteOnly:boolean,
   setNoteOnly: (state: boolean) => void,  
+  isInteractive:boolean,
+  setIsInteractive: (state: boolean) => void,  
 };
 
 //initial value for location context
@@ -75,6 +77,8 @@ const initialValue = {
   setOpenMiniMap: (state: boolean) => { },
   openAssistant:false,
   setOpenAssistant: (state: boolean) => { },  
+  isInteractive:false,
+  setIsInteractive: (state: boolean) => { },    
   noteOnly:JSON.parse(window.localStorage.getItem("noteOnly")) ?? false,
   setNoteOnly: (state: boolean) => { },  
 };
@@ -90,7 +94,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [showSideBar, setShowSideBar] = useState(initialValue.showSideBar);
   const [extraNavigation, setExtraNavigation] = useState({ title: "" });
   const [extraComponent, setExtraComponent] = useState(<></>);
-
+  const [isInteractive,setIsInteractive] = useState(false);  //the interactive (lock) button is clicked in flow, this value will be changed.
   const [openFolderList, setOpenFolderList] = useState(initialValue.openFolderList);
   const [openSearchList, setOpenSearchList] = useState(initialValue.openSearchList);
   const [openModelList, setOpenModelList] = useState(initialValue.openModelList);
@@ -142,6 +146,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
         setOpenAssistant,
         noteOnly,
         setNoteOnly,
+        isInteractive,
+        setIsInteractive,
       }}
     >
       {children}

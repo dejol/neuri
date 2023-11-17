@@ -556,7 +556,7 @@ export default function Header() {
 
             {(userData) ? (
               <ThemeProvider theme={muiTheme}>
-              <Fragment>
+              
                 <ShadTooltip content={userData.username} side="bottom">
                 <IconButton
                   onClick={(event: React.MouseEvent<HTMLElement>) => {
@@ -571,9 +571,9 @@ export default function Header() {
                     {userData.username.charAt(0).toUpperCase()}
                   </Avatar>
                 </IconButton>
-              </ShadTooltip>
+                </ShadTooltip>
 
-              <Menu         
+               <Menu         
                 anchorEl={anchorEl}
                 id="account-menu"
                 open={open}
@@ -607,7 +607,7 @@ export default function Header() {
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-              >
+                >
                 <MenuItem onClick={()=>{
                   navigate("/account/settings");
                   }
@@ -635,6 +635,7 @@ export default function Header() {
                   )}
                     显示模式
                 </MenuItem>
+                
                 <MenuItem onClick={()=>{
                       setOpenAssistant(!openAssistant);  
                     }
@@ -655,25 +656,21 @@ export default function Header() {
                   AI助理
                 </MenuItem>                  
                 {tabValues.get(tabId)&&tabValues.get(tabId).type=="flow"&&(
-                  <>
-              
-                    <MenuItem onClick={()=>{
-                        setOpenMiniMap(!openMiniMap);    
-                      }
+                  <MenuItem onClick={()=>{
+                      setOpenMiniMap(!openMiniMap);    
                     }
-                    className="px-0 pr-1"
-                    >
-                      
-                      <ToggleShadComponent
-                        disabled={false}
-                        enabled={openMiniMap}
-                        setEnabled={setOpenMiniMap}
-                        size="small"
-                      />
-                      全览地图
-                    </MenuItem>
-            
-                </>
+                  }
+                  className="px-0 pr-1"
+                  >
+                    
+                    <ToggleShadComponent
+                      disabled={false}
+                      enabled={openMiniMap}
+                      setEnabled={setOpenMiniMap}
+                      size="small"
+                    />
+                    全览地图
+                  </MenuItem>
                 )}
                                       
                 <MenuItem onClick={fullScreen}>
@@ -695,7 +692,7 @@ export default function Header() {
                   <IconComponent name="Upload" className="side-bar-button-size mr-2" />
                   恢复笔记数据
                 </MenuItem>                
-              <Divider sx={{ my: 0.5 }} /> 
+                <Divider sx={{ my: 0.5 }} /> 
                 <MenuItem onClick={()=>{
                     logout();    
                     setTabId("");
@@ -704,8 +701,7 @@ export default function Header() {
                 }>
                   <IconComponent name="LogOut" className="side-bar-button-size mr-2" />退出账号
                 </MenuItem>
-              </Menu>
-              </Fragment>
+               </Menu>
               </ThemeProvider>
             ) : (
               <ShadTooltip content="登陆" side="bottom"> 

@@ -52,7 +52,7 @@
     "react-syntax-highlighter": "^15.5.0",
     "react-tabs": "^6.0.0",
     "react-tooltip": "^5.13.1",
-    "reactflow": "^11.7.0",
+    "reactflow": "^11.10.1",
     "@reactflow/node-resizer":"^2.0.0",
     "@wangeditor/editor-for-react":"1.0.6",
     "@wangeditor/editor":"5.1.23",

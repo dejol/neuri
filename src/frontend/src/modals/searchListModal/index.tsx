@@ -15,6 +15,7 @@ import { alertContext } from "../../contexts/alertContext";
 import { APIClassType } from "../../types/api";
 import AccordionComponent from "../../components/AccordionComponent";
 import { locationContext } from "../../contexts/locationContext";
+import React from "react";
 export default function SearchListModal({
   open,
   setOpen,
@@ -163,26 +164,19 @@ export default function SearchListModal({
             <ShadTooltip content={<p>{flow.description}<br/>
               <span className=" text-muted-foreground">
               {"ID:"+flow.id}<br/>
-              {"编辑时间:"+moment(flow.update_at).local().format('YYYY-MM-DD HH:mm:ss')}<br/>
-              {"创建时间:"+moment(flow.create_at).local().format('YYYY-MM-DD HH:mm:ss')}
+              {"编辑:"+moment(flow.update_at).local().format('YYYY-MM-DD HH:mm:ss')}<br/>
+              {"创建:"+moment(flow.create_at).local().format('YYYY-MM-DD HH:mm:ss')}
               </span>                
               </p>} side="right">
-              <div className="file-component-badge-div justify-start h-4 ml-1">
-                <Button
-                  size="small"
-                  className=" whitespace-nowrap"
-                  // variant="link"
-                  style={{textTransform:"none"}}
-                  disableRipple
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    openNewTab(flow.id,"flow");
-                  }}
-                  startIcon={<IconComponent name="FileText" className="main-page-nav-button" />}
+              <div className={"file-component-badge-div justify-start h-4 ml-1 "+(flow.id==tabId?"text-blue-500":"")}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      openNewTab(flow.id,"flow");
+                    }}
                 >
+                  <IconComponent name="FileText" className="main-page-nav-button" />
                   {flow.name.substring(0,10)+(flow.name.length>10?"...":"")}
-                </Button>                          
-            </div>
+              </div>
             </ShadTooltip>
           }
           key={flow.id}
@@ -190,7 +184,7 @@ export default function SearchListModal({
           open={[tabId]}
           side="left"
       >
-      <List component="div" disablePadding={true}>
+      <List component="div" disablePadding={true} key="list-of-flows">
       {flow.data?.nodes.map((node, idx) => (
         (node.type=="noteNode")?(
           // <ShadTooltip content={filterHTML(node.data.value)} side="right" key={idx}>
@@ -211,6 +205,7 @@ export default function SearchListModal({
               );
             }}
             className="pr-0 py-2  group/item"
+            key={idx}
           >
             <div className="ml-5 items-center border border-dashed border-ring rounded-lg p-3 w-40 cursor-grab font-normal"
                 style={{backgroundColor:node.data.borderColor?switchToBG(node.data.borderColor,dark):""}}
@@ -262,6 +257,7 @@ export default function SearchListModal({
                   );
                 }}
                 className="pr-0 py-2 group/item"
+                key={idx}
               >
                 <div className={"ml-5 items-center border border-dashed border-ring w-40 cursor-grab font-normal "+(node.data.type=="AINote"?"input-note dark:input-note-dark":"rounded-lg p-3")}
                     style={{backgroundColor:node.data.borderColor?switchToBG(node.data.borderColor,dark):""}}
@@ -360,7 +356,7 @@ export default function SearchListModal({
                   )}
                   {(flowList.length+noteList.length)>0?(
                     <>
-                    <List component="div" disablePadding={true} className="self-start w-full">
+                    <List component="div" disablePadding={true} className="self-start w-full" key="list-of-notes">
                     {noteList.map((note, idx) => (
                         <ListItem  
                           sx={{ pl: 2 }}
@@ -379,40 +375,34 @@ export default function SearchListModal({
                             );
                           }}
                           className="p-0 pl-2 py-2"
+                          key={idx}
                         >
 
+                          <ShadTooltip content={<p><span className="text-sm text-muted-foreground">
+                            {"编辑:"+moment(note.update_at).local().format('YYYY-MM-DD HH:mm:ss')}<br/>
+                            {"创建:"+moment(note.create_at).local().format('YYYY-MM-DD HH:mm:ss')}</span></p>
+                          } side="right">
+                          <div className={"file-component-badge-div justify-start h-4 ml-[0.85rem] cursor-pointer "+(note.id==tabId?"text-blue-500":"")}
+                            onClick={() => { openNewTab(note.id,"note");  }}>
+                              <IconComponent name="Square" className="main-page-nav-button" />
+                              {filterHTML(note.name).substring(0,9)+(filterHTML(note.name).length>9?"...":"")}
+                          </div>   
+                          </ShadTooltip>                  
 
-                          <div className="file-component-badge-div justify-start h-4 ml-[0.85rem]">
-                            <ShadTooltip content={<p><span className="text-sm text-muted-foreground">{"编辑时间:"+moment(note.update_at).local().format('YYYY-MM-DD HH:mm:ss')}<br/>{"创建时间:"+moment(note.create_at).local().format('YYYY-MM-DD HH:mm:ss')}</span></p>} side="right">
-                              <Button
-                              size="small"
-                              // variant="link"
-                              className=" whitespace-nowrap"
-                              style={{textTransform:"none"}}
-                              disableRipple
-                              onClick={() => {
-                                openNewTab(note.id,"note");
-                                // webEdit(note.id,note.name,note.content.value);
-                              }}
-                              startIcon={<IconComponent name="Square" className="main-page-nav-button" />}
-                              >
-                              {filterHTML(note.name).substring(0,10)+(filterHTML(note.name).length>10?"...":"")}
-                              </Button>        
-                              
-                            </ShadTooltip>                  
-                          </div>                
                         </ListItem>
                     ))}                  
                     </List>
                     {!noteOnly&&(
                       <>
-                    {flowList.map((flow, id) => (
-                       itemList(flow,id)
-                    ))}
-                    
-                     {(itemCount+1!==flowList.length)&&(
-                      <IconComponent name="MoreHorizontal" className="main-page-nav-button animate-pulse" />
-                     )}
+                        {flowList.map((flow, id) => (
+                          <React.Fragment key={id}>
+                          {itemList(flow,id)}
+                          </React.Fragment> 
+                        ))}
+                      
+                        {(itemCount+1!==flowList.length)&&(
+                          <IconComponent name="MoreHorizontal" className="main-page-nav-button animate-pulse" />
+                        )}
                      </>
                     )}
 

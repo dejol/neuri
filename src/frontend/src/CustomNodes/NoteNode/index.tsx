@@ -9,6 +9,7 @@ import ShadTooltip from "../../components/ShadTooltipComponent";
 import IconComponent from "../../components/genericIconComponent";
 import { cloneDeep } from "lodash";
 import { typesContext } from "../../contexts/typesContext";
+import { locationContext } from "../../contexts/locationContext";
 import { darkContext } from "../../contexts/darkContext";
 import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
 import BorderColorComponent from "../../pages/FlowPage/components/borderColorComponent";
@@ -34,6 +35,7 @@ export default function NoteNode({
   const { flows, tabId,updateFlow } =useContext(TabsContext);
   const { reactFlowInstances } = useContext(typesContext);
   const {dark} =useContext(darkContext);
+  const {isInteractive} =useContext(locationContext);
   const [borderColour,setBorderColour] =useState(data.borderColor??"inherit");
   // editor 实例
   const [editor, setEditor] = useState<IDomEditor | null>(null)  
@@ -188,7 +190,7 @@ export default function NoteNode({
       updateFlow(flow);
     }
   }
-
+  
   return (
     <div className={"h-full p-1 "+
         (isTarget ? "bg-status-green":"bg-background")+
@@ -209,7 +211,7 @@ export default function NoteNode({
         }}
         
     >
-      <NodeResizer isVisible={selected} minWidth={225} minHeight={225} handleClassName="w-5 h-5"
+      <NodeResizer isVisible={selected} minWidth={300} minHeight={300} handleClassName="w-5 h-5"
                    onResizeEnd={refreshCurrentFlow}/>
       <div style={{cursor: 'text',position:"relative",zIndex:2}} onMouseDownCapture={handleMouseDown} className="bg-muted h-full">
         <NodeToolbar offset={2} className=" bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border">
@@ -221,7 +223,9 @@ export default function NoteNode({
               className="m-1"
           /> 
         </NodeToolbar>
-          <NodeToolbar offset={2} isVisible={toolbarOn}  position={Position.Left}>
+        {isInteractive&&(
+          <>
+        <NodeToolbar offset={2} isVisible={toolbarOn}  position={Position.Left}>
           <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
             <ShadTooltip content="Prev Node" side="left" >
               <button onClick={focusPrevNode}>
@@ -238,7 +242,9 @@ export default function NoteNode({
               </button>
             </ShadTooltip>            
           </div>  
-          </NodeToolbar>
+          </NodeToolbar>          
+          </>
+        )}
           <NodeToolbar offset={2} position={Position.Bottom}>
             <BorderColorComponent
               data={data}
@@ -252,8 +258,8 @@ export default function NoteNode({
             onCreated={setEditor}
               mode="simple"
               style={{ height: '100%',
-              minWidth:'200px',
-              minHeight:'200px',
+              minWidth:'300px',
+              minHeight:'300px',
               width:'100%',
               fontSize:'20px',
               backgroundColor:switchToBG(borderColour,dark),

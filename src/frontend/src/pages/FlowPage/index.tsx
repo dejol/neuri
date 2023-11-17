@@ -16,6 +16,7 @@ import { enforceMinimumLoadingTime,getAssistantFlow } from "../../utils/utils";
 import { postBuildInit, postNotesAssistant } from "../../controllers/API";
 import LeftFormModal from "../../modals/leftFormModal";
 import Welcome from "./components/WelcomeComponent";
+import React from "react";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -35,7 +36,7 @@ function TabPanel(props: TabPanelProps) {
       className="h-full w-full"
     >
       {value === index && (
-          <>{children}</>
+          <React.Fragment key={index}>{children}</React.Fragment>
       )}
     </div>
   );
@@ -143,15 +144,15 @@ export default function FlowPage() {
           return(
             <TabPanel value={tabId} index={value.id}>    
             {value.type=="flow"?(
-              <>
+              <React.Fragment key={key}>
               {flows.length > 0 && tabId !== "" &&
                 flows.findIndex((flow) => flow.id === tabId) !== -1 && (
                   <Page flow={flows.find((flow) => flow.id === tabId)} />
                 )
               }
-              </>
+              </React.Fragment>
             ):(
-              <>
+              <React.Fragment key={key}>
               {value.type=="note"&&(
               <NoteEditorModal
                note_id={value.id}
@@ -159,7 +160,7 @@ export default function FlowPage() {
                content={value.id.startsWith("NewNote")?"":(notes.find((note)=>note.id===value.id)).content.value}
               />
               )}
-              </>
+              </React.Fragment>
 
             )}
 

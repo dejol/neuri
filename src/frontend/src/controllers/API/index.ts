@@ -171,7 +171,7 @@ export async function readFlowsFromDatabase() {
 
   try {
     const response = await api.get(`${BASE_URL_API}flows/`);
-    if (response.status !== 200) {
+    if (response&&response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -185,7 +185,7 @@ export async function downloadFlowsFromDatabase() {
   try {
     
     const response = await api.get(`${BASE_URL_API}flows/download/`);
-    if (response.status !== 200) {
+    if (response&&response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -198,7 +198,7 @@ export async function downloadFlowsFromDatabase() {
 export async function downloadFoldersFromDatabase() {
   try {
     const response = await api.get(`${BASE_URL_API}folders/download/`);
-    if (response.status !== 200) {
+    if (response&&response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -211,7 +211,7 @@ export async function downloadFoldersFromDatabase() {
 export async function downloadNotesFromDatabase() {
   try {
     const response = await api.get(`${BASE_URL_API}notes/download/`);
-    if (response.status !== 200) {
+    if (response&&response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -225,7 +225,7 @@ export async function uploadFlowsToDatabase(flows) {
   try {
     const response = await api.post(`${BASE_URL_API}flows/upload/`, flows);
 
-    if (response.status !== 201) {
+    if (response&&response.status !== 201) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -238,7 +238,7 @@ export async function uploadAllToDatabase(allData) {
   try {
     const response = await api.post(`${BASE_URL_API}users/restore`, allData);
     
-    if (response.status !== 201) {
+    if (response&&response.status !== 201) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -259,7 +259,7 @@ export async function uploadAllToDatabase(allData) {
 export async function deleteFlowFromDatabase(flowId: string) {
   try {
     const response = await api.delete(`${BASE_URL_API}flows/${flowId}`);
-    if (response.status !== 200) {
+    if (response&&response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -279,7 +279,7 @@ export async function deleteFlowFromDatabase(flowId: string) {
 export async function getFlowFromDatabase(flowId: number) {
   try {
     const response = await api.get(`${BASE_URL_API}flows/${flowId}`);
-    if (response.status !== 200) {
+    if (response&&response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;
@@ -419,7 +419,7 @@ export async function readFoldersFromDatabase() {
   try {
     // console.log("user_id:",user_id)
     const response = await api.get(`${BASE_URL_API}folders/`);
-    if (response.status !== 200) {
+    if (response&&response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.data;

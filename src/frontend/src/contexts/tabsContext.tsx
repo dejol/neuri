@@ -318,11 +318,14 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   ) {
     flow.data.edges.forEach((edge) => {
       if (edge.source === node.id) {
-        edge.sourceHandle = edge.sourceHandle
+        if(edge.sourceHandle){
+          edge.sourceHandle = edge.sourceHandle
           .split("|")
           .slice(0, 2)
           .concat(template["base_classes"])
           .join("|");
+        }
+
       }
     });
   }

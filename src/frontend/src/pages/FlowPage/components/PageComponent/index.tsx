@@ -52,7 +52,7 @@ import { useSSE } from "../../../../contexts/SSEContext";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 
 export function ExtendButton(){
-  const { setOpenModelList,openModelList } = useContext(locationContext);
+  const { setOpenModelList,openModelList} = useContext(locationContext);
 
   return (
     <>
@@ -84,7 +84,9 @@ const nodeTypes = {
   noteNode:NoteNode,
 };
 
-
+const edgeTypes = {
+  floating: FloatingEdge,
+};
 
 export default function Page({ flow }: { flow: FlowType }) {
   let {
@@ -117,7 +119,11 @@ export default function Page({ flow }: { flow: FlowType }) {
   const {tabValues,isBuilt, setIsBuilt,getSearchResult,
     editNodeId } = useContext(TabsContext);
   const {openFolderList,
-      openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,setOpenSearchList,openSearchList } = useContext(locationContext);    
+      openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,setOpenSearchList,
+      openSearchList,setIsInteractive,isInteractive,
+      setExtraComponent, setExtraNavigation,screenWidth 
+    } = useContext(locationContext);  
+
   // const [openSearch,setOpenSearch]=useState(false);
   const [conChanged,setConChanged]=useState(false);//内容是否已经变化，暂时用在判断AI 助手是否需要工作上
   // useEffect(() => {
@@ -190,7 +196,6 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const [selectionMenuVisible, setSelectionMenuVisible] = useState(false);
 
-  const { setExtraComponent, setExtraNavigation,screenWidth } = useContext(locationContext);
   const { setErrorData } = useContext(alertContext);
   const [loading,setLoading] = useState(false);
   
@@ -200,7 +205,7 @@ export default function Page({ flow }: { flow: FlowType }) {
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     flow.data?.edges ?? []
   );
-  const { setViewport } = useReactFlow();
+  const { setViewport,screenToFlowPosition } = useReactFlow();
   const edgeUpdateSuccessful = useRef(true);
   useEffect(() => {
     let cloneRFI=cloneDeep(reactFlowInstances);
@@ -304,6 +309,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           // color: 'black',
         };
         newEdeg["type"]='floating';
+        newEdeg["id"]=getNodeId("floating");
       }
       setEdges((eds) =>
         addEdge(
@@ -317,6 +323,59 @@ export default function Page({ flow }: { flow: FlowType }) {
       });
     },
     [setEdges, setNodes, takeSnapshot]
+  );
+
+  const connectingNodeId = useRef(null);
+  const isLock = useRef(false);
+  const onConnectStart = useCallback((_, { nodeId }) => {
+    connectingNodeId.current = nodeId;
+  }, []);
+
+  const onConnectEnd = useCallback(
+    (event) => {
+      const targetIsPane = event.target.classList.contains('react-flow__pane');
+      if (!isLock.current&&targetIsPane) {
+        // we need to remove the wrapper bounds, in order to get the correct position
+        const reactflowBounds =
+          reactFlowWrapper.current.getBoundingClientRect();       
+        
+        let newNode=createNoteNode("", 
+        reactFlowInstances.get(tabId).project({
+          x: event.clientX - reactflowBounds.left,
+          y: event.clientY - reactflowBounds.top,
+        })
+        // screenToFlowPosition({
+        //                 x: event.clientX - reactflowBounds.left,
+        //                 y: event.clientY - reactflowBounds.top,
+        //               })
+                    );
+ 
+        
+        let newEdeg={
+          id:getNodeId("floating"),
+          source:connectingNodeId.current,
+          target:newNode.id,
+          style: { 
+            // stroke: "#555",
+            strokeWidth:6 
+          },
+          className:"stroke-foreground stroke-connection",
+          markerEnd:{
+            type: MarkerType.ArrowClosed,
+            // color: 'black',
+          },
+          type:"floating"
+        };
+        
+        setEdges((eds) =>
+          addEdge(
+            newEdeg,
+            eds
+          )
+        );
+      }
+    },
+    [ ],
   );
 
   const onNodeDragStart: NodeDragHandler = useCallback(() => {
@@ -565,11 +624,10 @@ function createNoteNode(newValue,newPosition){
   nodesList.push(newNode);
 
   reactFlowInstances.get(tabId).setNodes(nodesList);
+  return newNode;
 }
 
-  const edgeTypes = {
-    floating: FloatingEdge,
-  };
+
   
   const assistantOn = useRef(false);
   const changedContent = useRef(false);
@@ -823,6 +881,8 @@ function createNoteNode(newValue,newPosition){
                       onNodesChange={onNodesChangeMod}
                       onEdgesChange={onEdgesChangeMod} 
                       onConnect={onConnect} //链接线 连接成功后执行
+                      onConnectEnd={onConnectEnd}
+                      onConnectStart={onConnectStart}
                       disableKeyboardA11y={true}
                       // onLoad={initFlowInstance}
                       onInit={initFlowInstance}
@@ -844,7 +904,7 @@ function createNoteNode(newValue,newPosition){
                       className="theme-attribution"
                       minZoom={0.01}
                       maxZoom={8}
-                      
+
                     >
                       {openMiniMap&&(
                         <MiniMap pannable={true} 
@@ -859,6 +919,11 @@ function createNoteNode(newValue,newPosition){
                       [&>button]:border-b-border hover:[&>button]:bg-border"
                       showZoom={false}
                       position="bottom-right"
+                      onInteractiveChange={(status)=>{
+                        setIsInteractive(!status);
+                        isLock.current=!status;
+                        }
+                      }
                       >
                       </Controls>
                       <ExtendButton/>

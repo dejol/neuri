@@ -252,7 +252,8 @@ export default function FolderPopover() {
               <IconComponent name="Folder" className="main-page-nav-button" />
               {folder.name}
               </div>
-              <button className="invisible group-hover/item:visible"
+
+              <div className="invisible group-hover/item:visible"
                   onClick={(event)=>{
                     event.stopPropagation();                    
                       let deleteId=[];                      
@@ -284,8 +285,8 @@ export default function FolderPopover() {
                   }}
               >
                 <IconComponent name="Trash2" className="main-page-nav-button" />
-              </button>             
-              <button className="invisible group-hover/item:visible"
+              </div>             
+              <div className="invisible group-hover/item:visible"
                   onClick={(event)=>{
                     event.stopPropagation();                    
                     addFolder({id:"",parent_id:folder.id,name:"新建文件夹",description:""}).then((id) => {
@@ -299,8 +300,9 @@ export default function FolderPopover() {
                                                       
                   }}
               >
-                <IconComponent name="Plus" className="main-page-nav-button" />
-              </button>
+                <IconComponent name="Plus" className="main-page-nav-button"
+                    />
+              </div>
               <div className="mr-2">
                 <span className="text-sm text-muted-foreground">{calNumOfItem(folder.id)}</span>
               </div> 
