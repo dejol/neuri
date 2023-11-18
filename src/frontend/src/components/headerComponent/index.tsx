@@ -397,7 +397,7 @@ export default function Header() {
                     label={
                     (<div className="flex">
                       <IconComponent name={value.type=="flow"?"FileText":"Square"} className={"w-4 h-4 mr-2"} />{label}
-                    <button onClick={(event)=>{
+                    <div onClick={(event)=>{
                       // let newValues=cloneDeep(tabValues);
                       // newValues=newValues.filter((value) => value !== key);
                       // setTabValues(newValues);
@@ -417,7 +417,7 @@ export default function Header() {
                       // setReactFlowInstance(null);
                     }} className="invisible group-hover/item:visible">
                       <IconComponent name={"X"} className="w-4 h-4 ml-2" />
-                    </button>
+                    </div>
                     </div>)
                   }  
                   value={value.id} 
