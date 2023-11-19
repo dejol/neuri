@@ -133,9 +133,11 @@ export default function FullTextAreaComponent({
           setEditor(null)
       }
   }, [editor])
-  
+  const [editable,setEditable]=useState(false);
+
   const handleMouseDown = (event) => {
-    event.stopPropagation();
+    if(editable)
+      event.stopPropagation();
   };
   const {dark} =useContext(darkContext);
   // const [borderColour,setBorderColour] =useState(data.borderColor??"inherit");
@@ -146,6 +148,7 @@ export default function FullTextAreaComponent({
   return (
     <>
       <NodeToolbar offset={2} className="bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border" >
+      {editable&&(
       <Toolbar
           editor={editor}
           defaultConfig={toolbarConfig}
@@ -153,6 +156,7 @@ export default function FullTextAreaComponent({
           // style={{ border: '1px solid #ccc' }}
           className="m-1"
       />
+      )}
       </NodeToolbar>
       {/* <NodeToolbar offset={30} position={Position.Bottom}>
         <BorderColorComponent
@@ -163,7 +167,16 @@ export default function FullTextAreaComponent({
       </NodeToolbar>            */}
       <div className="w-full items-center h-full"
             // style={{cursor: 'text',borderColor:data.borderColor}}
+            style={{cursor: editable?'text':'pointer'}}
             onMouseDownCapture={handleMouseDown}
+            onDoubleClick={(event)=>{
+              event.stopPropagation();
+              setEditable(true);
+             }}
+             onBlur={()=>{
+              setEditable(false);
+             }}
+
       >
         <Editor
             defaultConfig={editorConfig}

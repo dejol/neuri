@@ -215,7 +215,8 @@ export default function MindNode({
     >
       <div style={{cursor: editable?'text':'pointer',position:"relative",zIndex:2}} 
           onMouseDownCapture={handleMouseDown} 
-          onDoubleClick={()=>{
+          onDoubleClick={(event)=>{
+            event.stopPropagation();
             setEditable(true);
            }}
            onBlur={()=>{

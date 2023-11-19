@@ -217,7 +217,8 @@ export default function NoteNode({
                    onResizeEnd={refreshCurrentFlow}/>
       <div style={{cursor: editable?'text':'pointer',position:"relative",zIndex:2}}
        onMouseDownCapture={handleMouseDown}
-       onDoubleClick={()=>{
+       onDoubleClick={(event)=>{
+        event.stopPropagation();
         setEditable(true);
        }}
        onBlur={()=>{
@@ -225,6 +226,7 @@ export default function NoteNode({
        }}
         className="bg-muted h-full">
         <NodeToolbar offset={2} className=" bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border">
+        {editable&&(
           <Toolbar
               editor={editor}
               defaultConfig={toolbarConfig}
@@ -232,6 +234,7 @@ export default function NoteNode({
               // style={{ border: '1px solid #ccc' }}
               className="m-1"
           /> 
+        )}
         </NodeToolbar>
         {isInteractive&&(
           <>

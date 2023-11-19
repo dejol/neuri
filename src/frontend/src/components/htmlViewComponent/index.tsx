@@ -178,9 +178,11 @@ const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 const ref = useRef<HTMLDivElement>(null);
 // const { reactFlowInstance } = useContext(typesContext);
+const [editable,setEditable]=useState(false);
+
 const handleMouseDown = (event) => {
   // console.log("call handleMouseDown");
-  event.stopPropagation();
+  if(editable) event.stopPropagation();
   // setIsDragging(true);
   // setMouseOffset({
   //   x: event.clientX - event.currentTarget.getBoundingClientRect().left,
@@ -216,14 +218,16 @@ const {dark} =useContext(darkContext);
   return (
     <>  
     <NodeToolbar offset={2} className="bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border">
-    <Toolbar
-        editor={editor}
-        defaultConfig={toolbarConfig}
-        mode={"simple"}
-        // style={{ border: '1px solid #ccc' }}
-        className="m-1"
+    {editable&&(
+      <Toolbar
+      editor={editor}
+      defaultConfig={toolbarConfig}
+      mode={"simple"}
+      // style={{ border: '1px solid #ccc' }}
+      className="m-1"
+      />
+    )}
 
-    />
     </NodeToolbar>
     <div className="left-form-modal-iv-box ">
     <div className="eraser-column-arrangement">
@@ -235,10 +239,18 @@ const {dark} =useContext(darkContext);
                             <div className="w-full">
                                 <div className="w-full">
                                     <div className="w-full" 
-                                    style={{cursor: 'text',}}
+                                    // style={{cursor: 'text',}}
                                     onMouseDownCapture={handleMouseDown}
                                     // onMouseMove={handleMouseMove}
                                     // onMouseUpCapture={handleMouseUp}
+                                    style={{cursor: editable?'text':'pointer'}}
+                                    onDoubleClick={(event)=>{
+                                      event.stopPropagation();
+                                      setEditable(true);
+                                     }}
+                                     onBlur={()=>{
+                                      setEditable(false);
+                                     }}                                    
                                     >   
 {/*                                                         
                                     <CKEditor
