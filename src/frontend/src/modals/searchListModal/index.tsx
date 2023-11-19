@@ -89,7 +89,7 @@ export default function SearchListModal({
   }
   function getShotContent(node){
     let content="";
-    if(node.type=="noteNode"){
+    if(node.type=="noteNode"||node.type=="mindNode"){
       content=node.data.value;
     }else{
       if(node.data.type=="Note"||node.data.type=="AINote"){

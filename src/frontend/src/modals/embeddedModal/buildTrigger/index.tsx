@@ -46,7 +46,7 @@ export default function BuildTrigger({
     node: NodeType,
     flow: FlowType
   ): Array<string> {
-    if(node.type=="noteNode") return [];
+    if(node.type!=="genericNode") return [];
     if (!node.data?.node?.template || !Object.keys(node.data.node.template)) {
       return [
         "We've noticed a potential issue with a node in the flow. Please review it and, if necessary, submit a bug report with your exported flow file. Thank you for your help!",

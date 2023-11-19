@@ -114,7 +114,7 @@ export function groupByFamily(data, baseClasses, left, flow?: NodeType[]) {
 
   if (flow) {
     for (const node of flow) {
-      if (node.type=="noteNode") continue;
+      if (node.type!=="genericNode") continue;
       const nodeData = node.data;
       const foundNode = checkedNodes.get(nodeData.type);
       checkedNodes.set(nodeData.type, {

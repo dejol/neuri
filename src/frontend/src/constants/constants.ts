@@ -558,3 +558,11 @@ export const CONTROL_PATCH_USER_STATE = {
   cnfPassword: "",
   gradient: "",
 };  
+
+export const BORDER_COLORS: string[] = [
+  // 'hsl(var(--background))',
+  'var(--status-blue)',
+  'var(--status-green)',
+  'var(--status-yellow)',
+  'var(--status-red)',
+];

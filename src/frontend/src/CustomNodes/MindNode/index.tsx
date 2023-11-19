@@ -17,7 +17,7 @@ import BorderColorComponent from "../../pages/FlowPage/components/borderColorCom
 const connectionNodeIdSelector = (state) => state.connectionNodeId;
 const sourceStyle = { zIndex: 1 };
 
-export default function NoteNode({
+export default function MindNode({
   id,
   data,
   selected,
@@ -78,7 +78,7 @@ export default function NoteNode({
   },[borderColour]);
 
   const editorConfig: Partial<IEditorConfig> = {   
-      placeholder: 'Type something...',
+      placeholder: '请输入内容...',
       autoFocus:false,
       MENU_CONF: {},
       onChange :(editor:IDomEditor)=>{
@@ -196,7 +196,7 @@ export default function NoteNode({
   return (
     <div className={"h-full p-1 "+
         (isTarget ? "bg-status-green":"bg-background")+
-        " border-8 rounded-lg" 
+        " border-8 rounded-full" +(selected?" border-ring":"")
       }
           onDoubleClick={(event)=>{
             event.stopPropagation();
@@ -213,26 +213,15 @@ export default function NoteNode({
         }}
         
     >
-      <NodeResizer isVisible={selected} minWidth={300} minHeight={300} handleClassName="w-5 h-5"
-                   onResizeEnd={refreshCurrentFlow}/>
-      <div style={{cursor: editable?'text':'pointer',position:"relative",zIndex:2}}
-       onMouseDownCapture={handleMouseDown}
-       onDoubleClick={()=>{
-        setEditable(true);
-       }}
-       onBlur={()=>{
-        setEditable(false);
-       }}
-        className="bg-muted h-full">
-        <NodeToolbar offset={2} className=" bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border">
-          <Toolbar
-              editor={editor}
-              defaultConfig={toolbarConfig}
-              mode={"simple"}
-              // style={{ border: '1px solid #ccc' }}
-              className="m-1"
-          /> 
-        </NodeToolbar>
+      <div style={{cursor: editable?'text':'pointer',position:"relative",zIndex:2}} 
+          onMouseDownCapture={handleMouseDown} 
+          onDoubleClick={()=>{
+            setEditable(true);
+           }}
+           onBlur={()=>{
+            setEditable(false);
+           }}          
+          className="bg-muted h-full border-0 rounded-full">
         {isInteractive&&(
           <>
         <NodeToolbar offset={2} isVisible={toolbarOn}  position={Position.Left}>
@@ -254,14 +243,7 @@ export default function NoteNode({
           </div>  
           </NodeToolbar>          
           </>
-        )}
-          <NodeToolbar offset={2} position={Position.Bottom}>
-            <BorderColorComponent
-              data={data}
-              setBorder={setBorderColour}
-              dark={dark}
-            />   
-          </NodeToolbar>       
+        )}   
           <Editor
             defaultConfig={editorConfig}
             value={data.value}
@@ -269,24 +251,23 @@ export default function NoteNode({
               mode="simple"
               style={{ height: '100%',
               minWidth:'300px',
-              minHeight:'300px',
+              minHeight:'100px',
               width:'100%',
               fontSize:'20px',
               backgroundColor:switchToBG(borderColour,dark),
               //  overflowY: 'scroll' 
             }} 
+            className="border-0 rounded-full"
           />
           
       </div>
-      {!isConnecting && (
           <Handle
             className="customHandle"
             position={Position.Right}
             type="source"
             style={sourceStyle}
           />
-        )}
-      <Handle type="target" position={Position.Left} id="a" className="customHandle"/>
+      <Handle type="target" position={Position.Left}  className="customHandle"/>
     </div>
   );
 }

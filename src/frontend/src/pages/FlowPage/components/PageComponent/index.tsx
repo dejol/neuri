@@ -21,6 +21,7 @@ import ReactFlow, {
   MarkerType,
   BackgroundVariant,
   ReactFlowInstance,
+  Position,
 } from "reactflow";
 import GenericNode from "../../../../CustomNodes/GenericNode";
 import Chat from "../../../../components/chatComponent";
@@ -42,6 +43,8 @@ import { Transition } from "@headlessui/react";
 import IconComponent from "../../../../components/genericIconComponent";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
 import NoteNode from "../../../../CustomNodes/NoteNode";
+import MindNode from "../../../../CustomNodes/MindNode";
+
 import FloatingEdge from "../FloatingEdgeComponent";
 import { postBuildInit, postNotesAssistant } from "../../../../controllers/API";
 import LoadingComponent from "../../../../components/loadingComponent";
@@ -50,6 +53,7 @@ import WebEditorModal from "../../../../modals/webEditorModal";
 import { Box, Typography } from "@mui/material";
 import { useSSE } from "../../../../contexts/SSEContext";
 // import LeftFormModal from "../../../../modals/leftFormModal";
+import {getNextBG} from "../../components/borderColorComponent";
 
 export function ExtendButton(){
   const { setOpenModelList,openModelList} = useContext(locationContext);
@@ -82,6 +86,7 @@ export function ExtendButton(){
 const nodeTypes = {
   genericNode: GenericNode,
   noteNode:NoteNode,
+  mindNode:MindNode,
 };
 
 const edgeTypes = {
@@ -338,33 +343,37 @@ export default function Page({ flow }: { flow: FlowType }) {
         // we need to remove the wrapper bounds, in order to get the correct position
         const reactflowBounds =
           reactFlowWrapper.current.getBoundingClientRect();       
-        
+        let sourceNode=flow?.data?.nodes.find((n)=>n.id==connectingNodeId.current);
         let newNode=createNoteNode("", 
         reactFlowInstances.get(tabId).project({
           x: event.clientX - reactflowBounds.left,
           y: event.clientY - reactflowBounds.top,
-        })
+        }),"mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
+
         // screenToFlowPosition({
         //                 x: event.clientX - reactflowBounds.left,
         //                 y: event.clientY - reactflowBounds.top,
         //               })
-                    );
- 
-        
+         );
+         
         let newEdeg={
-          id:getNodeId("floating"),
+          id:getNodeId("mindNode"),
           source:connectingNodeId.current,
           target:newNode.id,
           style: { 
-            // stroke: "#555",
-            strokeWidth:6 
+            stroke: getNextBG((sourceNode?sourceNode.data.borderColor:"")),
+            strokeWidth:6,
+             
           },
-          className:"stroke-foreground stroke-connection",
-          markerEnd:{
-            type: MarkerType.ArrowClosed,
-            // color: 'black',
-          },
-          type:"floating"
+          className:"stroke-foreground stroke-connection ",
+          // markerEnd:{
+          //   type: MarkerType.ArrowClosed,
+          //   // color: 'black',
+          // },
+          type:sourceNode.type=="noteNode"?"beizer":"smoothstep",
+          selectable:false,
+          deletable:false,
+          animated:true,
         };
         
         setEdges((eds) =>
@@ -593,11 +602,14 @@ export default function Page({ flow }: { flow: FlowType }) {
 //   nodesList.push(newNode);
 //   reactFlowInstance.setNodes(nodesList);
 // }
-function createNoteNode(newValue,newPosition){
+function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
   if(newValue&&isValidImageUrl(newValue)){
     newValue="<img src='"+newValue+"'/>";
   }
-  let newId = getNodeId("noteNode");
+  if(!type){
+    type="noteNode";
+  }
+  let newId = getNodeId(type);
   if(!newPosition){
     let bounds = reactFlowWrapper.current.getBoundingClientRect();
     newPosition = reactFlowInstances.get(tabId).project({
@@ -608,16 +620,19 @@ function createNoteNode(newValue,newPosition){
 
   let newNode = {
     id: newId,
-    type: "noteNode",
+    type: type,
     position:newPosition,
     data: {
       id:newId,
-      type:"noteNode",
+      type:type,
       value:newValue,
+      borderColor:borderColour??""
     },
     width:220,
     height:220,
     selected:false,
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
   };
   let nodesList=flow.data.nodes;
   

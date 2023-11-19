@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { useContext, useEffect, useState } from "react";
 import { Radio } from "@mui/material";
-
+import {BORDER_COLORS} from "../../../../constants/constants"
 /**
  * calculate Background colour from borderColour
  * @param borderColor string of border color value ,etc. 'var(--status-blue)'
@@ -22,7 +22,19 @@ export function switchToBG(borderColor:string,isDarkMod:any){
   }
   return colorValue;
 }
-
+export function getNextBG(borderColor:string){
+  // console.log("color:",borderColor);
+  if(!borderColor||borderColor=="inherit"){
+    return BORDER_COLORS[0];
+  }
+  let index=BORDER_COLORS.findIndex((color)=>color==borderColor);
+  if(BORDER_COLORS.length==index+1){
+    return "";
+  }else{
+    index+=1;
+  }
+  return BORDER_COLORS[index];
+}
 export default function BorderColorComponent({ 
   data,  
   setBorder,
@@ -60,38 +72,21 @@ export default function BorderColorComponent({
           color: 'hsl(var(--background))',
         },
       }} />
-    <Radio {...controlProps('var(--status-blue)')}
-      sx={{
-        color: 'var(--status-blue)',
-        '&.Mui-checked': {
-          color: 'var(--status-blue)',
-        },
-      }} />
-    <Radio {...controlProps('var(--status-green)')} 
-      sx={{
-        color: 'var(--status-green)',
-        '&.Mui-checked': {
-          color: 'var(--status-green)',
-        },
-      }} />
-    <Radio {...controlProps('var(--status-yellow)')} 
-      sx={{
-        color: 'var(--status-yellow)',
-        '&.Mui-checked': {
-          color: 'var(--status-yellow)',
-        },
-      }}
-      />
-    
-    <Radio
-      {...controlProps('var(--status-red)')}
-      sx={{
-        color: 'var(--status-red)',
-        '&.Mui-checked': {
-          color: 'var(--status-red)',
-        },
-      }}
-    />
+      {
+        BORDER_COLORS.map((color,idx)=>(
+          
+          <Radio {...controlProps(color)}
+          sx={{
+            color: color,
+            '&.Mui-checked': {
+              color: color,
+            },
+          }} />
+          
+        
+        ))
+      }
+
   </div>  
   );
 }

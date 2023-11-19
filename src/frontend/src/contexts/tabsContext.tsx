@@ -153,7 +153,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       Saveflows.forEach((flow) => {
         if (flow.data && flow.data?.nodes)
           flow.data?.nodes.forEach((node) => {
-            if(node.type!="noteNode"){
+            if(node.type=="genericNode"){
             //looking for file fields to prevent saving the content and breaking the flow for exceeding the the data limite for local storage
             Object.keys(node.data.node.template).forEach((key) => {
               if (node.data.node.template[key].type === "file") {
@@ -290,7 +290,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
   function processFlowNodes(flow) {
     if (!flow.data || !flow.data.nodes) return;
     flow.data.nodes.forEach((node: NodeType) => {
-      if(node.type=="noteNode") return;
+      if(node.type!=="genericNode") return;
       const template = templates[node.data.type];
       if (!template) {
         setErrorData({ title: `Unknown node type: ${node.data.type}` });
@@ -815,7 +815,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   const updateNodes = (nodes, edges) => {
     nodes.forEach((node) => {
-      if(node.type=="noteNode") return;
+      if(node.type!=="genericNode") return;
       const template = templates[node.data.type];
       if (!template) {
         setErrorData({ title: `Unknown node type: ${node.data.type}` });
