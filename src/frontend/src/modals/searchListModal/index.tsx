@@ -301,43 +301,6 @@ export default function SearchListModal({
           <div className="left-form-modal-iv-box mt-0">
             <div className="eraser-column-arrangement">
               <div className="eraser-size group/closeButton border-l-0">
-              {/* <div className={"side-bar-search-div-placement"}>
-                <div className="header-end-display my-1 ">
-                      <ShadTooltip content="New note" side="bottom">
-                      <button
-                        className={"extra-side-bar-save-disable"}
-                        onClick={(event) => {
-                            let noteId=getNodeId("NewNote");
-                            setTabId(noteId);
-                            tabValues.set(noteId,{id:noteId,type:"note"})
-                            notes.push({id:noteId,name:"",folder_id:folderId,content:{id:noteId,value:""}})
-                        }}
-                      >
-                        <IconComponent
-                          name="PlusSquare"
-                          className={
-                            "side-bar-button-size"
-                          }
-                        />
-                      </button>
-                    </ShadTooltip>  
-
-                    <ShadTooltip content="New notebook" side="bottom">
-                      <button
-                        className={"extra-side-bar-save-disable"}
-                        onClick={newNotebook}
-                      >
-                        <IconComponent
-                          name="FilePlus"
-                          className={
-                            "side-bar-button-size"
-                          }
-                        />
-                      </button>
-                    </ShadTooltip>                        
-                </div>
-              </div>                
-              <Separator orientation="horizontal" /> */}
                 <div className=" absolute z-50 right-1 top-1">
                   <button onClick={() => {setOpen(false);}} className="invisible group-hover/closeButton:visible">
                     <IconComponent
@@ -400,7 +363,7 @@ export default function SearchListModal({
                           </React.Fragment> 
                         ))}
                       
-                        {(itemCount+1!==flowList.length)&&(
+                        {(flowList.length!=0&&(itemCount+1)!==flowList.length)&&(
                           <IconComponent name="MoreHorizontal" className="main-page-nav-button animate-pulse" />
                         )}
                      </>
