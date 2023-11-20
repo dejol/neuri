@@ -373,7 +373,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           type:sourceNode.type=="noteNode"?"beizer":"smoothstep",
           selectable:false,
           deletable:false,
-          animated:true,
+          // animated:true,
         };
         
         setEdges((eds) =>
@@ -961,7 +961,7 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
                         // leaveTo={"transform translate-x-[-100%]"}
                         // className={"chat-message-modal-thought-cursor"}
                       >
-                        <div className="fixed top-12 left-0 h-[93%]">
+                        <div className="fixed top-[2.8rem] left-0 h-[93%]">
                           <FolderPopover />
                         </div>
                       </Transition>
@@ -976,7 +976,7 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
                         // className={"chat-message-modal-thought-cursor"}
             
                       >
-                      <div className="fixed top-12 left-[13rem] h-[93%]">
+                      <div className="fixed top-[2.8rem] left-[13rem] h-[93%]">
                         <div className="search-list-bar-arrangement">
                         <SearchListModal
                           open={openSearchList}

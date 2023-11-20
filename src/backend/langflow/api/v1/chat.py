@@ -89,7 +89,7 @@ async def init_build(graph_data: dict, flow_id: str):
         j+=1
     
     graph_data['data']['edges']=newEdges
-    logger.debug("runnable number_of_edges:%s",len(graph_data['data']['edges']))
+    # logger.debug("runnable number_of_edges:%s",len(graph_data['data']['edges']))
 
     # logger.debug("runnable number_of_edges:%s",graph_data['data']['edges'])
 #######

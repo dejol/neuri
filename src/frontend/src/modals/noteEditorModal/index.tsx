@@ -3,12 +3,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-twilight";
-// import "ace-builds/webpack-resolver";
 import { ReactNode, useContext, useEffect, useState,useRef } from "react";
-import AceEditor from "react-ace";
-import IconComponent from "../../components/genericIconComponent";
-import { Button } from "../../components/ui/button";
-import { WEB_EDITOR_DIALOG_SUBTITLE } from "../../constants/constants";
 import { alertContext } from "../../contexts/alertContext";
 import { darkContext } from "../../contexts/darkContext";
 import { postBuildInit, postContentAssistant } from "../../controllers/API";
@@ -24,8 +19,6 @@ import { enforceMinimumLoadingTime, getAssistantFlow } from "../../utils/utils";
 import Chat from "../../components/chatComponent";
 import LeftFormModal from "../leftFormModal";
 import { Transition } from "@headlessui/react";
-import ChatTrigger from "../../components/chatComponent/chatTrigger";
-
 
 export default function NoteEditorModal({
   note_id,
@@ -72,45 +65,6 @@ export default function NoteEditorModal({
       note.content.value=editValue;
     }
   },[name,editValue])
-
-  // function handleClick() {
-  //   if(note_id&&!note_id.startsWith("NewNote")){
-  //     let savedNote = notes.find((note) => note.id === note_id);
-  //     savedNote.content.value=editValue;
-  //     savedNote.name=name;
-  //     savedNote.folder_id=folderId;
-  //     saveNote(savedNote).then((res)=>{
-  //       console.log("res:",res);
-  //       cancelChange();
-  //       setSuccessData({ title: "Changes saved successfully" });
-  //     });
-  //   }else if(!note_id ||note_id.startsWith("NewNote")){
-  //     let newNote: NoteType;
-  //     newNote = {
-  //       id: "",
-  //       name:name,
-  //       folder_id:folderId,
-  //       content: {
-  //         id: "",
-  //         value: editValue,
-  //       },
-  //     };
-  //     addNote(newNote).then((id)=>{
-  //       newNote.id=id.toString();
-  //       newNote.content.id=id.toString();
-  //       notes.push(newNote);
-  //       cancelChange();
-  //       setSuccessData({ title: "Add Note successfully" });
-  //     });
-  //   }
-    
-  // }
-  // function cancelChange(){
-  //   setEditValue("");
-  //   setTabId("");
-  //   tabValues.delete(note_id);
-  //   note_id="";
-  // }
 
   useEffect(() => {
     // Function to be executed after the state changes
@@ -455,66 +409,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
               />
             </div>
           </div>
-          {/* <div className="flex h-fit w-[90%] justify-between"> 
-             <Button  onClick={()=>{
-                let note=notes.find((note) => note.id === note_id);
-                if(note){
-                  setTabId("");
-                  removeNote(note_id);
-                  setSuccessData({ title: "Delete Note successfully" });
-                  setEditValue("");
-                  setName("");
-                  tabValues.delete(note_id);
-                }
-              }} type="button" className="mx-2" variant={"secondary"}>
-                <IconComponent name="Trash2" className="h-4 w-4 mr-2" />
-              Delete
-            </Button>            
-            <div className="mb-2 mt-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button asChild variant="primary" size="sm">
-                  <div className="header-menu-bar-display">
-                    <div className="header-menu-flow-name">
-                    {folders&&folders.map((folder,idx) => (
-                      (folder.id==folderId)&&(
-                        <div key={idx}>{folder.name}</div>
-                      )
-                    ))}
-                    {!folderId&&(
-                      <div key="unclass">Unclassified</div>
-                    )}
-                    </div>
-                    <IconComponent name="ChevronDown" className="h-4 w-4" />
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-50">
-                {folders.map((folder, idx) => (
-                <DropdownMenuItem
-                  onClick={() => {
-                    setFolderId(folder.id);
-                  }}
-                  className="cursor-pointer"
-                  key={idx}
-                  >
-                {folder.name}
-                </DropdownMenuItem>
-                ))}
-                <DropdownMenuItem
-                onClick={() => {
-                  setFolderId("");
-                }}
-                className="cursor-pointer"
-                >Unclassified</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            </div>    
-             <Button className="mt-0 mr-6" onClick={handleClick} type="submit">
-              Save
-            </Button> 
-           </div> */}
-
+          
             <Chat open={open} setOpen={setOpen} isBuilt={isBuilt} setIsBuilt={setIsBuilt} 
               canOpen={canOpen} setCanOpen={setCanOpen} 
               flow={tempFlow}/>

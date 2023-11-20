@@ -82,7 +82,7 @@ class Graph:
         for node in self.nodes:
             if not self._validate_node(node):
                 raise ValueError(
-                    f"{node.vertex_type} is not connected to any other components"
+                    f"{node.vertex_type} is not connected to any other components or it is connected node which is not runnable"
                 )
 
     def _validate_node(self, node: Vertex) -> bool:

@@ -151,7 +151,7 @@ export default function Welcome({ flow }: { flow: FlowType }) {
                       // leaveTo={"transform translate-x-[-100%]"}
                       // className={"chat-message-modal-thought-cursor"}
                     >
-                      <div className="fixed top-12 left-0 h-[93%]">
+                      <div className="fixed top-[2.8rem] left-0 h-[93%]">
                         <FolderPopover />
                       </div>
                     </Transition>
@@ -166,7 +166,7 @@ export default function Welcome({ flow }: { flow: FlowType }) {
                           // className={"chat-message-modal-thought-cursor"}
               
                         >
-                          <div className="fixed top-12 left-[13rem] h-[93%]">
+                          <div className="fixed top-[2.8rem] left-[13rem] h-[93%]">
                             <div className="search-list-bar-arrangement">
                               <SearchListModal
                                 open={openSearchList}
