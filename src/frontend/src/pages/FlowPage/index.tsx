@@ -120,7 +120,7 @@ export default function FlowPage() {
 
           >
             <div className="flex h-full overflow-hidden">
-              <div className="search-list-bar-arrangement">
+              
               <SearchListModal
                 open={openSearchList}
                 setOpen={setOpenSearchList}
@@ -129,7 +129,7 @@ export default function FlowPage() {
                 searchKeyword={getSearchResult.keyword}
                 folderId={getSearchResult.folderId}
               />
-            </div>
+            
           </div>
         </Transition>    
         </>    

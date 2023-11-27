@@ -774,7 +774,7 @@ export default function FolderPopover() {
   
   return (
 
-    <div className={"left-side-folder-arrangement border-r-0"}>
+    <div className={"left-side-folder-arrangement border-r-0 shadow-lg"}>
       {/* <div className={"side-bar-search-div-placement"}>
         <div className="header-end-display">
               <ShadTooltip content="New note" side="bottom">

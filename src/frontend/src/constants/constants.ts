@@ -536,7 +536,7 @@ export const ADMIN_HEADER_TITLE = "管理用户";
  *
  */
 export const ADMIN_HEADER_DESCRIPTION =
-  "这里显示所有本系统的用户信息，密码等内容。";
+  "这里管理所有本系统的用户信息，密码等内容。";
 
 export const CONTROL_NEW_USER = {
   username: "",

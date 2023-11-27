@@ -19,8 +19,12 @@ export default function AccordionComponent({
   );
 
   useEffect(()=>{
-    setValue(open.length === 0 ? "" : getOpenAccordion());
-  },[open])
+    // if(open.length>1){
+      setValue( open.length === 0 ? "" :getOpenAccordion());
+    // }
+          // console.log("open is changed:",open);
+
+  },[open.length])
 
   function getOpenAccordion() {
     let value = "";

@@ -430,7 +430,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
 
                 > 
                 <div className="fixed bottom-14 left-0">   
-                  <div className={"left-side-bar-arrangement"+(screenWidth<=1024?" w-[24rem]":"")}>     
+                  <div className={"left-side-bar-arrangement shadow-lg"+(screenWidth<=1024?" w-[24rem]":"")}>     
                   <LeftFormModal
                     key={note_id}
                     flow={tempFlow}

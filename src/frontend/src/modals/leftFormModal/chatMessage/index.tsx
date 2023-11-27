@@ -1,5 +1,5 @@
 import Convert from "ansi-to-html";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeMathjax from "rehype-mathjax";
 import remarkGfm from "remark-gfm";
@@ -12,6 +12,7 @@ import IconComponent from "../../../components/genericIconComponent";
 import { ChatMessageType } from "../../../types/chat";
 import { classNames } from "../../../utils/utils";
 import FileCard from "../fileComponent";
+import { alertContext } from "../../../contexts/alertContext";
 export default function ChatMessage({
   chat,
   lockChat,
@@ -25,6 +26,17 @@ export default function ChatMessage({
   const [hidden, setHidden] = useState(true);
   const template = chat.template;
   const [promptOpen, setPromptOpen] = useState(false);
+  const { setSuccessData } = useContext(alertContext);
+  const copyToClipboard = (contents) => {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      return;
+    }
+
+    navigator.clipboard.writeText(contents).then(() => {
+      setSuccessData({ title: "文字已复制" }); 
+    });
+  };
+  
   return (
     <div
       className={classNames("left-form-modal-chat-position", chat.isSend ? "" : " ")}
@@ -85,11 +97,18 @@ export default function ChatMessage({
                           className="h-8 w-8 animate-pulse"
                         />
                       ) : (
+                        <div className="group/closeButton">
+                          <div className=" absolute z-50 right-1 bottom-1">
+                           <button onClick={()=>{copyToClipboard(chat.message.toString())}} className="invisible group-hover/closeButton:visible">
+                              <IconComponent name="Clipboard" className="h-4 w-4 hover:text-gray-600" />
+                           </button>
+                          </div>
+
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm, remarkMath]}
                           rehypePlugins={[rehypeMathjax]}
                           className="markdown prose min-w-full text-primary word-break-break-word
-                      dark:prose-invert"
+                            dark:prose-invert"
                           components={{
                             pre({ node, ...props }) {
                               return <>{props.children}</>;
@@ -146,6 +165,7 @@ export default function ChatMessage({
                         >
                           {chat.message.toString()}
                         </ReactMarkdown>
+                        </div>
                       ),
                     [chat.message, chat.message.toString()]
                   )}

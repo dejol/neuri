@@ -167,7 +167,6 @@ export default function Welcome({ flow }: { flow: FlowType }) {
               
                         >
                           <div className="fixed top-[2.8rem] left-[13rem] h-[93%]">
-                            <div className="search-list-bar-arrangement">
                               <SearchListModal
                                 open={openSearchList}
                                 setOpen={setOpenSearchList}
@@ -176,7 +175,6 @@ export default function Welcome({ flow }: { flow: FlowType }) {
                                 searchKeyword={getSearchResult.keyword}
                                 folderId={getSearchResult.folderId}
                               />
-                            </div>
                           </div>
                         </Transition> 
                         </div>
@@ -199,7 +197,7 @@ export default function Welcome({ flow }: { flow: FlowType }) {
 
                       > 
                       <div className="fixed bottom-14 left-0">   
-                        <div className={"left-side-bar-arrangement"+(screenWidth<=1024?" w-[24rem]":"")}>     
+                        <div className={"left-side-bar-arrangement shadow-lg"+(screenWidth<=1024?" w-[24rem]":"")}>     
                         <LeftFormModal
                           key={flow.id}
                           flow={flow}

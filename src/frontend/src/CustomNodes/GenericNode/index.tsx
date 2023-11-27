@@ -160,7 +160,7 @@ export default function GenericNode({
 
       >
       {(data.type=="Note" || data.type=="AINote") &&(
-        <NodeResizer isVisible={selected} minWidth={255} minHeight={290} handleClassName="w-5 h-5"
+        <NodeResizer isVisible={selected} minWidth={300} minHeight={300} handleClassName="w-5 h-5"
                     onResizeEnd={(event)=>{
                       refreshCurrentFlow();
                     }}/>

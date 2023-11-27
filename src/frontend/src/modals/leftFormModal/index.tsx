@@ -402,7 +402,7 @@ export default function LeftFormModal({
 
        tabsState[flow.id].formKeysData && (
 
-          <div className="form-modal-iv-box ">
+          <div className="form-modal-iv-box">
             <div className="eraser-column-arrangement">
               <div className="eraser-size">
                 <div className="eraser-position mb-1">

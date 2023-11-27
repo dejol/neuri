@@ -1736,3 +1736,14 @@ export async function enforceMinimumLoadingTime(
     return new Promise((resolve) => setTimeout(resolve, remainingTime));
   }
 }
+
+export function getAllRelatedNode(flow,rootId:string,returnEdgeIds,returnNodeIds){
+  let edges=flow.data?.edges.filter((edge)=>(edge.source===rootId));
+  edges.forEach((edge)=>{
+    returnEdgeIds.push(edge.id);
+    if(edge.type!="floating"){
+      returnNodeIds.push(edge.target);
+      getAllRelatedNode(flow,edge.target,returnEdgeIds,returnNodeIds);
+    }
+  })
+}

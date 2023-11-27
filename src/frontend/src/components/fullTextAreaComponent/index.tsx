@@ -146,7 +146,19 @@ export default function FullTextAreaComponent({
   // },[borderColour,dark]); 
 
   return (
-    <>
+    <div className=" h-full p-1"
+    // style={{cursor: 'text',borderColor:data.borderColor}}
+    // style={{cursor: editable?'text':'pointer'}}
+    onMouseDownCapture={handleMouseDown}
+    onDoubleClick={(event)=>{
+      event.stopPropagation();
+      setEditable(true);
+     }}
+     onBlur={()=>{
+      setEditable(false);
+     }}
+
+    >
       <NodeToolbar offset={2} className="bg-muted fill-foreground stroke-foreground rounded-md shadow-sm border" >
       {editable&&(
       <Toolbar
@@ -165,19 +177,9 @@ export default function FullTextAreaComponent({
               dark={dark}
             />   
       </NodeToolbar>            */}
-      <div className="w-full items-center h-full"
-            // style={{cursor: 'text',borderColor:data.borderColor}}
-            style={{cursor: editable?'text':'pointer'}}
-            onMouseDownCapture={handleMouseDown}
-            onDoubleClick={(event)=>{
-              event.stopPropagation();
-              setEditable(true);
-             }}
-             onBlur={()=>{
-              setEditable(false);
-             }}
 
-      >
+
+        <div style={{cursor: editable?'text':'pointer',position:"relative",zIndex:2}} className="bg-muted h-full ">
         <Editor
             defaultConfig={editorConfig}
             value={value}
@@ -188,16 +190,16 @@ export default function FullTextAreaComponent({
               // }}
               mode="simple"
               style={{ height: '100%',
-              minWidth:'200px',
-              minHeight:'200px',
+              minWidth:'300px',
+              minHeight:'300px',
               width:'100%',
               fontSize:'20px',
               backgroundColor:switchToBG(data.borderColor,dark),
               //  overflowY: 'scroll' 
+              
             }} 
           />
-                 
+        </div>   
       </div>
-    </>
   );
 }

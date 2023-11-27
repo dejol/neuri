@@ -87,8 +87,10 @@ export function AuthProvider({ children }): React.ReactElement {
   }
 
   function login(newAccessToken: string, refreshToken: string) {
-    cookies.set("access_tkn_lflw", newAccessToken, { path: "/" });
-    cookies.set("refresh_tkn_lflw", refreshToken, { path: "/" });
+    const exdate = new Date();
+    exdate.setTime(exdate.getTime() + 60 * 60 * 1000 * 24 * 30);//一个月
+    cookies.set("access_tkn_lflw", newAccessToken, { path: "/",expires:exdate });
+    cookies.set("refresh_tkn_lflw", refreshToken, { path: "/" ,expires:exdate});
     setAccessToken(newAccessToken);
     setRefreshToken(refreshToken);
     setIsAuthenticated(true);

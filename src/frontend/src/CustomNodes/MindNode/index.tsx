@@ -13,10 +13,18 @@ import { locationContext } from "../../contexts/locationContext";
 import { darkContext } from "../../contexts/darkContext";
 import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
 import BorderColorComponent from "../../pages/FlowPage/components/borderColorComponent";
+import { Expand } from "lucide-react";
+import { getAllRelatedNode } from "../../utils/utils";
 
 const connectionNodeIdSelector = (state) => state.connectionNodeId;
 const sourceStyle = { zIndex: 1 };
-
+const hide = (hidden,ids) => (nodeOrEdge) => {
+  let indx=ids.findIndex((id)=>id==nodeOrEdge.id)
+  if(indx>=0){
+    nodeOrEdge.hidden = hidden;
+  }
+  return nodeOrEdge;
+};
 export default function MindNode({
   id,
   data,
@@ -25,7 +33,7 @@ export default function MindNode({
   yPos,
 }: {
   id:string,
-  data: {id:string,value:string,type:string,borderColor?:string,update_at?:Date}; 
+  data: {id:string,value:string,type:string,borderColor?:string,update_at?:Date,numOftarget?:number}; 
   selected: boolean;
   xPos:number;
   yPos:number;
@@ -154,7 +162,7 @@ export default function MindNode({
   };
   const connectionNodeId = useStore(connectionNodeIdSelector);
   const isConnecting = !!connectionNodeId;
-  const isTarget = connectionNodeId && connectionNodeId !== id&&(connectionNodeId&&connectionNodeId.toString().startsWith("noteNode"));
+  const isTarget = connectionNodeId && connectionNodeId !== id&&(connectionNodeId&&connectionNodeId.toString().startsWith("mindNode"));
   const { setCenter,fitView } = useReactFlow();
   function focusNode() {
     let flow = flows.find((flow) => flow.id === tabId);
@@ -192,11 +200,31 @@ export default function MindNode({
       updateFlow(flow);
     }
   }
-  
+  const [hidden, setHidden] = useState(true);
+
+  function expandNode(){
+    let flow = flows.find((flow) => flow.id === tabId);
+    let edges=flow.data?.edges.filter((edge)=>(edge.source===id));
+    data.numOftarget=edges.length;
+    let ids=[];
+    let nodeIds=[];
+    edges.forEach((edge)=>{
+      
+        ids.push(edge.id);
+      if(edge.type!="floating"){
+        nodeIds.push(edge.target);
+        getAllRelatedNode(flow,edge.target,ids,nodeIds)
+      }
+    })
+    reactFlowInstances.get(tabId).setEdges((eds) => eds.map(hide(hidden,ids)));
+    reactFlowInstances.get(tabId).setNodes((nds) => nds.map(hide(hidden,nodeIds)));
+    setHidden(!hidden);
+
+  }
   return (
     <div className={"h-full p-1 "+
         (isTarget ? "bg-status-green":"bg-background")+
-        " border-8 rounded-full" +(selected?" border-ring":"")
+        " border-8 rounded-3xl" +(selected?" border-ring":"")
       }
           onDoubleClick={(event)=>{
             event.stopPropagation();
@@ -222,10 +250,11 @@ export default function MindNode({
            onBlur={()=>{
             setEditable(false);
            }}          
-          className="bg-muted h-full border-0 rounded-full">
+          className="bg-muted h-full border-0 rounded-3xl">
+
         {isInteractive&&(
           <>
-        <NodeToolbar offset={2} isVisible={toolbarOn}  position={Position.Left}>
+        <NodeToolbar offset={2} align={"end"} isVisible={toolbarOn}  position={Position.Left}>
           <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
             <ShadTooltip content="Prev Node" side="left" >
               <button onClick={focusPrevNode}>
@@ -234,7 +263,7 @@ export default function MindNode({
             </ShadTooltip>            
           </div>  
           </NodeToolbar>
-          <NodeToolbar offset={2} isVisible={toolbarOn} position={Position.Right}>
+          <NodeToolbar offset={2} align={"end"} isVisible={toolbarOn} position={Position.Right}>
           <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
             <ShadTooltip content="Next Node" side="right" >
               <button onClick={focusNextNode}>
@@ -258,17 +287,41 @@ export default function MindNode({
               backgroundColor:switchToBG(borderColour,dark),
               //  overflowY: 'scroll' 
             }} 
-            className="border-0 rounded-full"
+            className="border-0 rounded-3xl"
           />
           
       </div>
+      {!isConnecting ? (
           <Handle
-            className="customHandle"
+            // className="customHandle"
             position={Position.Right}
             type="source"
-            style={sourceStyle}
-          />
+            // style={sourceStyle}
+            className={data.numOftarget>0?"-mr-5 h-5 w-5 rounded-full border-2 bg-background cursor-pointer":"h-1 w-1"}
+            style={{
+              borderColor: borderColour,
+              zIndex:1,
+            }}      
+            onClick={expandNode}     
+          >
+          {(!hidden)?(
+          <div className="h-5 w-5 absolute flex -top-1 left-1" >{data.numOftarget??0}</div>
+          ):data.numOftarget>0&&(
+              <IconComponent name="Minus" className="h-4 w-4" />
+          )}
+          </Handle>
+      ):(
+        <Handle
+          className="customHandle"
+          position={Position.Right}
+          type="source"
+          style={sourceStyle}
+          // className={data.numOftarget>0?"-mr-5 h-5 w-5 rounded-full border-2 bg-background cursor-pointer":"h-1 w-1"}    
+        >
+        </Handle>
+      )}
       <Handle type="target" position={Position.Left}  className="customHandle"/>
     </div>
   );
 }
+

@@ -183,7 +183,7 @@ export default function ExtraSidebar() {
         </div>
           )
         )}
-
+{/* 
             <ShadTooltip
               content={"常规笔记"}
               side="left"
@@ -219,7 +219,7 @@ export default function ExtraSidebar() {
                   </div>
                 </div>
               </div>
-            </ShadTooltip>
+            </ShadTooltip> */}
 
       </>
     ):(

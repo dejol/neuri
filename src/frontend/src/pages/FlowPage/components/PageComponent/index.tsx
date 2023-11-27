@@ -33,7 +33,7 @@ import { undoRedoContext } from "../../../../contexts/undoRedoContext";
 import { APIClassType } from "../../../../types/api";
 import { FlowType, NodeType } from "../../../../types/flow";
 import { isValidConnection } from "../../../../utils/reactflowUtils";
-import { isWrappedWithClass ,isValidImageUrl, classNames, getAssistantFlow, enforceMinimumLoadingTime} from "../../../../utils/utils";
+import { isWrappedWithClass ,isValidImageUrl, classNames, getAssistantFlow, enforceMinimumLoadingTime, getAllRelatedNode} from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
 import LeftFormModal from "../../../../modals/leftFormModal";
@@ -107,7 +107,7 @@ export default function Page({ flow }: { flow: FlowType }) {
     setTabsState,
     tabId,
   } = useContext(TabsContext);
-  const { types,reactFlowInstances,templates,data } = useContext(typesContext);
+  const { types,reactFlowInstances,templates,data,deleteNode } = useContext(typesContext);
   const { dark } = useContext(darkContext);
 
   const reactFlowWrapper = useRef(null);
@@ -169,8 +169,8 @@ export default function Page({ flow }: { flow: FlowType }) {
           event.preventDefault();
           if (navigator.clipboard && navigator.clipboard.readText) {
             navigator.clipboard.readText().then((value:string)=>{
-              // createNewNote(value);
-              createNoteNode(value,null);
+              createNewNote(value);
+              // createNoteNode(value,null);
               // console.log(value);
             });
           }
@@ -274,7 +274,35 @@ export default function Page({ flow }: { flow: FlowType }) {
     },
     [onEdgesChange, setNodes, setTabsState, tabId]
   );
+  function deleteMindNode(nodeId){
+          
+    if( nodeId.startsWith('mindNode')){
+      let nodeIds=[];
+      let edgeIds=[];
+      getAllRelatedNode(flow,nodeId,edgeIds,nodeIds);
+      setEdges(
+        edges.filter(
+          (edge) =>
+            !edgeIds.some(
+              (id) => id === edge.id
+            )
+        )
+      );
 
+      setNodes(
+        nodes.filter(
+          (node) =>
+            !nodeIds.some(
+              (nodeId) => nodeId === node.id
+            )
+        )
+      );
+
+      // let node = flow.data.nodes.find((node)=>node.id==nodeId);
+      // node.data.numOftarget-=1;
+    }
+
+  }
   const onNodesChangeMod = useCallback(
     (change: NodeChange[]) => {
       setConChanged(true);
@@ -302,20 +330,29 @@ export default function Page({ flow }: { flow: FlowType }) {
           // stroke: "#555",
           strokeWidth:6 
         },
-        className:
-          (params.targetHandle.split("|")[0] === "Text"
-            ? "stroke-foreground "
-            : "stroke-foreground ") + " stroke-connection",
-        animated: params.targetHandle.split("|")[0] === "Text",
+
       };
-      if(params.target.indexOf("noteNode")>=0){
+      if(params.target.startsWith("mindNode")||params.target.startsWith("noteNode")){
+       
         newEdeg["markerEnd"]={
           type: MarkerType.ArrowClosed,
           // color: 'black',
         };
         newEdeg["type"]='floating';
         newEdeg["id"]=getNodeId("floating");
+        if(params.target.startsWith("mindNode")&&params.source.startsWith("mindNode")){
+          newEdeg["source"]=params.target;
+          newEdeg["target"]=params.source;
+        }
+      }else{
+        newEdeg["className"]=
+          (params.targetHandle.split("|")[0] === "Text"
+            ? "stroke-foreground "
+            : "stroke-foreground ") + " stroke-connection"; 
+            newEdeg["animated"]= params.targetHandle.split("|")[0] === "Text";
+
       }
+
       setEdges((eds) =>
         addEdge(
           newEdeg,
@@ -339,7 +376,8 @@ export default function Page({ flow }: { flow: FlowType }) {
   const onConnectEnd = useCallback(
     (event) => {
       const targetIsPane = event.target.classList.contains('react-flow__pane');
-      if (!isLock.current&&targetIsPane) {
+      if (!isLock.current){
+        if(targetIsPane) {
         // we need to remove the wrapper bounds, in order to get the correct position
         const reactflowBounds =
           reactFlowWrapper.current.getBoundingClientRect();       
@@ -370,9 +408,10 @@ export default function Page({ flow }: { flow: FlowType }) {
           //   type: MarkerType.ArrowClosed,
           //   // color: 'black',
           // },
-          type:sourceNode.type=="noteNode"?"beizer":"smoothstep",
+          type:(sourceNode.type == "noteNode"||sourceNode.type=="genericNode")?"simplebezier":"smoothstep",
           selectable:false,
           deletable:false,
+          updatable:false,
           // animated:true,
         };
         
@@ -382,7 +421,10 @@ export default function Page({ flow }: { flow: FlowType }) {
             eds
           )
         );
+        if(!sourceNode.data.numOftarget)sourceNode.data.numOftarget=0;
+        sourceNode.data.numOftarget+=1;
       }
+     }
     },
     [ ],
   );
@@ -518,6 +560,9 @@ export default function Page({ flow }: { flow: FlowType }) {
   const onDelete = useCallback(
     (mynodes) => {
       takeSnapshot();
+      mynodes.forEach((nod)=>{
+        deleteMindNode(nod.id);
+      });
       setEdges(
         edges.filter(
           (edge) =>
@@ -576,32 +621,35 @@ export default function Page({ flow }: { flow: FlowType }) {
     setLastSelection(flow);
   }, []);
 
-// function createNewNote(newValue){
-//   let newData = { type: "Note",node:data["notes"]["Note"]};
-//   let { type } = newData;
-//   let newId = getNodeId(type);
-//   let newNode: NodeType;
-//   let bounds = reactFlowWrapper.current.getBoundingClientRect();
-//   const newPosition = reactFlowInstance.project({
-//     x: position.x - bounds.left,
-//     y: position.y - bounds.top,    
-//   });
-//   newData.node.template.note.value=newValue;
-//   newNode = {
-//     id: newId,
-//     type: "genericNode",
-//     position:newPosition,
+function createNewNote(newValue){
+  if(newValue&&isValidImageUrl(newValue)){
+    newValue="<img src='"+newValue+"'/>";
+  }
+  let newData = { type: "Note",node:data["notes"]["Note"]};
+  let { type } = newData;
+  let newId = getNodeId(type);
+  let newNode: NodeType;
+  let bounds = reactFlowWrapper.current.getBoundingClientRect();
+  const newPosition = reactFlowInstances.get(tabId).project({
+    x: position.x - bounds.left,
+    y: position.y - bounds.top,    
+  });
+  newData.node.template.note.value=newValue;
+  newNode = {
+    id: newId,
+    type: "genericNode",
+    position:newPosition,
     
-//     data: {
-//       ...newData,
-//       id: newId,
-//       value: null,
-//     },
-//   };
-//   let nodesList=flow.data.nodes;
-//   nodesList.push(newNode);
-//   reactFlowInstance.setNodes(nodesList);
-// }
+    data: {
+      ...newData,
+      id: newId,
+      value: null,
+    },
+  };
+  let nodesList=flow.data.nodes;
+  nodesList.push(newNode);
+  reactFlowInstances.get(tabId).setNodes(nodesList);
+}
 function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
   if(newValue&&isValidImageUrl(newValue)){
     newValue="<img src='"+newValue+"'/>";
@@ -626,7 +674,8 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
       id:newId,
       type:type,
       value:newValue,
-      borderColor:borderColour??""
+      borderColor:borderColour??"",
+      numOftarget:0
     },
     width:220,
     height:220,
@@ -919,7 +968,7 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
                       className="theme-attribution"
                       minZoom={0.01}
                       maxZoom={8}
-
+                      
                     >
                       {openMiniMap&&(
                         <MiniMap pannable={true} 
@@ -977,7 +1026,6 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
             
                       >
                       <div className="fixed top-[2.8rem] left-[13rem] h-[93%]">
-                        <div className="search-list-bar-arrangement">
                         <SearchListModal
                           open={openSearchList}
                           setOpen={setOpenSearchList}
@@ -986,7 +1034,6 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
                           searchKeyword={getSearchResult.keyword}
                           folderId={getSearchResult.folderId}
                         />
-                      </div>
                     </div>
                   </Transition> 
                     </div>
@@ -1010,7 +1057,7 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
 
                       > 
                       <div className="fixed bottom-14 left-0">   
-                        <div className={"left-side-bar-arrangement"+(screenWidth<=1024?" w-[24rem]":"")}>     
+                        <div className={"left-side-bar-arrangement shadow-lg"+(screenWidth<=1024?" w-[24rem]":"")}>     
                         <LeftFormModal
                           key={flow.id}
                           flow={flow}

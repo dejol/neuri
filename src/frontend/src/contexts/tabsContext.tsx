@@ -272,8 +272,10 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     if (!flow.data || !flow.data.edges) return;
     flow.data.edges.forEach((edge) => {
       edge.className = "";
+      let targetNode=flow.data.nodes.find((node)=>node.id==edge.target);
       edge.style = { 
         // stroke: "#555", 
+        stroke: targetNode?targetNode.data?.borderColor : "",
         strokeWidth:6 
       };
     });
@@ -662,6 +664,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
           "-" +
           target +
           targetHandle;
+        console.log("edge:",edge);
         edges = addEdge(
           {
             source,
@@ -669,7 +672,9 @@ export function TabsProvider({ children }: { children: ReactNode }) {
             sourceHandle,
             targetHandle,
             id,
-            style: { strokeWidth:6 },
+            style: { 
+              strokeWidth:6 
+            },
             className:
               targetHandle.split("|")[0] === "Text"
                 ? "stroke-gray-800 "

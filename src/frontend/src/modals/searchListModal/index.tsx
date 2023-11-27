@@ -298,7 +298,8 @@ export default function SearchListModal({
   }
 
   return (
-          <div className="left-form-modal-iv-box mt-0">
+    <div className="search-list-bar-arrangement shadow-lg">
+          <div className="left-form-modal-iv-box mt-0 shadow-xl">
             <div className="eraser-column-arrangement">
               <div className="eraser-size group/closeButton border-l-0">
                 <div className=" absolute z-50 right-1 top-1">
@@ -405,5 +406,6 @@ export default function SearchListModal({
               </div>
             </div>
           </div>
+    </div>      
   );
 }
