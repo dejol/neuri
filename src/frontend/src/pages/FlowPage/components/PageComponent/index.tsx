@@ -54,6 +54,7 @@ import { Box, Typography } from "@mui/material";
 import { useSSE } from "../../../../contexts/SSEContext";
 // import LeftFormModal from "../../../../modals/leftFormModal";
 import {getNextBG} from "../../components/borderColorComponent";
+import test from "node:test";
 
 export function ExtendButton(){
   const { setOpenModelList,openModelList} = useContext(locationContext);
@@ -169,9 +170,16 @@ export default function Page({ flow }: { flow: FlowType }) {
           event.preventDefault();
           if (navigator.clipboard && navigator.clipboard.readText) {
             navigator.clipboard.readText().then((value:string)=>{
+            try {
+              const jsonObject = JSON.parse(value);
+              let root=createNoteNode("JSON 对象",null);
+              let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
+              createNodesFromJson(position.x+400*currZoom,position.y,jsonObject,root.id);
+            } catch (error) {
               createNewNote(value);
-              // createNoteNode(value,null);
-              // console.log(value);
+            }
+              
+              
             });
           }
         }
@@ -373,57 +381,95 @@ export default function Page({ flow }: { flow: FlowType }) {
     connectingNodeId.current = nodeId;
   }, []);
 
+  // const testJson={
+  //   "桥头镇": {
+  //     "概述": "2019年",
+  //     "第一产业": "桥头镇为澄迈县的农业大镇",
+  //     "第二产业": "桥头近年来在第一产业发展的",
+  //     "第三产业": "桥头镇依托区位优势，"
+  //   },
+  //   "西岸村": {
+  //     "概述": "西岸村委会位于桥头镇的东部",
+  //     "基地": {
+  //       "A":"位于西岸村的陆侨无核荔枝",
+  //       "B":"位于西岸村的陆侨无核荔枝"
+  //     }
+  //   },
+  //   "桥": {
+  //     "概述": "2020年"
+  //   }
+  // };
+
+  function createNodesFromJson(clientX,clientY,jsonObj,sourceId){
+    let numX=1;
+    let numY=0;
+    let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
+    for (let key in jsonObj) {
+      let newNodeId=createNodeEdge(clientX,clientY+200*numY*currZoom,key,sourceId);
+      if (typeof jsonObj[key] === "object" && jsonObj[key] !== null) {
+        numY+=createNodesFromJson(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+      }else{
+        createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+      }
+      numY+=1;
+    }
+    return numY-1;
+  }
+  function createNodeEdge(clientX,clientY,content,sourceId){
+      // we need to remove the wrapper bounds, in order to get the correct position
+      const reactflowBounds = reactFlowWrapper.current.getBoundingClientRect();       
+      let sourceNode=flow?.data?.nodes.find((n)=>n.id==sourceId);
+      let newNode=createNoteNode(content, 
+      reactFlowInstances.get(tabId).project({
+      x: clientX - reactflowBounds.left,
+      y: clientY - reactflowBounds.top,
+      }),"mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
+
+      // screenToFlowPosition({
+      //                 x: event.clientX - reactflowBounds.left,
+      //                 y: event.clientY - reactflowBounds.top,
+      //               })
+      );
+
+      let newEdeg={
+      id:getNodeId("mindEdeg"),
+      source:sourceId,
+      target:newNode.id,
+      style: { 
+        stroke: getNextBG((sourceNode?sourceNode.data.borderColor:"")),
+        strokeWidth:6,
+        
+      },
+      className:"stroke-foreground stroke-connection ",
+      // markerEnd:{
+      //   type: MarkerType.ArrowClosed,
+      //   // color: 'black',
+      // },
+      type:(sourceNode.type == "noteNode"||sourceNode.type=="genericNode")?"simplebezier":"smoothstep",
+      selectable:false,
+      deletable:false,
+      updatable:false,
+      // animated:true,
+      };
+
+      setEdges((eds) =>
+      addEdge(
+        newEdeg,
+        eds
+      )
+      );
+      if(!sourceNode.data.numOftarget)sourceNode.data.numOftarget=0;
+      sourceNode.data.numOftarget+=1;
+      return newNode.id;
+  }
   const onConnectEnd = useCallback(
     (event) => {
       const targetIsPane = event.target.classList.contains('react-flow__pane');
       if (!isLock.current){
         if(targetIsPane) {
-        // we need to remove the wrapper bounds, in order to get the correct position
-        const reactflowBounds =
-          reactFlowWrapper.current.getBoundingClientRect();       
-        let sourceNode=flow?.data?.nodes.find((n)=>n.id==connectingNodeId.current);
-        let newNode=createNoteNode("", 
-        reactFlowInstances.get(tabId).project({
-          x: event.clientX - reactflowBounds.left,
-          y: event.clientY - reactflowBounds.top,
-        }),"mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
-
-        // screenToFlowPosition({
-        //                 x: event.clientX - reactflowBounds.left,
-        //                 y: event.clientY - reactflowBounds.top,
-        //               })
-         );
-         
-        let newEdeg={
-          id:getNodeId("mindNode"),
-          source:connectingNodeId.current,
-          target:newNode.id,
-          style: { 
-            stroke: getNextBG((sourceNode?sourceNode.data.borderColor:"")),
-            strokeWidth:6,
-             
-          },
-          className:"stroke-foreground stroke-connection ",
-          // markerEnd:{
-          //   type: MarkerType.ArrowClosed,
-          //   // color: 'black',
-          // },
-          type:(sourceNode.type == "noteNode"||sourceNode.type=="genericNode")?"simplebezier":"smoothstep",
-          selectable:false,
-          deletable:false,
-          updatable:false,
-          // animated:true,
-        };
-        
-        setEdges((eds) =>
-          addEdge(
-            newEdeg,
-            eds
-          )
-        );
-        if(!sourceNode.data.numOftarget)sourceNode.data.numOftarget=0;
-        sourceNode.data.numOftarget+=1;
-      }
+          // createNodesFromJson(event.clientX,event.clientY,testJson,connectingNodeId.current);
+          createNodeEdge(event.clientX,event.clientY,"",connectingNodeId.current)
+        }
      }
     },
     [ ],
@@ -654,6 +700,7 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
   if(newValue&&isValidImageUrl(newValue)){
     newValue="<img src='"+newValue+"'/>";
   }
+
   if(!type){
     type="noteNode";
   }
@@ -705,8 +752,6 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
             if(assistantOn.current&&flow&&changedContent.current&&!isBuilding){
               postNotesAssistant(flow).then((resp)=>{
                 if(resp){
-                  // setNoticeData({title:resp.data.result.msg})
-                  // console.log("resp:",resp);
                   handleBuild(getAssistantFlow(flow.id,resp.data.result.msg));
                      
                 }

@@ -186,7 +186,7 @@ export default function SearchListModal({
       >
       <List component="div" disablePadding={true} key="list-of-flows">
       {flow.data?.nodes.map((node, idx) => (
-        (node.type=="noteNode")?(
+        (node.type=="noteNode"||node.type=="mindNode")?(
           // <ShadTooltip content={filterHTML(node.data.value)} side="right" key={idx}>
           <ListItem  
             sx={{ pl: 2 }}
