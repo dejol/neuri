@@ -340,7 +340,7 @@ export default function Page({ flow }: { flow: FlowType }) {
         },
 
       };
-      if(params.target.startsWith("mindNode")||params.target.startsWith("noteNode")){
+      if(params.target.startsWith("mindNode-")||params.target.startsWith("noteNode-")||params.target.startsWith("Note-")){
        
         newEdeg["markerEnd"]={
           type: MarkerType.ArrowClosed,
@@ -348,7 +348,7 @@ export default function Page({ flow }: { flow: FlowType }) {
         };
         newEdeg["type"]='floating';
         newEdeg["id"]=getNodeId("floating");
-        if(params.target.startsWith("mindNode")&&params.source.startsWith("mindNode")){
+        if(params.target.startsWith("mindNode-")&&params.source.startsWith("mindNode-")){
           newEdeg["source"]=params.target;
           newEdeg["target"]=params.source;
         }
@@ -465,10 +465,35 @@ export default function Page({ flow }: { flow: FlowType }) {
   const onConnectEnd = useCallback(
     (event) => {
       const targetIsPane = event.target.classList.contains('react-flow__pane');
+      const targetIsRunNote = event.target.dataset.nodeid?.startsWith("Note-");
       if (!isLock.current){
         if(targetIsPane) {
           // createNodesFromJson(event.clientX,event.clientY,testJson,connectingNodeId.current);
           createNodeEdge(event.clientX,event.clientY,"",connectingNodeId.current)
+        }
+        if(targetIsRunNote){
+          let newEdeg={
+            id:getNodeId("finalEdge"),
+            source:connectingNodeId.current,
+            target:event.target.dataset.nodeid,
+            style: { 
+              strokeWidth:6,
+            },
+            className:"stroke-foreground stroke-connection ",
+            markerEnd:{
+              type: MarkerType.ArrowClosed,
+            //   // color: 'black',
+            },
+            type:"floating",
+            animated:true,
+            };
+      
+            setEdges((eds) =>
+              addEdge(
+                newEdeg,
+                eds
+              )
+            );
         }
      }
     },
@@ -627,6 +652,8 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const onEdgeUpdate = useCallback(
     (oldEdge: Edge, newConnection: Connection) => {
+      console.log("oldEdge:",oldEdge);
+      console.log("newConnection:",newConnection);
       if (isValidConnection(newConnection, reactFlowInstances.get(tabId))) {
         edgeUpdateSuccessful.current = true;
         setEdges((els) => updateEdge(oldEdge, newConnection, els));

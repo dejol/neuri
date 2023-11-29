@@ -150,8 +150,15 @@ export default function LoginPage(): JSX.Element {
               </Button>
             </Link>
           </div>
+
+        </div>
+        <div className=" flex justify-center w-full absolute inset-x-0 bottom-0 h-16">
+          <div className="text-xs text-slate-400">
+          <Link to={"https://beian.miit.gov.cn"}>备案/许可证编号：粤ICP备2023138014号</Link>
+          </div>
         </div>
       </div>
+      
     </Form.Root>
   );
 }

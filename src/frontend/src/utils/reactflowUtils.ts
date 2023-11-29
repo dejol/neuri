@@ -180,7 +180,10 @@ export function validateNode(
   node: NodeType,
   reactFlowInstance: ReactFlowInstance
 ): Array<string> {
-  if(node.type!=="genericNode") return [];
+  if(node.type!=="genericNode"||
+  reactFlowInstance.getEdges().findIndex((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==node.id))>=0){ 
+    return []
+  }
   if (!node.data?.node?.template || !Object.keys(node.data.node.template)) {
     return [
       "遇到了我们未知的问题，请检查一下。如您方便请将具体情况告知我们，谢谢您的帮助！",

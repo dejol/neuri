@@ -301,12 +301,24 @@ export default function ParameterComponent({
               />
               
               ) : data.node?.template[name].fulline ? (
+                  (isEMBuilt && tabsState[currentFlow.id+"-"+data.id] &&
+                  tabsState[currentFlow.id+"-"+data.id].formKeysData &&
+                  tabsState[currentFlow.id+"-"+data.id].formKeysData.input_keys!==null)? (
+                  <EmbeddedModal
+                  sourceData={data}
+                  setSourceData={setData}
+                  key={currentFlow.id}
+                  flow={currentFlow}
+                  name={name}
+                />
+                ):(
                 <FullTextAreaComponent
                   value={data.node.template[name].value ?? ""}
                   onChange={handleOnNewValue}
                   data={data}
                   nodeSelected={nodeSelected}
                 />  
+                )
               ) : data.node?.template[name].chat_view ? (
                   <div className="input-full-node-wrap input-note dark:input-note-dark">
                     {

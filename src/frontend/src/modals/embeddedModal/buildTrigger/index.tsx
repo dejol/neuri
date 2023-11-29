@@ -46,7 +46,11 @@ export default function BuildTrigger({
     node: NodeType,
     flow: FlowType
   ): Array<string> {
-    if(node.type!=="genericNode") return [];
+    if(node.type!=="genericNode"||
+      flow.data.edges.findIndex((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==node.id))>=0){ 
+
+      return []
+    }
     if (!node.data?.node?.template || !Object.keys(node.data.node.template)) {
       return [
         "We've noticed a potential issue with a node in the flow. Please review it and, if necessary, submit a bug report with your exported flow file. Thank you for your help!",
@@ -266,8 +270,14 @@ export default function BuildTrigger({
     }
     
     // 删除没有与给定节点相关的节点和边
-    const filteredNodes = flow.data.nodes.filter((node) => allRelatedNodeIds.has(node.id));
-    const filteredEdges = flow.data.edges.filter((edge) => allRelatedNodeIds.has(edge.source) && allRelatedNodeIds.has(edge.target));
+    let filteredNodes = flow.data.nodes.filter((node) => allRelatedNodeIds.has(node.id));
+    let filteredEdges = flow.data.edges.filter((edge) => allRelatedNodeIds.has(edge.source) && allRelatedNodeIds.has(edge.target));
+
+     filteredNodes = filteredNodes.filter((node) => (node.type=="genericNode"));  //只保留可运行的节点
+     filteredNodes = filteredNodes.filter((node) => (node.id!==node_id)); // 删除启动运行的节点
+    
+     filteredEdges = filteredEdges.filter((edge) => edge.id.startsWith("reactflow__edge-")); //只保留可运行的节点的边
+
 
     newFlow.id=flow.id+"-"+node_id;
     newFlow.data.edges=filteredEdges;

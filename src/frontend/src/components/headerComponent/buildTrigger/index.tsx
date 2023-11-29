@@ -13,6 +13,7 @@ import RadialProgressComponent from "../../RadialProgress";
 import IconComponent from "../../genericIconComponent";
 import { enforceMinimumLoadingTime } from "../../../utils/utils";
 import ShadTooltip from "../../ShadTooltipComponent";
+import { cloneDeep } from "lodash";
 
 export default function BuildTrigger({
   // open,
@@ -34,7 +35,8 @@ export default function BuildTrigger({
   const eventClick = isBuilding ? "pointer-events-none" : "";
   const [progress, setProgress] = useState(0);
 
-  async function handleBuild(flow: FlowType) {
+  async function handleBuild(sourceFlow: FlowType) {
+    let flow=newFlow(sourceFlow);
     try {
       if (isBuilding) {
         return;
@@ -73,6 +75,7 @@ export default function BuildTrigger({
     }
   }
   async function streamNodeData(flow: FlowType) {
+
     // Step 1: Make a POST request to send the flow data and receive a unique session ID
     const response = await postBuildInit(flow);
     const { flowId } = response.data;
@@ -153,7 +156,39 @@ export default function BuildTrigger({
     }
     return parsedData.valid;
   }
+/**
+   * generate a new flow, which id will be changed, and edges & nodes will be filtered
+   * @param flow 
+   * @returns newFlow
+   */
+  function newFlow(flow:FlowType){
+    let newFlow=cloneDeep(flow);
+    const removeNodeIds = [];
+    // console.log("flow:",flow);
+    // 遍历数组edges，找出不需要运行的节点
+    flow.data.edges.forEach((edge) => {
+      // console.log("edge:",edge);
+      if (edge.id.startsWith("finalEdge-")) {
+        removeNodeIds.push(edge.target);
+      }
+    });
 
+    const runEdgs=flow.data.edges.filter((edge) => edge.id.startsWith("reactflow__edge-"));
+
+    // 用于存储与给定节点相关联的节点ID
+    const allRemovedNodeIds = new Set(removeNodeIds);
+
+    
+    // 删除没有与给定节点相关的节点和边
+    let filteredNodes = flow.data.nodes.filter((node) => !allRemovedNodeIds.has(node.id));
+    filteredNodes = filteredNodes.filter((node) => (node.type=="genericNode"));  //只保留可运行的节点
+    newFlow.data.edges=runEdgs;
+    newFlow.data.nodes=filteredNodes;
+    // console.log("newFlow:",newFlow);
+    // console.log("filteredNodes:",filteredNodes);
+    // console.log("filteredEdges:",filteredEdges);
+    return newFlow;
+}
   // async function enforceMinimumLoadingTime(
   //   startTime: number,
   //   minimumLoadingTime: number

@@ -15,6 +15,7 @@ import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent
 import BorderColorComponent from "../../pages/FlowPage/components/borderColorComponent";
 import { Expand } from "lucide-react";
 import { getAllRelatedNode } from "../../utils/utils";
+import BuildTrigger from "../../modals/embeddedModal/buildTrigger";
 
 const connectionNodeIdSelector = (state) => state.connectionNodeId;
 const sourceStyle = { zIndex: 1 };
@@ -40,7 +41,7 @@ export default function MindNode({
 }) {
   const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
-  const { flows, tabId,updateFlow } =useContext(TabsContext);
+  const { flows, tabId,updateFlow,setIsEMBuilt } =useContext(TabsContext);
   const { reactFlowInstances } = useContext(typesContext);
   const {dark} =useContext(darkContext);
   const {isInteractive} =useContext(locationContext);
@@ -254,7 +255,7 @@ export default function MindNode({
 
         {isInteractive&&(
           <>
-        <NodeToolbar offset={2} align={"end"} isVisible={toolbarOn}  position={Position.Left}>
+          <NodeToolbar offset={2} align={"end"} isVisible={toolbarOn}  position={Position.Left}>
           <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
             <ShadTooltip content="Prev Node" side="left" >
               <button onClick={focusPrevNode}>
@@ -263,6 +264,7 @@ export default function MindNode({
             </ShadTooltip>            
           </div>  
           </NodeToolbar>
+
           <NodeToolbar offset={2} align={"end"} isVisible={toolbarOn} position={Position.Right}>
           <div className="m-0 mt-2 bg-muted fill-foreground stroke-foreground text-primary [&>button]:border-b-border hover:[&>button]:bg-border">
             <ShadTooltip content="Next Node" side="right" >
@@ -273,7 +275,9 @@ export default function MindNode({
           </div>  
           </NodeToolbar>          
           </>
-        )}   
+
+        )} 
+
           <Editor
             defaultConfig={editorConfig}
             value={data.value}

@@ -6,7 +6,7 @@ import '../../style/custom.css'
 import { Boot } from '@wangeditor/editor'
 import markdownModule from '@wangeditor/plugin-md'
 import {NodeDataType} from "../../types/flow/index"
-import { NodeToolbar, Position } from "reactflow";
+import { Handle, NodeToolbar, Position } from "reactflow";
 import { TabsContext } from "../../contexts/tabsContext";
 import { darkContext } from "../../contexts/darkContext";
 import { cloneDeep } from "lodash";
@@ -178,6 +178,7 @@ export default function FullTextAreaComponent({
             />   
       </NodeToolbar>            */}
 
+<Handle type="target" position={Position.Left} id="responseContaner" style={{ zIndex: 1 }}  className="customHandle"/>
 
         <div style={{cursor: editable?'text':'pointer',position:"relative",zIndex:2}} className="bg-muted h-full ">
         <Editor
@@ -199,7 +200,9 @@ export default function FullTextAreaComponent({
               
             }} 
           />
+
         </div>   
+
       </div>
   );
 }

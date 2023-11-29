@@ -131,9 +131,11 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
               <IconComponent name="Copy" className="h-4 w-4" />
             </button>
           </ShadTooltip>
-          {reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"&&(
+          {(reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"||
+          reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="Note")&&(
             <>
-            <ShadTooltip content="复制成笔记" side="top">
+            {reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"&&(
+              <ShadTooltip content="复制成笔记" side="top">
               <button
                 className={classNames(
                   "relative -ml-px inline-flex items-center bg-background px-2 py-2 text-foreground shadow-md ring-1 ring-inset ring-ring  transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
@@ -156,12 +158,19 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
               >
                 <IconComponent name="Copy" className="h-4 w-4" iconColor="Green"/>
               </button>
-            </ShadTooltip>
-            <BuildTrigger 
+              </ShadTooltip>
+            )}
+            
+            {
+            (reactFlowInstances.get(tabId)?.getEdges().find((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==data.id)))&&(
+              <BuildTrigger 
               flow={flows.find((flow)=>flow.id==tabId)}
               setIsBuilt={setIsEMBuilt}
               nodeId={data.id}
             />
+            )}
+
+
           </>
           )}
           <ShadTooltip
@@ -192,23 +201,25 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           </ShadTooltip>
           {(data.type=="Note" || data.type=="AINote")?(
             <>
-            <ShadTooltip content="可运行" side="top">
-                <div
-                  className={
-                    "relative -ml-px inline-flex items-center bg-background p-0 text-foreground shadow-md ring-1 ring-inset  ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
-                  }
-                >
+            {!(reactFlowInstances.get(tabId)?.getEdges().find((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==data.id)))&&(
+              <ShadTooltip content="可运行" side="top">
                   <div
-                  className={"mt-1"}>
-                <ToggleShadComponent
-                  disabled={false}
-                  enabled={runnabler}
-                  setEnabled={setRunnabler}
-                  size="small"
-                />
-                </div>
-            </div>
-          </ShadTooltip>
+                    className={
+                      "relative -ml-px inline-flex items-center bg-background p-0 text-foreground shadow-md ring-1 ring-inset  ring-ring transition-all duration-500 ease-in-out hover:bg-muted focus:z-10"
+                    }
+                  >
+                    <div
+                    className={"mt-1"}>
+                  <ToggleShadComponent
+                    disabled={false}
+                    enabled={runnabler}
+                    setEnabled={setRunnabler}
+                    size="small"
+                  />
+                  </div>
+              </div>
+            </ShadTooltip>
+          )}
           <ShadTooltip content="全能编辑" side="top">
             
             <button
