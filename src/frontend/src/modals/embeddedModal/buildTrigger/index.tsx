@@ -283,7 +283,7 @@ export default function BuildTrigger({
     newFlow.id=flow.id+"-"+node_id;
     newFlow.data.edges=filteredEdges;
     newFlow.data.nodes=filteredNodes;
-    console.log("newFlow:",newFlow);
+    // console.log("newFlow:",newFlow);
     // console.log("filteredNodes:",filteredNodes);
     // console.log("filteredEdges:",filteredEdges);
     return newFlow;

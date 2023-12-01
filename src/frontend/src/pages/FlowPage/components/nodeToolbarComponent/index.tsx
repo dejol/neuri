@@ -92,7 +92,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
   const [showRunButton,setShowRunButton] = useState(false);
 
   useEffect(()=>{
-    if(data){
+    if(data && reactFlowInstances.get(tabId)?.getNode(data.id)){
       if(reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"||
       reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="Note"){
         if(reactFlowInstances.get(tabId)?.getEdges().find((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==data.id))){
