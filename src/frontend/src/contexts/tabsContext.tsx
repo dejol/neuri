@@ -100,6 +100,7 @@ const TabsContextInitialValue: TabsContextType = {
   tabsState: {},
   setTabsState: (state: TabsState) => { },
   getNodeId: (nodeType: string) => "",
+  getNewEdgeId:(oldId: string) => "",
   setTweak: (tweak: any) => { },
   getTweak: [],
   setSearchResult: (results:{folderId:"",keyword:"",notes:[],flows:[]}) => { },
@@ -270,15 +271,15 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
   function processFlowEdges(flow) {
     if (!flow.data || !flow.data.edges) return;
-    flow.data.edges.forEach((edge) => {
-      edge.className = "";
-      let targetNode=flow.data.nodes.find((node)=>node.id==edge.target);
-      edge.style = { 
-        // stroke: "#555", 
-        stroke: targetNode?targetNode.data?.borderColor : "",
-        strokeWidth:6 
-      };
-    });
+    // flow.data.edges.forEach((edge) => {
+    //   edge.className = "";
+    //   let targetNode=flow.data.nodes.find((node)=>node.id==edge.target);
+    //   edge.style = { 
+    //     // stroke: "#555", 
+    //     stroke: targetNode?targetNode.data?.borderColor : "",
+    //     strokeWidth:6 
+    //   };
+    // });
   }
 
   function updateDisplay_name(node: NodeType, template: APIClassType) {
@@ -427,6 +428,10 @@ export function TabsProvider({ children }: { children: ReactNode }) {
     return nodeType + "-" + incrementNodeId();
   }
 
+  function getNewEdgeId(oldId:string){
+    let prefix=oldId.split('-')[0];
+    return getNodeId(prefix);
+  }
   /**
    * Creates a file input and listens to a change event to upload a JSON flow file.
    * If the file type is application/json, the file is read and parsed into a JSON object.
@@ -623,30 +628,10 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       let source = idsMap[edge.source];
       let target = idsMap[edge.target];
       // console.log("source:",source)
-      let sourceNode=nodes.find((node)=>node.id==source);
-      if(sourceNode&& sourceNode.type=="noteNode"){   
-        let id =
-          "reactflow__edge-" +
-          source +
-          "-" +
-          target;  
-        edges = addEdge(
-          {
-            source,
-            target,
-            markerEnd:{
-              type: MarkerType.ArrowClosed,
-              // color: 'black',
-            },
-            type:'floating',
-            id,
-            style: { strokeWidth:6 },
+      // let sourceNode=nodes.find((node)=>node.id==source);
+      // let targetNode=nodes.find((node)=>node.id==target);
 
-            selected: false,
-          },
-          edges.map((edge) => ({ ...edge, selected: false }))
-        );
-      }else{
+      if(edge.id.startsWith("reactflow__edge-")){   
         let sourceHandleSplitted = edge.sourceHandle.split("|");
         let sourceHandle =
           sourceHandleSplitted[0] +
@@ -664,7 +649,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
           "-" +
           target +
           targetHandle;
-        console.log("edge:",edge);
+        // console.log("edge:",edge);
         edges = addEdge(
           {
             source,
@@ -681,6 +666,24 @@ export function TabsProvider({ children }: { children: ReactNode }) {
                 : "stroke-gray-900 ",
             animated: targetHandle.split("|")[0] === "Text",
             selected: false,
+          },
+          edges.map((edge) => ({ ...edge, selected: false }))
+        );
+      }else{
+        let id =getNewEdgeId(edge.id);
+        edges = addEdge(
+          {
+            ...edge,
+            source,
+            target,
+            // markerEnd:{
+            //   type: MarkerType.ArrowClosed,
+            //   // color: 'black',
+            // },
+            // type:edge.type,
+            id,
+            // style: { strokeWidth:6 },
+            // selected: false,
           },
           edges.map((edge) => ({ ...edge, selected: false }))
         );
@@ -1023,16 +1026,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         setIsBuilt,
         isEMBuilt,
         setIsEMBuilt,
-        // openFolderList,
-        // setOpenFolderList,    
-        // openModelList,
-        // setOpenModelList,
-        // openWebEditor,
-        // setOpenWebEditor,   
-        // openMiniMap,
-        // setOpenMiniMap,           
-        // openAssistant,
-        // setOpenAssistant,
+        getNewEdgeId,
         lastCopiedSelection,
         setLastCopiedSelection,
         hardReset,

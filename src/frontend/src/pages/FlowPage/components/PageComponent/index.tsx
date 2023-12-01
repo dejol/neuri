@@ -1,5 +1,5 @@
 import _, { cloneDeep } from "lodash";
-import { ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   Connection,
@@ -33,7 +33,7 @@ import { undoRedoContext } from "../../../../contexts/undoRedoContext";
 import { APIClassType } from "../../../../types/api";
 import { FlowType, NodeType } from "../../../../types/flow";
 import { isValidConnection } from "../../../../utils/reactflowUtils";
-import { isWrappedWithClass ,isValidImageUrl, classNames, getAssistantFlow, enforceMinimumLoadingTime, getAllRelatedNode} from "../../../../utils/utils";
+import { isWrappedWithClass ,isValidImageUrl, getAssistantFlow, enforceMinimumLoadingTime, getAllRelatedNode} from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
 import LeftFormModal from "../../../../modals/leftFormModal";
@@ -50,11 +50,8 @@ import { postBuildInit, postNotesAssistant } from "../../../../controllers/API";
 import LoadingComponent from "../../../../components/loadingComponent";
 import { darkContext } from "../../../../contexts/darkContext";
 import WebEditorModal from "../../../../modals/webEditorModal";
-import { Box, Typography } from "@mui/material";
 import { useSSE } from "../../../../contexts/SSEContext";
-// import LeftFormModal from "../../../../modals/leftFormModal";
 import {getNextBG} from "../../components/borderColorComponent";
-import test from "node:test";
 
 export function ExtendButton(){
   const { setOpenModelList,openModelList} = useContext(locationContext);
@@ -98,22 +95,23 @@ export default function Page({ flow }: { flow: FlowType }) {
   let {
     updateFlow,
     uploadFlow,
-    addFlow,
     getNodeId,
+    getNewEdgeId,
     paste,
     lastCopiedSelection,
     setLastCopiedSelection,
     tabsState,
-    saveFlow,
     setTabsState,
     tabId,
+    isBuilt, 
+    setIsBuilt,
+    getSearchResult,
+    editNodeId
   } = useContext(TabsContext);
-  const { types,reactFlowInstances,templates,data,deleteNode } = useContext(typesContext);
+  const { types,reactFlowInstances,templates,data } = useContext(typesContext);
   const { dark } = useContext(darkContext);
 
   const reactFlowWrapper = useRef(null);
-  const {setNoticeData } = useContext(alertContext);
-
   const { takeSnapshot } = useContext(undoRedoContext);
   const { updateSSEData, isBuilding, setIsBuilding, sseData } = useSSE();
 
@@ -122,8 +120,6 @@ export default function Page({ flow }: { flow: FlowType }) {
     useState<OnSelectionChangeParams>(null);
   const [open,setOpen]=useState(false);
   const [canOpen, setCanOpen] = useState(false);
-  const {tabValues,isBuilt, setIsBuilt,getSearchResult,
-    editNodeId } = useContext(TabsContext);
   const {openFolderList,
       openMiniMap,openModelList,openAssistant,openWebEditor,setOpenWebEditor,setOpenSearchList,
       openSearchList,setIsInteractive,isInteractive,
@@ -209,7 +205,6 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const [selectionMenuVisible, setSelectionMenuVisible] = useState(false);
 
-  const { setErrorData } = useContext(alertContext);
   const [loading,setLoading] = useState(false);
   
   const [nodes, setNodes, onNodesChange] = useNodesState(
@@ -347,7 +342,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           // color: 'black',
         };
         newEdeg["type"]='floating';
-        newEdeg["id"]=getNodeId("floating");
+        newEdeg["id"]=getNewEdgeId("mindEdge");
         if(params.target.startsWith("mindNode-")&&params.source.startsWith("mindNode-")){
           newEdeg["source"]=params.target;
           newEdeg["target"]=params.source;
@@ -432,7 +427,7 @@ export default function Page({ flow }: { flow: FlowType }) {
       );
 
       let newEdeg={
-      id:getNodeId("mindEdeg"),
+      id:getNewEdgeId("mindEdeg"),
       source:sourceId,
       target:newNode.id,
       style: { 
@@ -473,7 +468,7 @@ export default function Page({ flow }: { flow: FlowType }) {
         }
         if(targetIsRunNote){
           let newEdeg={
-            id:getNodeId("finalEdge"),
+            id:getNewEdgeId("finalEdge"),
             source:connectingNodeId.current,
             target:event.target.dataset.nodeid,
             style: { 

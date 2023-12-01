@@ -57,6 +57,7 @@ export type TabsContextType = {
   uploadFlow: (newFlow?: boolean, file?: File) => void;
   hardReset: () => void;
   getNodeId: (nodeType: string) => string;
+  getNewEdgeId:(oldId: string) => string;
   tabsState: TabsState;
   setTabsState: Dispatch<SetStateAction<TabsState>>;
   paste: (

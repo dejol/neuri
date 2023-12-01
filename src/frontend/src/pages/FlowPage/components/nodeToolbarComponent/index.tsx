@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useReactFlow } from "reactflow";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
 import IconComponent from "../../../../components/genericIconComponent";
@@ -89,8 +89,18 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
 
   const open = Boolean(anchorEl);
   const id = open ? 'colour-popover' : undefined;
+  const [showRunButton,setShowRunButton] = useState(false);
 
-
+  useEffect(()=>{
+    if(data){
+      if(reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="AINote"||
+      reactFlowInstances.get(tabId)?.getNode(data.id).data.type=="Note"){
+        if(reactFlowInstances.get(tabId)?.getEdges().find((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==data.id))){
+          setShowRunButton(true);
+        }
+      }
+    }
+  },[data])
   return (
     <>
       <div className="w-26 h-10">
@@ -162,7 +172,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
             )}
             
             {
-            (reactFlowInstances.get(tabId)?.getEdges().find((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==data.id)))&&(
+            showRunButton&&(
               <BuildTrigger 
               flow={flows.find((flow)=>flow.id==tabId)}
               setIsBuilt={setIsEMBuilt}
@@ -201,7 +211,7 @@ export default function NodeToolbarComponent({ data, setData, deleteNode,runnabl
           </ShadTooltip>
           {(data.type=="Note" || data.type=="AINote")?(
             <>
-            {!(reactFlowInstances.get(tabId)?.getEdges().find((edge)=>(edge.id.startsWith("finalEdge-")&&edge.target==data.id)))&&(
+            {!showRunButton&&(
               <ShadTooltip content="可运行" side="top">
                   <div
                     className={
