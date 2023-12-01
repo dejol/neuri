@@ -48,7 +48,7 @@ CUSTOM_NODES = {
     },
     "notes":{
         "Note":frontend_node.notes.NoteFrontendNode(),
-        "AINote":frontend_node.notes.AINoteFrontendNode(),
+        # "AINote":frontend_node.notes.AINoteFrontendNode(),
         "CustomPrompt":frontend_node.notes.CustomPromptFrontendNode(),
     },
 }

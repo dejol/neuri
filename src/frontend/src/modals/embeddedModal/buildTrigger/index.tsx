@@ -247,6 +247,7 @@ export default function BuildTrigger({
         relatedNodeIds.push(edge.source);
       }
     });
+    let filteredEdges = flow.data.edges.filter((edge) => edge.id.startsWith("reactflow__edge-")); //只保留可运行的节点的边
 
     // 用于存储与给定节点相关联的节点ID
     const allRelatedNodeIds = new Set(relatedNodeIds);
@@ -257,7 +258,8 @@ export default function BuildTrigger({
       newRelatedNodeFound = false;
 
       // 遍历数组edges，找出所有与已知关联节点相关的边
-      flow.data.edges.forEach((edge) => {
+      filteredEdges.forEach((edge) => {
+        
         if (allRelatedNodeIds.has(edge.source) && !allRelatedNodeIds.has(edge.target)) {
           allRelatedNodeIds.add(edge.target);
           newRelatedNodeFound = true;
@@ -271,18 +273,17 @@ export default function BuildTrigger({
     
     // 删除没有与给定节点相关的节点和边
     let filteredNodes = flow.data.nodes.filter((node) => allRelatedNodeIds.has(node.id));
-    let filteredEdges = flow.data.edges.filter((edge) => allRelatedNodeIds.has(edge.source) && allRelatedNodeIds.has(edge.target));
+    filteredEdges = filteredEdges.filter((edge) => allRelatedNodeIds.has(edge.source) && allRelatedNodeIds.has(edge.target));
 
      filteredNodes = filteredNodes.filter((node) => (node.type=="genericNode"));  //只保留可运行的节点
      filteredNodes = filteredNodes.filter((node) => (node.id!==node_id)); // 删除启动运行的节点
     
-     filteredEdges = filteredEdges.filter((edge) => edge.id.startsWith("reactflow__edge-")); //只保留可运行的节点的边
 
 
     newFlow.id=flow.id+"-"+node_id;
     newFlow.data.edges=filteredEdges;
     newFlow.data.nodes=filteredNodes;
-    // console.log("newFlow:",newFlow);
+    console.log("newFlow:",newFlow);
     // console.log("filteredNodes:",filteredNodes);
     // console.log("filteredEdges:",filteredEdges);
     return newFlow;

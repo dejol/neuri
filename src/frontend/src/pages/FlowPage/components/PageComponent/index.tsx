@@ -480,10 +480,10 @@ export default function Page({ flow }: { flow: FlowType }) {
               strokeWidth:6,
             },
             className:"stroke-foreground stroke-connection ",
-            markerEnd:{
-              type: MarkerType.ArrowClosed,
-            //   // color: 'black',
-            },
+            // markerEnd:{
+            //   type: MarkerType.ArrowClosed,
+            // //   // color: 'black',
+            // },
             type:"floating",
             animated:true,
             };
@@ -568,9 +568,11 @@ export default function Page({ flow }: { flow: FlowType }) {
           //   nodesList.push(newNode);
           //   reactFlowInstance.setNodes(nodesList);
           if(data.node?.value){
-            createNoteNode(data.node?.value,position);
+            // createNoteNode(data.node?.value,position);
+            createNewNote(data.node?.value);
           }else{
-            createNoteNode("",position);
+            // createNoteNode("",position);
+            createNewNote(data.node?.value);
 
           }
         }else{

@@ -300,7 +300,7 @@ export default function EmbeddedModal({
     connectWS();
     return () => {
       console.log("unmount");
-      console.log(ws);
+      // console.log(ws);
       if (ws.current) {
         console.log("close connection");
         ws.current.close();
