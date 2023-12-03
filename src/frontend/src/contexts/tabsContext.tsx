@@ -876,8 +876,12 @@ export function TabsProvider({ children }: { children: ReactNode }) {
       const index = newFlows.findIndex((flow) => flow.id === newFlow.id);
       if (index !== -1) {
         newFlows[index].description = newFlow.description ?? "";
-        newFlows[index].data = newFlow.data;
-        // newFlows[index].data.viewport = newFlow.data.viewport;
+        newFlows[index].data.edges = newFlow.data.edges;
+        newFlows[index].data.nodes = newFlow.data.nodes;
+        if(newFlow.data.viewport&&
+          !(newFlow.data.viewport.x==0&&newFlow.data.viewport.y==0&&newFlow.data.viewport.zoom==1)){
+            newFlows[index].data.viewport = newFlow.data.viewport;
+        }
 
         newFlows[index].name = newFlow.name;
         newFlows[index].user_id = userData.id;

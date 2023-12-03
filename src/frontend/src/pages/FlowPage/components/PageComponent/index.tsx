@@ -243,7 +243,17 @@ export default function Page({ flow }: { flow: FlowType }) {
         // setLoading(false);
         // console.log('flow viewport:',flow?.data?.viewport)
         // console.log('current viewport:',reactFlowInstances.get(tabId).getViewport())
-        setViewport(flow?.data?.viewport ?? { x: 1, y: 0, zoom: 0.5 });
+        if(flow?.data?.viewport){
+          if(!(flow.data?.viewport.x==0&&flow.data?.viewport.y==0&&flow.data?.viewport.zoom==1)){
+            // reactFlowInstances.get(tabId).setViewport(flow?.data?.viewport);
+            setViewport(flow?.data?.viewport);
+          }
+        }else{
+          // reactFlowInstances.get(tabId).setViewport({ x: 1, y: 0, zoom: 0.5 });
+          setViewport({ x: 1, y: 0, zoom: 0.5 });
+        }
+
+        
         // reactFlowInstances.get(tabId).fitView();
       }
   }, [flow
@@ -649,8 +659,8 @@ export default function Page({ flow }: { flow: FlowType }) {
 
   const onEdgeUpdate = useCallback(
     (oldEdge: Edge, newConnection: Connection) => {
-      console.log("oldEdge:",oldEdge);
-      console.log("newConnection:",newConnection);
+      // console.log("oldEdge:",oldEdge);
+      // console.log("newConnection:",newConnection);
       if (isValidConnection(newConnection, reactFlowInstances.get(tabId))) {
         edgeUpdateSuccessful.current = true;
         setEdges((els) => updateEdge(oldEdge, newConnection, els));
@@ -799,24 +809,27 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
 
   function initFlowInstance(reactFlowIns:ReactFlowInstance){
     // setReactFlowInstance(reactFlowIns);
-    
+    // console.log("call initFlowInstance[flow]:",flow.name,flow.data?.viewport);
+    // console.log("call initFlowInstance[instance]:",flow.name,reactFlowIns.getViewport());
     reactFlowInstances.set(tabId,reactFlowIns);
     if(flow.id==tabId && flow.data?.viewport){
-
-      setViewport(flow.data?.viewport);
+      if(!(flow.data?.viewport.x==0&&flow.data?.viewport.y==0&&flow.data?.viewport.zoom==1)){
+        // reactFlowIns.setViewport(flow.data?.viewport);
+        setViewport(flow.data?.viewport);
+      }
     }
     setLoading(false);
   }
   // check is there has AINote 
   // function checkAINote(){
-    let isAINote:boolean=false;
-    if (!flow.data || !flow.data.nodes) return;
-      flow.data.nodes.forEach((node: NodeType) => {
-        if(node.data.type=="AINote"&&(node.data.node.runnable==undefined||node.data.node.runnable)){
-          isAINote=true;
-          return;
-        }
-    });
+    // let isAINote:boolean=false;
+    // if (!flow.data || !flow.data.nodes) return;
+    //   flow.data.nodes.forEach((node: NodeType) => {
+    //     if(node.data.type=="AINote"&&(node.data.node.runnable==undefined||node.data.node.runnable)){
+    //       isAINote=true;
+    //       return;
+    //     }
+    // });
     // return false;
   // }
   // useEffect(()=>{
@@ -989,23 +1002,23 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
                         if (reactFlowInstances.get(tabId)&&tabId==flow.id){
                           // console.log("instances:",flow);
                           // console.log("call updateFlow:",reactFlowInstances.get(tabId).toObject());
-                          // console.log("call updateFlow onMove:",reactFlowInstances.get(tabId).getViewport());
-                          let viewport=reactFlowInstances.get(tabId).getViewport();
-                          if(viewport&&viewport.x==0&&viewport.y==0&&viewport.zoom==1){
-                            updateFlow({
-                              ...flow,
-                              data:{
-                                nodes:reactFlowInstances.get(tabId).toObject().nodes,
-                                edges:reactFlowInstances.get(tabId).toObject().edges,
-                                viewport:flow.data.viewport
-                              } ,
-                            });
-                          }else{
+                          // console.log("call updateFlow onMove:",flow.name,reactFlowInstances.get(tabId).getViewport());
+                          // let viewport=reactFlowInstances.get(tabId).getViewport();
+                          // if(viewport&&viewport.x==0&&viewport.y==0&&viewport.zoom==1){
+                          //   updateFlow({
+                          //     ...flow,
+                          //     data:{
+                          //       nodes:reactFlowInstances.get(tabId).toObject().nodes,
+                          //       edges:reactFlowInstances.get(tabId).toObject().edges,
+                          //       viewport:flow.data.viewport
+                          //     } ,
+                          //   });
+                          // }else{
                             updateFlow({
                               ...flow,
                               data: reactFlowInstances.get(tabId).toObject(),
                             });
-                          }
+                          // }
                           
 
                         }

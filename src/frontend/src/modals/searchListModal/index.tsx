@@ -38,7 +38,7 @@ export default function SearchListModal({
   const { flows, tabId, setTabId, tabsState, isBuilt,folders,
     backup,restore,
     setEditFlowId,setEditNodeId,setTabValues,tabValues,notes,getNodeId,
-    setSearchResult,addFlow
+    setSearchResult,addFlow,getSearchResult
    } =useContext(TabsContext);
   const { dark, setDark } = useContext(darkContext);
   const { setErrorData, setSuccessData } = useContext(alertContext);
@@ -46,26 +46,27 @@ export default function SearchListModal({
 
   // const [loading,setLoading] = useState(false);
 
-  useEffect(() => {
-    if(folderId){
-      setSearchResult({
-        folderId:folderId,
-        keyword:searchKeyword,
-        flows:flows.filter((flow)=>flow.folder_id==folderId),
-        notes:notes.filter((note)=>note.folder_id==folderId)
-      });
-    }else{
-      if(!searchKeyword){
-        setSearchResult({
-          folderId:folderId,
-          keyword:searchKeyword,
-          flows:flows.filter((flow)=>!flow.folder_id),
-          notes:notes.filter((note)=>!note.folder_id)
-        });        
-      }
-    }
+  // useEffect(() => {
+  //   if(folderId){
+  //     setSearchResult({
+  //       folderId:folderId,
+  //       keyword:searchKeyword,
+  //       flows:flows.filter((flow)=>flow.folder_id==folderId),
+  //       notes:notes.filter((note)=>note.folder_id==folderId)
+  //     });
+  //   }else{
+  //     if(!searchKeyword){
+  //       setSearchResult({
+  //         folderId:folderId,
+  //         keyword:searchKeyword,
+  //         flows:flows.filter((flow)=>!flow.folder_id),
+  //         notes:notes.filter((note)=>!note.folder_id)
+  //       });        
+  //     }
+  //   }
     
-  }, [notes,flows]);
+  // }, [flowList,noteList]);
+
   // useEffect(() => {
   //   setLoading(true);
   // }, []);
@@ -87,23 +88,23 @@ export default function SearchListModal({
     // setCenter(x, y, { zoom:1.1, duration: 1000 });
     fitView({nodes:[node],duration:1000,padding:0.1})
   }
-  function getShotContent(node){
-    let content="";
-    if(node.type=="noteNode"||node.type=="mindNode"){
-      content=node.data.value;
-    }else{
-      if(node.data.type=="Note"||node.data.type=="AINote"){
-        content=node.data.node.template.note.value;
-      }
-    }
-    if(content){
-      content=filterHTML(content)
+  // function getShotContent(node){
+  //   let content="";
+  //   if(node.type=="noteNode"||node.type=="mindNode"){
+  //     content=node.data.value;
+  //   }else{
+  //     if(node.data.type=="Note"||node.data.type=="AINote"){
+  //       content=node.data.node.template.note.value;
+  //     }
+  //   }
+  //   if(content){
+  //     content=filterHTML(content)
 
-        // const zoom = 1.1;
-        content=content.substring(0,20)+"...";      
-    }
-    return content;
-  }
+  //       // const zoom = 1.1;
+  //       content=content.substring(0,20)+"...";      
+  //   }
+  //   return content;
+  // }
   function newNotebook(){
     addFlow({name:"未命名",description:"",id:"",data:null,folder_id:folderId},true,folderId)
     .then((id) => {
@@ -132,7 +133,7 @@ export default function SearchListModal({
       if(tabId==flow_id){
 
       }else{
-        setErrorData({title:"Please open '"+flow_name+"' first!"})
+        setErrorData({title:"请先打开白板： '"+flow_name+"' "})
         return;
       }
       
@@ -358,9 +359,9 @@ export default function SearchListModal({
                     </List>
                     {!noteOnly&&(
                       <>
-                        {flowList.map((flow, id) => (
-                          <React.Fragment key={id}>
-                          {itemList(flow,id)}
+                        {flowList.map((flow, idx) => (
+                          <React.Fragment key={idx}>
+                            {itemList(flow,idx)}
                           </React.Fragment> 
                         ))}
                       

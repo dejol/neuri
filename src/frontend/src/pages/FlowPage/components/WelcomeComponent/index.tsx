@@ -14,7 +14,7 @@ import SearchListModal from "../../../../modals/searchListModal";
 
 
 export default function Welcome({ flow }: { flow: FlowType }) {
-  let {tabsState,setTabsState,tabId,getSearchResult} = useContext(TabsContext);
+  let {tabsState,setTabsState,tabId,getSearchResult,setSearchResult,flows,notes} = useContext(TabsContext);
 
   const { dark } = useContext(darkContext);
   const reactFlowWrapper = useRef(null);
@@ -31,7 +31,18 @@ export default function Welcome({ flow }: { flow: FlowType }) {
       handleBuild(getAssistantFlow(flow.id,"Neuri 是一个AI网络笔记系统"));
     }
   },[openAssistant,flow.id]);
+  useEffect(()=>{
+    let flowsInFolder=flows.filter((flow)=>flow.folder_id===getSearchResult.folderId);
+    let notesInFolder=notes.filter((note)=>note.folder_id===getSearchResult.folderId);
 
+    setSearchResult({
+      ...getSearchResult,
+      flows:flowsInFolder,
+      notes:notesInFolder,
+    });
+    // setOpenSearchList(true);
+  },[flows]);
+  
   async function handleBuild(flow: FlowType) {
     
     try {

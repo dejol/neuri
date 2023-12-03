@@ -43,3 +43,11 @@ div.customHandle {
 .remind-blue{
   color: #1976d2;
 }
+
+.react-flow__attribution a{
+  color: white;
+}
+.dark .theme-attribution .react-flow__attribution{
+  display: none;
+
+}

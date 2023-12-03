@@ -154,11 +154,11 @@ export default function FlowPage() {
             ):(
               <React.Fragment key={key}>
               {value.type=="note"&&(
-              <NoteEditorModal
-               note_id={value.id}
-               title={value.id.startsWith("NewNote")?"":(notes.find((note)=>note.id===value.id)).name}
-               content={value.id.startsWith("NewNote")?"":(notes.find((note)=>note.id===value.id)).content.value}
-              />
+                <NoteEditorModal
+                  note_id={value.id}
+                  title={value.id.startsWith("NewNote")?"":(notes.find((note)=>note.id===value.id)).name}
+                  content={value.id.startsWith("NewNote")?"":(notes.find((note)=>note.id===value.id)).content.value}
+                />
               )}
               </React.Fragment>
 

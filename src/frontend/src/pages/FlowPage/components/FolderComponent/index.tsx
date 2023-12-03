@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState,Fragment } from "react";
+import { useContext, useEffect, useState,Fragment, useRef } from "react";
 import ShadTooltip from "../../../../components/ShadTooltipComponent";
 import IconComponent from "../../../../components/genericIconComponent";
 import { Input } from "../../../../components/ui/input";
@@ -46,7 +46,7 @@ import AccordionComponent from "../../../../components/AccordionComponent";
 import { cloneDeep, transform } from "lodash";
 import { filterHTML } from "../../../../utils/utils";
 import { locationContext } from "../../../../contexts/locationContext";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
+// import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
 // import moment from 'moment';
 // import { switchToBG } from "../borderColorComponent"
 // import { FolderType } from "../../../../types/flow";
@@ -58,18 +58,51 @@ export default function FolderPopover() {
     setSearchResult,getSearchResult,addFolder,removeFolder,tabValues,notes,folders
    } =useContext(TabsContext);
   const { setOpenSearchList,noteOnly,setOpenFolderList,openFolderList } = useContext(locationContext);
-  const flow = flows.find((flow) => flow.id === tabId);
+  const currFlowflow = flows.find((flow) => flow.id === tabId);
   // const [popoverState, setPopoverState] = useState(false);
   // const [open, setOpen] = useState(false);
   const [isNewFolder, setIsNewFoler] = useState(true);
   const [openFolder, setOpenFolder] = useState(false);
   // const [search, setSearch] = useState([]);
   // const [searchNote, setSearchNote] = useState([]);
-  const [parentId,setParentId] =useState('');
 
+  const [parentId,setParentId] =useState('');
   const [searchKeyword,setSearchKeyword] =useState('');
   const { setErrorData, setSuccessData } = useContext(alertContext);
+  const folderId= useRef('');
+  useEffect(()=>{
+    let currFlow=flows.find((flow) => flow.id === tabId);
+    let currNote=notes.find((note) => note.id === tabId);
+    let curr=currFlow??currNote;
+    if(curr && openFolderList){
+      setSearchResult({
+        folderId:curr.folder_id,
+        keyword:searchKeyword,
+        flows:flows.filter((flow)=>flow.folder_id===curr.folder_id),
+        notes:notes.filter((note)=>note.folder_id===curr.folder_id)
+      });
+      folderId.current=curr.folder_id;
+      let openIds=[];                      
+      findParentId(openIds,curr.folder_id);
+      setOpenAccordion(openIds);
+      // setOpenSearchList(true);
+    }else if(openFolderList){
+      setSearchResult({
+        folderId:"",
+        keyword:searchKeyword,
+        flows:flows.filter((flow)=>!flow.folder_id),
+        notes:notes.filter((note)=>!note.folder_id)
+      });
+      folderId.current="";
+    }
+    
+  },[openFolderList,tabId])
 
+  // useEffect(()=>{
+  //   console.log("getSearchResult:",getSearchResult.folderId);
+
+  //   setCurrentFolderId(getSearchResult.folderId);
+  // },[getSearchResult.folderId])
   // let resultFlows=cloneDeep(flows);
   // useEffect(()=>{
   //   if(searchKeyword.length>0&&search.length>0){
@@ -188,20 +221,20 @@ export default function FolderPopover() {
     setTabId(id);
   }
   const [openAccordion,setOpenAccordion]= useState([]);
-  function findParentId(openId:Array<string>,folderId:string){
-    openId.push(folderId);
+  function findParentId(openIds:Array<string>,folderId:string){
+    openIds.push(folderId);
     let folder=folders.find((folder)=>folder.id==folderId);
-    if(folder.parent_id){
+    if(folder&&folder.parent_id){
       // openId.push(folder.parent_id);
-      findParentId(openId,folder.parent_id);
+      findParentId(openIds,folder.parent_id);
     }
   }
-  function findSubId(openId:Array<string>,folderId:string){
-    openId.push(folderId);
+  function findSubId(openIds:Array<string>,folderId:string){
+    openIds.push(folderId);
     let folder=folders.filter((folder)=>folder.parent_id==folderId);
     if(folder.length>0){
       folder.map((item)=>{
-        findSubId(openId,item.id);
+        findSubId(openIds,item.id);
       });
     }
     
@@ -245,10 +278,11 @@ export default function FolderPopover() {
                   flows:flows.filter((flow)=>flow.folder_id===folder.id),
                   notes:notes.filter((note)=>note.folder_id===folder.id)
                 });
+                folderId.current=folder.id;
                 setOpenSearchList(true);
               }}
             > 
-              <div className={"file-component-badge-div justify-start "+(getSearchResult.folderId==folder.id?"text-blue-500":"")}>
+              <div className={"file-component-badge-div justify-start "+(folderId.current==folder.id?"text-blue-500":"")}>
               <IconComponent name="Folder" className="main-page-nav-button" />
               {folder.name}
               </div>
@@ -292,9 +326,9 @@ export default function FolderPopover() {
                     addFolder({id:"",parent_id:folder.id,name:"新建文件夹",description:""}).then((id) => {
                       // setPopoverStatus(true);
                       setSuccessData({ title: "新建文件夹创建成功" }); 
-                      let openId=[];                      
-                      findParentId(openId,folder.id);
-                      setOpenAccordion(openId);
+                      let openIds=[];                      
+                      findParentId(openIds,folder.id);
+                      setOpenAccordion(openIds);
                     });
                     
                                                       
@@ -575,10 +609,11 @@ export default function FolderPopover() {
                   flows:flows.filter((flow)=>!flow.folder_id),
                   notes:notes.filter((note)=>!note.folder_id)
                 });
+                folderId.current="";
                 setOpenSearchList(true);
               }}
             >
-            <div className={"file-component-badge-div justify-start "+(getSearchResult.folderId==""?"text-blue-500/80":"")}>
+            <div className={"file-component-badge-div justify-start "+(folderId.current==""?"text-blue-500/80":"")}>
             <IconComponent name="Folder" className="main-page-nav-button" />
             暂未分类
             </div>
