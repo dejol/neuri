@@ -597,7 +597,7 @@ export function TabsProvider({ children }: { children: ReactNode }) {
 
     const insidePosition = position.paneX
       ? { x: position.paneX + position.x, y: position.paneY + position.y }
-      : reactFlowInstances.get(tabId).project({ x: position.x, y: position.y });
+      : reactFlowInstances.get(tabId).screenToFlowPosition({ x: position.x, y: position.y });
 
     selectionInstance.nodes.forEach((node: NodeType) => {
       // Generate a unique node ID

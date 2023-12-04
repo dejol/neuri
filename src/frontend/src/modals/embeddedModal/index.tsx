@@ -11,6 +11,14 @@ import { TabsContext } from "../../contexts/tabsContext";
 import { validateNodes } from "../../utils/reactflowUtils";
 import { NodeDataType } from "../../types/flow/index";
 import { cloneDeep } from "lodash";
+import  {
+  addEdge,
+  Position,
+  useEdgesState,
+  XYPosition,
+} from "reactflow";
+import { getNextBG } from "../../pages/FlowPage/components/borderColorComponent";
+import { undoRedoContext } from "../../contexts/undoRedoContext";
 
 export default function EmbeddedModal({
   name="",
@@ -23,8 +31,8 @@ export default function EmbeddedModal({
   setSourceData: (value: NodeDataType) => void;
   flow: FlowType;
 }) {
-  // console.log("--------:::",sourceData);
-  const { tabsState, setTabsState,tabId,setIsEMBuilt } = useContext(TabsContext);
+  const { takeSnapshot } = useContext(undoRedoContext);
+  const { tabsState, setTabsState,tabId,setIsEMBuilt,getNodeId,getNewEdgeId } = useContext(TabsContext);
   const [responseId,setResponseId] = useState(flow.id+"-"+sourceData.id);
   const [chatValue, setChatValue] = useState(() => {
     try {
@@ -57,6 +65,9 @@ export default function EmbeddedModal({
   const id = useRef(responseId);
   const tabsStateFlowId = tabsState[responseId];
   const tabsStateFlowIdFormKeysData = tabsStateFlowId.formKeysData;
+  const [edges, setEdges] = useEdgesState(
+    flow.data?.edges ?? []
+  );
   const [chatKey, setChatKey] = useState(() => {
     if (tabsState[responseId]?.formKeysData?.input_keys) {
       return Object.keys(tabsState[responseId].formKeysData.input_keys).find(
@@ -162,6 +173,110 @@ export default function EmbeddedModal({
     }://${host}${chatEndpoint}`;
   }
 
+  function generateMindNodes(value:string){
+    let currNode=flow.data.nodes.find((node)=>node.id===sourceData.id);
+    // console.log("currNode:",currNode);
+    // let position=reactFlowInstances.get(tabId).screenToFlowPosition(currNode.position);
+    try {
+      const jsonObject = JSON.parse(value);
+      takeSnapshot();
+      let root=createNoteNode("JSON 对象",currNode.position);
+      // let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
+      // createNodesFromJson(currNode.position.x+400*currZoom,currNode.position.y,jsonObject,sourceData.id);
+    } catch (error) {
+      console.log("not is json formate");
+    }
+  }
+  function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
+    if(!type){
+      type="noteNode";
+    }
+    console.log("create node: ",newPosition);
+    let newId = getNodeId(type);
+    let newNode = {
+      id: newId,
+      type: type,
+      position:newPosition,
+      data: {
+        id:newId,
+        type:type,
+        value:newValue,
+        borderColor:borderColour??"",
+        numOftarget:0
+      },
+      width:220,
+      height:220,
+      selected:false,
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    };
+  
+    let nodesList=flow.data.nodes;
+    
+    nodesList.push(newNode);
+  
+    reactFlowInstances.get(tabId).setNodes(nodesList);
+    return newNode;
+  }
+  function createNodesFromJson(clientX,clientY,jsonObj,sourceId){
+    let numX=1;
+    let numY=0;
+    let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
+    for (let key in jsonObj) {
+      // setTimeout(function() {
+        let newNodeId=createNodeEdge(clientX,clientY+200*numY*currZoom,key,sourceId);
+        if (typeof jsonObj[key] === "object" && jsonObj[key] !== null) {
+          numY+=createNodesFromJson(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+        }else{
+          createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+        }
+        numY+=1;
+      // }, 2000);
+    }
+    return numY-1;
+  }
+  function createNodeEdge(clientX,clientY,content,sourceId){
+      // we need to remove the wrapper bounds, in order to get the correct position
+      let sourceNode=flow?.data?.nodes.find((n)=>n.id==sourceId);
+      let newNode=createNoteNode(content, 
+      reactFlowInstances.get(tabId).screenToFlowPosition({
+                    x: clientX, 
+                    y: clientY 
+                }),
+      "mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
+      );
+
+      let newEdeg={
+      id:getNewEdgeId("mindEdeg"),
+      source:sourceId,
+      target:newNode.id,
+      style: { 
+        stroke: getNextBG((sourceNode?sourceNode.data.borderColor:"")),
+        strokeWidth:6,
+        
+      },
+      className:"stroke-foreground stroke-connection ",
+      // markerEnd:{
+      //   type: MarkerType.ArrowClosed,
+      //   // color: 'black',
+      // },
+      type:(sourceNode.type == "noteNode"||sourceNode.type=="genericNode")?"simplebezier":"smoothstep",
+      selectable:false,
+      deletable:false,
+      updatable:false,
+      // animated:true,
+      };
+
+      setEdges((eds) =>addEdge(
+          newEdeg,
+          eds
+        )
+      );
+      if(!sourceNode.data.numOftarget)sourceNode.data.numOftarget=0;
+      sourceNode.data.numOftarget+=1;
+      return newNode.id;
+  }
+
   function handleWsMessage(data: any) {
     if (Array.isArray(data)) {
       //set chat history
@@ -210,21 +325,23 @@ export default function EmbeddedModal({
     if (data.type === "end") {
       if (data.message) {
         updateLastMessage({ str: data.message, end: true });
-      let newData = cloneDeep(sourceData);
-      newData.node!.template[name].value = data.message;
-      setSourceData(newData);
-      setIsEMBuilt(false);
-      if (ws.current) {
-        try{
-          // clearChat();
-          console.log("close connection");
-          ws.current.close(1000,"User closed the connection");
-        }catch (error) {
+        let newData = cloneDeep(sourceData);
+        newData.node!.template[name].value = data.message;
+        
+        setSourceData(newData);
+        setIsEMBuilt(false);
+        generateMindNodes(data.message);
+        if (ws.current) {
+          try{
+            // clearChat();
+            console.log("close connection");
+            ws.current.close(1000,"User closed the connection");
+          }catch (error) {
 
+          }
+          //isOpen.current=null;
+          ws.current=null;
         }
-        //isOpen.current=null;
-        ws.current=null;
-      }
 
       }
       if (data.intermediate_steps) {

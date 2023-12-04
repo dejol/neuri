@@ -153,11 +153,7 @@ export default function Page({ flow }: { flow: FlowType }) {
           lastCopiedSelection
         ) {
           event.preventDefault();
-          let bounds = reactFlowWrapper.current.getBoundingClientRect();
-          paste(lastCopiedSelection, {
-            x: position.x - bounds.left,
-            y: position.y - bounds.top,
-          });
+          paste(lastCopiedSelection, {x: position.x,y: position.y});
         }
         if (
           (event.ctrlKey || event.metaKey) &&
@@ -168,6 +164,7 @@ export default function Page({ flow }: { flow: FlowType }) {
             navigator.clipboard.readText().then((value:string)=>{
             try {
               const jsonObject = JSON.parse(value);
+              takeSnapshot();
               let root=createNoteNode("JSON 对象",null);
               let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
               createNodesFromJson(position.x+400*currZoom,position.y,jsonObject,root.id);
@@ -422,18 +419,20 @@ export default function Page({ flow }: { flow: FlowType }) {
   }
   function createNodeEdge(clientX,clientY,content,sourceId){
       // we need to remove the wrapper bounds, in order to get the correct position
-      const reactflowBounds = reactFlowWrapper.current.getBoundingClientRect();       
+      // const reactflowBounds = reactFlowWrapper.current.getBoundingClientRect();       
       let sourceNode=flow?.data?.nodes.find((n)=>n.id==sourceId);
       let newNode=createNoteNode(content, 
-      reactFlowInstances.get(tabId).project({
-      x: clientX - reactflowBounds.left,
-      y: clientY - reactflowBounds.top,
-      }),"mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
+          // reactFlowInstances.get(tabId).project({
+          // x: clientX - reactflowBounds.left,
+          // y: clientY - reactflowBounds.top,
+          // }),
+          reactFlowInstances.get(tabId).screenToFlowPosition({
+                  x: clientX,
+                  y: clientY
+                }),          
+          "mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
 
-      // screenToFlowPosition({
-      //                 x: event.clientX - reactflowBounds.left,
-      //                 y: event.clientY - reactflowBounds.top,
-      //               })
+
       );
 
       let newEdeg={
@@ -537,8 +536,8 @@ export default function Page({ flow }: { flow: FlowType }) {
         takeSnapshot();
 
         // Get the current bounds of the ReactFlow wrapper element
-        const reactflowBounds =
-          reactFlowWrapper.current.getBoundingClientRect();
+        // const reactflowBounds =
+        //   reactFlowWrapper.current.getBoundingClientRect();
 
         // Extract the data from the drag event and parse it as a JSON object
         let data: { type: string; node?: APIClassType } = JSON.parse(
@@ -549,10 +548,15 @@ export default function Page({ flow }: { flow: FlowType }) {
         // If data type is not "chatInput" or if there are no "chatInputNode" nodes present in the ReactFlow instance, create a new node
         // Calculate the position where the node should be created
         // console.log("reactFlowInstances:",reactFlowInstances);
-        const position = reactFlowInstances.get(tabId).project({
-          x: event.clientX - reactflowBounds.left,
-          y: event.clientY - reactflowBounds.top,
+        const position = reactFlowInstances.get(tabId).screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY
         });
+        
+        // .project({
+        //   x: event.clientX - reactflowBounds.left,
+        //   y: event.clientY - reactflowBounds.top,
+        // });
 
         // Generate a unique node ID
         let { type } = data;
@@ -709,11 +713,16 @@ function createNewNote(newValue){
   let { type } = newData;
   let newId = getNodeId(type);
   let newNode: NodeType;
-  let bounds = reactFlowWrapper.current.getBoundingClientRect();
-  const newPosition = reactFlowInstances.get(tabId).project({
-    x: position.x - bounds.left,
-    y: position.y - bounds.top,    
-  });
+  // let bounds = reactFlowWrapper.current.getBoundingClientRect();
+  const newPosition = reactFlowInstances.get(tabId).screenToFlowPosition({
+                        x: position.x,
+                        y: position.y    
+                      });
+  // .project({
+  //   x: position.x - bounds.left,
+  //   y: position.y - bounds.top,    
+  // });
+
   newData.node.template.note.value=newValue;
   newNode = {
     id: newId,
@@ -740,13 +749,17 @@ function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
   }
   let newId = getNodeId(type);
   if(!newPosition){
-    let bounds = reactFlowWrapper.current.getBoundingClientRect();
-    newPosition = reactFlowInstances.get(tabId).project({
-      x: position.x - bounds.left,
-      y: position.y - bounds.top,    
+    // let bounds = reactFlowWrapper.current.getBoundingClientRect();
+    newPosition = reactFlowInstances.get(tabId).screenToFlowPosition({
+      x: position.x,
+      y: position.y    
     });
+    // .project({
+    //   x: position.x - bounds.left,
+    //   y: position.y - bounds.top,    
+    // });
   }
-
+  // console.log("newPosition:",newPosition);
   let newNode = {
     id: newId,
     type: type,

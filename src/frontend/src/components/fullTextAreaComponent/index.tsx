@@ -11,6 +11,7 @@ import { TabsContext } from "../../contexts/tabsContext";
 import { darkContext } from "../../contexts/darkContext";
 import { cloneDeep } from "lodash";
 import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
+import { typesContext } from "../../contexts/typesContext";
 
 export default function FullTextAreaComponent({
   value,
@@ -25,7 +26,7 @@ export default function FullTextAreaComponent({
   // setBorder: (value: string) => void;
   nodeSelected:boolean;
 }) {
-  const { tabId } =useContext(TabsContext);
+  const { tabId,getNodeId,flows } =useContext(TabsContext);
   // const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
 
@@ -79,12 +80,51 @@ export default function FullTextAreaComponent({
       onChange(content);
     }
   }
+  const { reactFlowInstances } = useContext(typesContext);
+
+  function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
+    if(!type){
+      type="noteNode";
+    }
+    let flow=flows.find((flow)=>flow.id===tabId);
+
+    if(!newPosition){
+      let currNode=flow.data.nodes.find((node)=>node.id===data.id);
+      newPosition={x:currNode.position.x+400,y:currNode.position.y+20};
+    }
+    let newId = getNodeId(type);
+    let newNode = {
+      id: newId,
+      type: type,
+      position:newPosition,
+      data: {
+        id:newId,
+        type:type,
+        value:newValue,
+        borderColor:borderColour??"",
+        numOftarget:0
+      },
+      width:220,
+      height:220,
+      selected:false,
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    };
+    // let nodesList=flow.data.nodes;
+    flow.data.nodes.push(newNode);
+    // nodesList.push(newNode);
+  
+    reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
+    return newNode;
+  }
+
   const editorConfig: Partial<IEditorConfig> = {   
       placeholder: 'Type something...',
       autoFocus:false,
       MENU_CONF:{},
       onChange :(editor:IDomEditor)=>{
           handleChange(editor.getHtml());
+          // createNoteNode(editor.getHtml(),null);
       },
       onBlur:(editor:IDomEditor)=>{
         // setToolbarOn(false);

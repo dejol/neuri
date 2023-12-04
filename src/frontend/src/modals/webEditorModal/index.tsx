@@ -75,7 +75,7 @@ export default function WebEditorModal({
     if(node_id){
       let savedFlow = flows.find((flow) => flow.id === flow_id);
       let editedNode=savedFlow.data.nodes.find((node)=>node.id===node_id);
-      if(editedNode.type=="noteNode"){
+      if(editedNode.type=="noteNode"||editedNode.type=="mindNode"){
         editedNode.data.value=editValue;
       }else{
         editedNode.data.node.template.note.value=editValue;
@@ -151,7 +151,7 @@ export default function WebEditorModal({
         if(node_id){
           let editedNode=savedFlow.data.nodes.find((node)=>node.data.id===node_id);
           if(editedNode){
-            if(editedNode.type=="noteNode"){
+            if(editedNode.type=="noteNode"||editedNode.type=="mindNode"){
               setEditValue(editedNode.data.value);
             }else{
               setEditValue(editedNode.data.node.template.note.value);

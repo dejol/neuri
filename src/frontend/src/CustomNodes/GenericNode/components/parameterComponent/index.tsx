@@ -83,7 +83,7 @@ export default function ParameterComponent({
 
   const handleOnNewValue = (newValue: string | string[] | boolean): void => {
     let oldRunnable=data.node.runnable;
-    // console.log("runnable data:",oldRunnable);
+    // console.log(" data:",data.id,newValue);
 
     let newData = cloneDeep(data);
     newData.node!.runnable = oldRunnable;
