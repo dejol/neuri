@@ -789,6 +789,16 @@ export function TabsProvider({ children }: { children: ReactNode }) {
         const { id } = await saveNoteToDatabase(newNote);
         refreshNotes();
         // Return the id
+         //update tabs state
+         setTabsState((prev) => {
+          return {
+            ...prev,
+            [tabId]: {
+              ...prev[tabId],
+              isPending: false,
+            },
+          };
+        });
         return id;
       } catch (error) {
         // Handle the error if needed
@@ -981,6 +991,16 @@ export function TabsProvider({ children }: { children: ReactNode }) {
             newNotes[index].update_at=updatedNote.update_at;
           }
           return newNotes;
+        });
+         //update tabs state
+         setTabsState((prev) => {
+          return {
+            ...prev,
+            [tabId]: {
+              ...prev[tabId],
+              isPending: false,
+            },
+          };
         });
       }
     } catch (err) {

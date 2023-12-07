@@ -24,7 +24,7 @@ export default function ProfileSettingsPage(): JSX.Element {
   const [inputState, setInputState] = useState<patchUserInputStateType>(
     CONTROL_PATCH_USER_STATE
   );
-  const {setNoteOnly,noteOnly} =useContext(locationContext);
+  const {setNoteOnly,noteOnly,setAutoSave,autoSave} =useContext(locationContext);
   // set null id
   useEffect(() => {
     setTabId("");
@@ -166,6 +166,20 @@ export default function ProfileSettingsPage(): JSX.Element {
             </div>            
           <span className="community-page-description-text w-full">
             选择是否仅修改和查看笔记，白板内容将隐藏，但不会删除；该项不需要保存，效果是及时生效的。
+          </span>
+        </div>
+        <div className="ml-0 mt-4">
+            <div className="flex">
+            <ToggleShadComponent
+                disabled={false}
+                enabled={autoSave}
+                setEnabled={setAutoSave}
+                size="small"
+              />
+                自动保存    
+            </div>            
+          <span className="community-page-description-text w-full">
+            选择是否仅自动保存笔记，白板内容，每10分钟执行一次。
           </span>
         </div>
           <div className="flex w-full justify-end">

@@ -44,6 +44,8 @@ type locationContextType = {
   setOpenAssistant: (state: boolean) => void,  
   noteOnly:boolean,
   setNoteOnly: (state: boolean) => void,  
+  autoSave:boolean,
+  setAutoSave: (state: boolean) => void,  
   isInteractive:boolean,
   setIsInteractive: (state: boolean) => void,  
 };
@@ -81,6 +83,8 @@ const initialValue = {
   setIsInteractive: (state: boolean) => { },    
   noteOnly:JSON.parse(window.localStorage.getItem("noteOnly")) ?? false,
   setNoteOnly: (state: boolean) => { },  
+  autoSave:JSON.parse(window.localStorage.getItem("autoSave")) ?? false,
+  setAutoSave: (state: boolean) => { },  
 };
 
 export const locationContext = createContext<locationContextType>(initialValue);
@@ -102,6 +106,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [openMiniMap, setOpenMiniMap] = useState(initialValue.openMiniMap);
   const [openAssistant, setOpenAssistant] = useState(false);
   const [noteOnly, setNoteOnly] = useState(initialValue.noteOnly);
+  const [autoSave, setAutoSave] = useState(initialValue.autoSave);
+
 
   useEffect(() => {
     window.localStorage.setItem("openFolder", openFolderList.toString());
@@ -148,6 +154,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
         setNoteOnly,
         isInteractive,
         setIsInteractive,
+        autoSave,
+        setAutoSave,
       }}
     >
       {children}

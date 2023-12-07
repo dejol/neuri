@@ -56,9 +56,7 @@ export default function ParameterComponent({
   const infoHtml = useRef<HTMLDivElement & ReactNode>(null);
   const updateNodeInternals = useUpdateNodeInternals();
   const [position, setPosition] = useState(0);
-  const { setTabsState, tabId, save, flows } = useContext(TabsContext);
-  const {isEMBuilt, setIsEMBuilt } = useContext(TabsContext);
-  const { tabsState } = useContext(TabsContext);
+  const { setTabsState, tabId, save, flows,isEMBuilt, setIsEMBuilt,tabsState } = useContext(TabsContext);
 
   const flow = flows.find((flow) => flow.id === tabId)?.data?.nodes ?? null;
   const currentFlow = flows.find((flow) => flow.id === tabId);

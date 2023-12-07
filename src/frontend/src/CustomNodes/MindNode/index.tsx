@@ -277,7 +277,7 @@ export default function MindNode({
           </>
 
         )} 
-
+        {editable?(
           <Editor
             defaultConfig={editorConfig}
             value={data.value}
@@ -293,6 +293,11 @@ export default function MindNode({
             }} 
             className="border-0 rounded-3xl"
           />
+        ):(
+          <div className="border-0 rounded-3xl p-3 w-full h-full" style={{backgroundColor:switchToBG(borderColour,dark),minWidth:'300px',minHeight:'100px',fontSize:'20px'}}>
+            <div dangerouslySetInnerHTML={{__html:data.value}}/>
+          </div>
+        )}
           
       </div>
       {!isConnecting ? (

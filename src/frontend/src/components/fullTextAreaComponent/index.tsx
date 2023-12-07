@@ -6,12 +6,13 @@ import '../../style/custom.css'
 import { Boot } from '@wangeditor/editor'
 import markdownModule from '@wangeditor/plugin-md'
 import {NodeDataType} from "../../types/flow/index"
-import { Handle, NodeToolbar, Position } from "reactflow";
+import { Handle, NodeToolbar, Position, addEdge, useEdgesState } from "reactflow";
 import { TabsContext } from "../../contexts/tabsContext";
 import { darkContext } from "../../contexts/darkContext";
 import { cloneDeep } from "lodash";
-import { switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
+import { getNextBG, switchToBG } from "../../pages/FlowPage/components/borderColorComponent";
 import { typesContext } from "../../contexts/typesContext";
+import { undoRedoContext } from "../../contexts/undoRedoContext";
 
 export default function FullTextAreaComponent({
   value,
@@ -26,7 +27,11 @@ export default function FullTextAreaComponent({
   // setBorder: (value: string) => void;
   nodeSelected:boolean;
 }) {
-  const { tabId,getNodeId,flows } =useContext(TabsContext);
+  const { tabId,getNodeId,flows,getNewEdgeId } =useContext(TabsContext);
+  // const flow=flows.find((flow)=>flow.id===tabId);
+
+  // const { takeSnapshot } = useContext(undoRedoContext);
+
   // const [toolbarOn,setToolbarOn] = useState(false);
   Boot.registerModule(markdownModule);
 
@@ -74,6 +79,25 @@ export default function FullTextAreaComponent({
   //     setToolbarOn(false);
   // }, [nodeSelected]);
 
+  // useEffect(() => {
+  //   let currNode=flow.data.nodes.find((node)=>node.id===data.id);
+
+  // if(navigator.clipboard && navigator.clipboard.readText){
+  //   navigator.clipboard.readText().then((value:string)=>{
+  //     try {
+  //       const jsonObject = JSON.parse(value);
+  //       // let root=createNoteNode("JSON 对象",{x:currNode.position.x+700,y:currNode.position.y});
+  //       // let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
+  //       // takeSnapshot();
+  //       // createNodeEdge(currNode.position.x+currNode.width+100,currNode.position.y,value,currNode.id);
+  //       // createNodesFromJson(currNode.position.x+currNode.width+100,currNode.position.y,jsonObject,currNode.id);        
+  //     } catch (error) {
+  //       console.log("value is not json:",value);
+  //     }
+  //   });
+  // }
+
+  // }, [value]);
 
   function handleChange(content){
     if(focusEditorRef.current){
@@ -82,41 +106,99 @@ export default function FullTextAreaComponent({
   }
   const { reactFlowInstances } = useContext(typesContext);
 
-  function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
-    if(!type){
-      type="noteNode";
-    }
-    let flow=flows.find((flow)=>flow.id===tabId);
+  // function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
+  //   if(!type){
+  //     type="noteNode";
+  //   }
+  //   let flow=flows.find((flow)=>flow.id===tabId);
 
-    if(!newPosition){
-      let currNode=flow.data.nodes.find((node)=>node.id===data.id);
-      newPosition={x:currNode.position.x+400,y:currNode.position.y+20};
-    }
-    let newId = getNodeId(type);
-    let newNode = {
-      id: newId,
-      type: type,
-      position:newPosition,
-      data: {
-        id:newId,
-        type:type,
-        value:newValue,
-        borderColor:borderColour??"",
-        numOftarget:0
-      },
-      width:220,
-      height:220,
-      selected:false,
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
-    };
-    // let nodesList=flow.data.nodes;
-    flow.data.nodes.push(newNode);
-    // nodesList.push(newNode);
+  //   if(!newPosition){
+  //     let currNode=flow.data.nodes.find((node)=>node.id===data.id);
+  //     newPosition={x:currNode.position.x+400,y:currNode.position.y+20};
+  //   }
+  //   let newId = getNodeId(type);
+  //   let newNode = {
+  //     id: newId,
+  //     type: type,
+  //     position:newPosition,
+  //     data: {
+  //       id:newId,
+  //       type:type,
+  //       value:newValue,
+  //       borderColor:borderColour??"",
+  //       numOftarget:0
+  //     },
+  //     width:220,
+  //     height:220,
+  //     selected:false,
+  //     sourcePosition: Position.Right,
+  //     targetPosition: Position.Left,
+  //   };
+  //   // let nodesList=flow.data.nodes;
+  //   flow.data.nodes.push(newNode);
+  //   // nodesList.push(newNode);
   
-    reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
-    return newNode;
-  }
+  //   reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
+  //   return newNode;
+  // }
+
+  // function createNodesFromJson(clientX,clientY,jsonObj,sourceId){
+  //   let numX=1;
+  //   let numY=0;
+  //   let currZoom=1; //reactFlowInstances.get(tabId).getViewport().zoom;
+  //   for (let key in jsonObj) {
+  //     // setTimeout(function() {
+  //       let newNodeId=createNodeEdge(clientX,clientY+200*numY*currZoom,key,sourceId);
+  //       if (typeof jsonObj[key] === "object" && jsonObj[key] !== null) {
+  //         numY+=createNodesFromJson(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+  //       }else{
+  //         createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+  //       }
+  //       numY+=1;
+  //     // }, 2000);
+  //   }
+  //   return numY-1;
+  // }
+  // function createNodeEdge(clientX,clientY,content,sourceId){
+  //     // we need to remove the wrapper bounds, in order to get the correct position
+  //     let sourceNode=flow?.data?.nodes.find((n)=>n.id==sourceId);
+  //     let newNode=createNoteNode(content, 
+  //     {
+  //                   x: clientX, 
+  //                   y: clientY 
+  //               },
+  //     "mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
+  //     );
+
+  //     let newEdeg={
+  //       id:getNewEdgeId("mindEdeg"),
+  //       source:sourceId,
+  //       target:newNode.id,
+  //       style: { 
+  //         stroke: getNextBG((sourceNode?sourceNode.data.borderColor:"")),
+  //         strokeWidth:6,
+          
+  //       },
+  //       className:"stroke-foreground stroke-connection ",
+  //       // markerEnd:{
+  //       //   type: MarkerType.ArrowClosed,
+  //       //   // color: 'black',
+  //       // },
+  //       type:(sourceNode.type == "noteNode"||sourceNode.type=="genericNode")?"simplebezier":"smoothstep",
+  //       selectable:false,
+  //       deletable:false,
+  //       updatable:false,
+  //       // animated:true,
+  //     };
+
+
+  //     flow.data.edges.push(newEdeg);    
+  //     reactFlowInstances.get(tabId).setEdges(flow.data.edges);
+
+  //     if(!sourceNode.data.numOftarget)sourceNode.data.numOftarget=0;
+  //     sourceNode.data.numOftarget+=1;
+  //     return newNode.id;
+  // }
 
   const editorConfig: Partial<IEditorConfig> = {   
       placeholder: 'Type something...',
@@ -222,22 +304,21 @@ export default function FullTextAreaComponent({
 
         <div style={{cursor: editable?'text':'pointer',position:"relative",zIndex:2}} className="bg-muted h-full ">
         <Editor
-            defaultConfig={editorConfig}
-            value={value}
-            onCreated={setEditor}
-              // onChange={editor => {                 
-                //onChange(editor.getHtml());
-                // console.log(editor.getHtml());
-              // }}
-              mode="simple"
-              style={{ height: '100%',
-              minWidth:'300px',
-              minHeight:'300px',
-              width:'100%',
-              fontSize:'20px',
-              backgroundColor:switchToBG(data.borderColor,dark),
-              //  overflowY: 'scroll' 
-              
+          defaultConfig={editorConfig}
+          value={value}
+          onCreated={setEditor}
+            // onChange={editor => {                 
+              //onChange(editor.getHtml());
+              // console.log(editor.getHtml());
+            // }}
+            mode="simple"
+            style={{ height: '100%',
+            minWidth:'300px',
+            minHeight:'300px',
+            width:'100%',
+            fontSize:'20px',
+            backgroundColor:switchToBG(data.borderColor,dark),
+            //  overflowY: 'scroll' 
             }} 
           />
 

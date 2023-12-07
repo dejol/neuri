@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { useContext, useEffect, useState } from "react";
-import { NodeResizer,NodeToolbar, Position, useReactFlow, useUpdateNodeInternals } from "reactflow";
+import { NodeResizer,NodeToolbar, Position, addEdge, useEdgesState, useReactFlow, useUpdateNodeInternals } from "reactflow";
 import ShadTooltip from "../../components/ShadTooltipComponent";
 import Tooltip from "../../components/TooltipComponent";
 import IconComponent from "../../components/genericIconComponent";
@@ -16,6 +16,8 @@ import ParameterComponent from "./components/parameterComponent";
 import ToggleShadComponent from "../../components/toggleShadComponent";
 import { time } from "console";
 import AccordionComponent from "../../components/AccordionComponent";
+import { getNextBG } from "../../pages/FlowPage/components/borderColorComponent";
+import { undoRedoContext } from "../../contexts/undoRedoContext";
 
 export default function GenericNode({
   data: olddata,
@@ -25,11 +27,15 @@ export default function GenericNode({
   selected: boolean;
 }) {
   const [data, setData] = useState(olddata);
-  const { updateFlow, flows, tabId,saveFlow } = useContext(TabsContext);
+  const { updateFlow, flows, tabId,getNewEdgeId,getNodeId,isEMBuilt,tabsState  } = useContext(TabsContext);
   const updateNodeInternals = useUpdateNodeInternals();
   const { types, deleteNode, reactFlowInstances } = useContext(typesContext);
   const name = nodeIconsLucide[data.type] ? data.type : types[data.type];
   const [validationStatus, setValidationStatus] = useState(null);
+  const flow=flows.find((flow)=>flow.id===tabId);
+
+  const { takeSnapshot } = useContext(undoRedoContext);
+
   // State for outline color
   
   const [borderColor,setBorderColor] = useState(data.borderColor??"inherit");
@@ -130,6 +136,130 @@ export default function GenericNode({
     }
   }    
   
+  useEffect(()=>{
+    if(data.type=="Note"&&tabId&&reactFlowInstances.get(tabId)  &&
+      tabsState[tabId+"-"+data.id] &&
+      tabsState[tabId+"-"+data.id].formKeysData &&
+      tabsState[tabId+"-"+data.id].formKeysData.input_keys!==null
+      ){
+      try {
+        let value=data.node.template.note?.value;
+        let currNode=reactFlowInstances.get(tabId).getNode(data.id);
+        const jsonObject = JSON.parse(value);
+        // let root=createNoteNode("JSON 对象",{x:currNode.position.x+700,y:currNode.position.y});
+        takeSnapshot();
+        // createNodeEdge(root.position.x+400*currZoom,root.position.y,"jsonObject",root.id);
+        createNodesFromJson(currNode.position.x+currNode.width+100,currNode.position.y,jsonObject,currNode.id);        
+      } catch (error) {
+        // console.log("value is not Json:",data.node.template.note?.value);
+      }
+    }
+  },[data]);
+  
+  function createNoteNode(newValue,newPosition,type?:string,borderColour?:string){
+    if(!type){
+      type="noteNode";
+    }
+    if(!newPosition){
+      let currNode=flow.data.nodes.find((node)=>node.id===data.id);
+      newPosition={x:currNode.position.x+400,y:currNode.position.y+20};
+    }
+    let newId = getNodeId(type);
+    let newNode = {
+      id: newId,
+      type: type,
+      position:newPosition,
+      data: {
+        id:newId,
+        type:type,
+        value:newValue,
+        borderColor:borderColour??"",
+        numOftarget:0
+      },
+      width:220,
+      height:220,
+      selected:false,
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    };
+    // let nodesList=flow.data.nodes;
+    flow.data.nodes.push(newNode);
+    // nodesList.push(newNode);
+  
+    reactFlowInstances.get(tabId).setNodes(flow.data.nodes);
+    return newNode;
+  }
+  function createNodesFromJson(clientX,clientY,jsonObj,sourceId){
+    let numX=1;
+    let numY=0;
+    let currZoom=1;//reactFlowInstances.get(tabId).getViewport().zoom;
+    for (let key in jsonObj) {
+        if (jsonObj[key] !== null && (typeof jsonObj[key] === "object") ) {
+          if(checkArray(jsonObj[key])){
+            createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,(key+": "+jsonObj[key]),sourceId);
+          }else{
+            let newNodeId=createNodeEdge(clientX,clientY+200*numY*currZoom,key,sourceId);
+
+            numY+=createNodesFromJson(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+          }
+        }else{
+          createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,(key+": "+jsonObj[key]),sourceId);
+        }
+        numY+=1;
+    }
+    return numY-1;
+  }
+  function checkArray(arr){
+    if(Array.isArray(arr)){
+      for (let i = 0; i < arr.length; i++) {  
+        if(typeof arr[i]==="object"){
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+  function createNodeEdge(clientX,clientY,content,sourceId){
+      // we need to remove the wrapper bounds, in order to get the correct position
+      let sourceNode=flow?.data?.nodes.find((n)=>n.id==sourceId);
+      let newNode=createNoteNode(content, 
+                {
+                    x: clientX, 
+                    y: clientY 
+                },
+      "mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
+      );
+
+      let newEdeg={
+      id:getNewEdgeId("mindEdeg"),
+      source:sourceId,
+      target:newNode.id,
+      style: { 
+        stroke: getNextBG((sourceNode?sourceNode.data.borderColor:"")),
+        strokeWidth:6,
+        
+      },
+      className:"stroke-foreground stroke-connection ",
+      // markerEnd:{
+      //   type: MarkerType.ArrowClosed,
+      //   // color: 'black',
+      // },
+      type:(sourceNode.type == "noteNode"||sourceNode.type=="genericNode")?"simplebezier":"smoothstep",
+      selectable:false,
+      deletable:false,
+      updatable:false,
+      // animated:true,
+      };
+
+      
+      flow.data.edges.push(newEdeg);    
+      reactFlowInstances.get(tabId).setEdges(flow.data.edges);
+
+      if(!sourceNode.data.numOftarget)sourceNode.data.numOftarget=0;
+      sourceNode.data.numOftarget+=1;
+      return newNode.id;
+  }
+
   return (
     <>
       <NodeToolbar offset={(data.type=="Note" || data.type=="AINote")?2:-5} position={(data.type=="Note" || data.type=="AINote")?Position.Bottom:Position.Top}>

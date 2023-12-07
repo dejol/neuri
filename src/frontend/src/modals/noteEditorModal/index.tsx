@@ -109,6 +109,15 @@ export default function NoteEditorModal({
     onChange :(editor:IDomEditor)=>{
       setEditValue(editor.getHtml());
       setConChanged(true);
+      setTabsState((prev) => {
+        return {
+          ...prev,
+          [note_id]: {
+            ...prev[note_id],
+            isPending: true,
+          },
+        };
+      });
     },
     onBlur:(editor:IDomEditor)=>{
     },
@@ -386,7 +395,17 @@ editorConfig.MENU_CONF['uploadVideo'] = {
                  placeholder="Title..."
                  value={name}
                  onChange={(event)=>{
-                  setName(event.target.value);                  
+                  setName(event.target.value);     
+                   //update tabs state
+                  setTabsState((prev) => {
+                    return {
+                      ...prev,
+                      [note_id]: {
+                        ...prev[note_id],
+                        isPending: true,
+                      },
+                    };
+                  });             
                 }}
                  />
                  <span className="whitespace-nowrap text-sm text-muted-foreground">编辑: {moment(udpateAt).local().format('YYYY-MM-DD HH:mm:ss')}</span>

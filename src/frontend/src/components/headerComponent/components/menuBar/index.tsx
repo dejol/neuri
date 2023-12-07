@@ -70,7 +70,7 @@ export const MenuBar = ({ tabId }) => {
   const { undo, redo } = useContext(undoRedoContext);
   const [openSettings, setOpenSettings] = useState(false);
   // const [openBuilder, setOpenBuilder] = useState(false);
-  const{screenWidth} =useContext(locationContext);
+  const{screenWidth,autoSave} =useContext(locationContext);
   const isPending = tabsState[tabId]?.isPending;
   const flow = flows.find((flow) => flow.id === tabId);
   const [folderId,setFolderId]= useState(notes.find((note) => note.id === tabId)?notes.find((note) => note.id === tabId).folder_id:""); // for NoteEditor
@@ -131,7 +131,7 @@ export const MenuBar = ({ tabId }) => {
             setSuccessData({ title: "笔记保存成功" });
           });
         }
-      // setTabId("")
+       
     }    
   }
   const [openConfirm,setOpenConfirm] = useState(false);
@@ -162,6 +162,29 @@ export const MenuBar = ({ tabId }) => {
       ))
     )
   }
+  useEffect(() => {
+    let delay = 1000*60*10; // Start delay of 10 minus
+    let intervalId = null;
+    function autoSaveFlow(){
+      if(autoSave&&isPending){
+        if(tabValues.get(tabId)&&tabValues.get(tabId).type=="note"){
+          handleSaveNote();
+        }else if(tabValues.get(tabId)&&tabValues.get(tabId).type=="flow"){
+          saveFlow(flow).then(()=>{
+            setSuccessData({ title: "自动保存白板成功" });
+            clearInterval(intervalId);
+          });
+        }
+      }
+    }
+    // Start the initial interval.
+    intervalId = setInterval(autoSaveFlow, delay);
+    return () => {
+      // This will clear the interval when the component unmounts, or when the dependencies of the useEffect hook change.
+      clearInterval(intervalId);
+    };
+  }, [isPending]);  
+
   return (
     <div className="round-button-div">
       {/* <Link to="/">
@@ -362,14 +385,14 @@ export const MenuBar = ({ tabId }) => {
           <ShadTooltip content="保存" side="bottom">
           <button
             className={
-              "extra-side-bar-buttons " 
+              "extra-side-bar-buttons "  + (isPending ? "" : "button-disable")
             }
             onClick={handleSaveNote}
           >
             <IconComponent
               name="Save"
               className={
-                "side-bar-button-size remind-blue" 
+                "side-bar-button-size " + (isPending ? "remind-blue" : "extra-side-bar-save-disable")
               }
             />
           </button>

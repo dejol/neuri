@@ -63,13 +63,16 @@ export function UndoRedoProvider({ children }) {
 
   const takeSnapshot = useCallback(() => {
     // push the current graph to the past state
+    
     setPast((old) => {
       let newPast = cloneDeep(old);
-      newPast[tabIndex] = old[tabIndex].slice(
-        old[tabIndex].length - defaultOptions.maxHistorySize + 1,
-        old[tabIndex].length
-      );
-      newPast[tabIndex].push({ nodes: getNodes(), edges: getEdges() });
+      if(old[tabIndex]){
+        newPast[tabIndex] = old[tabIndex].slice(
+          old[tabIndex].length - defaultOptions.maxHistorySize + 1,
+          old[tabIndex].length
+        );
+        newPast[tabIndex].push({ nodes: getNodes(), edges: getEdges() });
+      }
       return newPast;
     });
 
