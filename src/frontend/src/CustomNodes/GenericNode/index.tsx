@@ -11,7 +11,7 @@ import NodeToolbarComponent from "../../pages/FlowPage/components/nodeToolbarCom
 import { NodeDataType } from "../../types/flow";
 import { cleanEdges } from "../../utils/reactflowUtils";
 import { nodeColors, nodeIconsLucide } from "../../utils/styleUtils";
-import { classNames, toTitleCase } from "../../utils/utils";
+import { checkArray, classNames, toTitleCase } from "../../utils/utils";
 import ParameterComponent from "./components/parameterComponent";
 import ToggleShadComponent from "../../components/toggleShadComponent";
 import { time } from "console";
@@ -209,16 +209,7 @@ export default function GenericNode({
     }
     return numY-1;
   }
-  function checkArray(arr){
-    if(Array.isArray(arr)){
-      for (let i = 0; i < arr.length; i++) {  
-        if(typeof arr[i]==="object"){
-          return false;
-        }
-      }
-      return true;
-    }
-  }
+
   function createNodeEdge(clientX,clientY,content,sourceId){
       // we need to remove the wrapper bounds, in order to get the correct position
       let sourceNode=flow?.data?.nodes.find((n)=>n.id==sourceId);

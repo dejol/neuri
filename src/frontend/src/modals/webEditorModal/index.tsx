@@ -114,7 +114,7 @@ export default function WebEditorModal({
       // updateFlow(savedFlow);
       saveFlow(currentFlow);
     }
-    setSuccessData({ title: "Notebook saved successfully" });
+    setSuccessData({ title: "白板数据保存成功" });
     cancelChange();
   }
   function cancelChange(){

@@ -1747,3 +1747,18 @@ export function getAllRelatedNode(flow,rootId:string,returnEdgeIds,returnNodeIds
     }
   })
 }
+/**
+ * check object whether is Array 
+ * @param arr 
+ * @returns true is diect the object is Array and not object value  (only  string and number) type inside
+ */
+export function checkArray(arr){
+  if(Array.isArray(arr)){
+    for (let i = 0; i < arr.length; i++) {  
+      if(typeof arr[i]==="object"){
+        return false;
+      }
+    }
+    return true;
+  }
+}

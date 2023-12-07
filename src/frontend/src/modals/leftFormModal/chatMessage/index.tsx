@@ -13,6 +13,7 @@ import { ChatMessageType } from "../../../types/chat";
 import { classNames } from "../../../utils/utils";
 import FileCard from "../fileComponent";
 import { alertContext } from "../../../contexts/alertContext";
+import { typesContext } from "../../../contexts/typesContext";
 export default function ChatMessage({
   chat,
   lockChat,
@@ -27,6 +28,8 @@ export default function ChatMessage({
   const template = chat.template;
   const [promptOpen, setPromptOpen] = useState(false);
   const { setSuccessData } = useContext(alertContext);
+  const { data } = useContext(typesContext);
+
   const copyToClipboard = (contents) => {
     if (!navigator.clipboard || !navigator.clipboard.writeText) {
       return;
@@ -36,7 +39,24 @@ export default function ChatMessage({
       setSuccessData({ title: "文字已复制" }); 
     });
   };
-  
+  function onDragStart(
+    event: React.DragEvent<any>,
+    newValue: string
+  ) {
+    //start drag event
+    let newData = { type: "Note",node:data["notes"]["Note"]};
+    newData.node.template.note.value=newValue;
+
+    var crt = event.currentTarget.cloneNode(true);
+    crt.style.position = "absolute";
+    crt.style.top = "-500px";
+    crt.style.right = "-500px";
+    crt.classList.add("cursor-grabbing");
+    document.body.appendChild(crt);
+    event.dataTransfer.setDragImage(crt, 0, 0);
+    event.dataTransfer.setData("nodedata", JSON.stringify(newData));
+  }
+   
   return (
     <div
       className={classNames("left-form-modal-chat-position", chat.isSend ? "" : " ")}
@@ -97,7 +117,19 @@ export default function ChatMessage({
                           className="h-8 w-8 animate-pulse"
                         />
                       ) : (
-                        <div className="group/closeButton">
+                        <div className="group/closeButton cursor-grab"
+                              draggable={true}
+                              onDragStart={(event) =>
+                                onDragStart(event, chat.message.toString())
+                              }
+                              onDragEnd={() => {
+                                document.body.removeChild(
+                                  document.getElementsByClassName(
+                                    "cursor-grabbing"
+                                  )[0]
+                                );
+                              }}
+                        >
                           <div className=" absolute z-50 right-1 bottom-1">
                            <button onClick={()=>{copyToClipboard(chat.message.toString())}} className="invisible group-hover/closeButton:visible">
                               <IconComponent name="Clipboard" className="h-4 w-4 hover:text-gray-600" />

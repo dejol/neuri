@@ -33,7 +33,7 @@ import { undoRedoContext } from "../../../../contexts/undoRedoContext";
 import { APIClassType } from "../../../../types/api";
 import { FlowType, NodeType } from "../../../../types/flow";
 import { isValidConnection } from "../../../../utils/reactflowUtils";
-import { isWrappedWithClass ,isValidImageUrl, getAssistantFlow, enforceMinimumLoadingTime, getAllRelatedNode} from "../../../../utils/utils";
+import { isWrappedWithClass ,isValidImageUrl, getAssistantFlow, enforceMinimumLoadingTime, getAllRelatedNode, checkArray} from "../../../../utils/utils";
 import ConnectionLineComponent from "../ConnectionLineComponent";
 import ExtraSidebar from "../extraSidebarComponent";
 import LeftFormModal from "../../../../modals/leftFormModal";
@@ -162,17 +162,20 @@ export default function Page({ flow }: { flow: FlowType }) {
           event.preventDefault();
           if (navigator.clipboard && navigator.clipboard.readText) {
             navigator.clipboard.readText().then((value:string)=>{
-            try {
-              const jsonObject = JSON.parse(value);
-              takeSnapshot();
-              let root=createNoteNode("JSON 对象",null);
-              let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
-              createNodesFromJson(position.x+400*currZoom,position.y,jsonObject,root.id);
-            } catch (error) {
-              createNewNote(value);
-            }
-              
-              
+              if(event.shiftKey){
+                try {
+                  const jsonObject = JSON.parse(value);
+                  takeSnapshot();
+                  let root=createNoteNode(value,null);
+                  let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
+                  createNodesFromJson(position.x+400*currZoom,position.y,jsonObject,root.id);
+                } catch (error) {
+                  createNewNote(value);
+                }
+              }else{
+                createNewNote(value);
+              }
+
             });
           }
         }
@@ -383,35 +386,40 @@ export default function Page({ flow }: { flow: FlowType }) {
     connectingNodeId.current = nodeId;
   }, []);
 
-  // const testJson={
-  //   "桥头镇": {
-  //     "概述": "2019年",
-  //     "第一产业": "桥头镇为澄迈县的农业大镇",
-  //     "第二产业": "桥头近年来在第一产业发展的",
-  //     "第三产业": "桥头镇依托区位优势，"
-  //   },
-  //   "西岸村": {
-  //     "概述": "西岸村委会位于桥头镇的东部",
-  //     "基地": {
-  //       "A":"位于西岸村的陆侨无核荔枝",
-  //       "B":"位于西岸村的陆侨无核荔枝"
-  //     }
-  //   },
-  //   "桥": {
-  //     "概述": "2020年"
-  //   }
-  // };
+  //just for testing ,will be deleted when system publiched
+  const testJson={
+    "桥头镇": {
+      "概述": "2019年",
+      "第一产业": "桥头镇为澄迈县的农业大镇",
+      "第二产业": "桥头近年来在第一产业发展的",
+      "第三产业": "桥头镇依托区位优势，"
+    },
+    "西岸村": {
+      "概述": "西岸村委会位于桥头镇的东部",
+      "基地": {
+        "A":"位于西岸村的陆侨无核荔枝",
+        "B":"位于西岸村的陆侨无核荔枝"
+      }
+    },
+    "桥": {
+      "概述": "2020年"
+    }
+  };
 
   function createNodesFromJson(clientX,clientY,jsonObj,sourceId){
     let numX=1;
     let numY=0;
     let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
     for (let key in jsonObj) {
-      let newNodeId=createNodeEdge(clientX,clientY+200*numY*currZoom,key,sourceId);
-      if (typeof jsonObj[key] === "object" && jsonObj[key] !== null) {
-        numY+=createNodesFromJson(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+      if (jsonObj[key] !== null && typeof jsonObj[key] === "object" ) {
+        if(checkArray(jsonObj[key])){
+          createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,(key+": "+jsonObj[key]),sourceId);
+        }else{
+          let newNodeId=createNodeEdge(clientX,clientY+200*numY*currZoom,key,sourceId);
+          numY+=createNodesFromJson(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+        }
       }else{
-        createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,jsonObj[key],newNodeId);
+        createNodeEdge(clientX+400*numX*currZoom,clientY+200*numY*currZoom,(key+": "+jsonObj[key]),sourceId);
       }
       numY+=1;
     }
@@ -543,7 +551,7 @@ export default function Page({ flow }: { flow: FlowType }) {
         let data: { type: string; node?: APIClassType } = JSON.parse(
           event.dataTransfer.getData("nodedata")
         );
-        // console.log("data:",data);
+        
 
         // If data type is not "chatInput" or if there are no "chatInputNode" nodes present in the ReactFlow instance, create a new node
         // Calculate the position where the node should be created

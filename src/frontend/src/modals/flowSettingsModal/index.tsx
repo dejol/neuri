@@ -64,7 +64,7 @@ export default function FlowSettingsModal({
           // setTabValues(newValues);
           tabValues.set(id.toString(),{id:id.toString(),type:"flow"})
           setTabId(id.toString());
-          setSuccessData({ title: "New notebook successfully" });
+          setSuccessData({ title: "创建白板成功" });
 
        });
       }
@@ -74,7 +74,7 @@ export default function FlowSettingsModal({
       savedFlow.description = description;
       savedFlow.folder_id = folderId;
       saveFlow(savedFlow);
-      setSuccessData({ title: "Notebook saved successfully" });
+      setSuccessData({ title: "白板数据保存成功" });
     }
     setOpen(false);
   }
