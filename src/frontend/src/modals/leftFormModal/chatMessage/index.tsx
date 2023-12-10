@@ -46,7 +46,7 @@ export default function ChatMessage({
     //start drag event
     let newData = { type: "Note",node:data["notes"]["Note"]};
     newData.node.template.note.value=newValue;
-
+    newData.node.runnable=false;
     var crt = event.currentTarget.cloneNode(true);
     crt.style.position = "absolute";
     crt.style.top = "-500px";

@@ -285,11 +285,13 @@ export default function MindNode({
               mode="simple"
               style={{ height: '100%',
               minWidth:'300px',
+              maxWidth:'700px',
               minHeight:'100px',
+              maxHeight:'300px',
               width:'100%',
               fontSize:'20px',
               backgroundColor:switchToBG(borderColour,dark),
-              //  overflowY: 'scroll' 
+               overflowY: 'scroll' 
             }} 
             className="border-0 rounded-3xl"
           />

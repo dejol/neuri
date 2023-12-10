@@ -167,9 +167,10 @@ export default function Page({ flow }: { flow: FlowType }) {
                   const jsonObject = JSON.parse(value);
                   takeSnapshot();
                   let root=createNoteNode(value,null);
-                  // let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
-                  createNodesFromJson(position.x+root.width+300,position.y,jsonObject,root.id);
+                   let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
+                  createNodesFromJson(position.x+(root.width+300)*currZoom,position.y,jsonObject,root.id);
                 } catch (error) {
+                  takeSnapshot();
                   createNewNote(value);
                 }
               }
@@ -410,7 +411,7 @@ export default function Page({ flow }: { flow: FlowType }) {
   function createNodesFromJson(clientX,clientY,jsonObj,sourceId){
     let numX=1;
     let numY=0;
-    let currZoom=1;//reactFlowInstances.get(tabId).getViewport().zoom;
+    let currZoom=reactFlowInstances.get(tabId).getViewport().zoom;
     for (let key in jsonObj) {
       if (jsonObj[key] !== null && typeof jsonObj[key] === "object" ) {
         if(checkArray(jsonObj[key])){
@@ -435,10 +436,10 @@ export default function Page({ flow }: { flow: FlowType }) {
           // x: clientX - reactflowBounds.left,
           // y: clientY - reactflowBounds.top,
           // }),
-          {
+          reactFlowInstances.get(tabId).screenToFlowPosition({
                   x: clientX,
                   y: clientY
-                },          
+                }),          
           "mindNode",getNextBG((sourceNode?sourceNode.data.borderColor:""))
 
 
@@ -549,6 +550,10 @@ export default function Page({ flow }: { flow: FlowType }) {
         //   reactFlowWrapper.current.getBoundingClientRect();
 
         // Extract the data from the drag event and parse it as a JSON object
+        // let oo=JSON.parse(
+        //   event.dataTransfer.getData("nodedata")
+        // );
+        // console.log("oo value:",oo);
         let data: { type: string; node?: APIClassType } = JSON.parse(
           event.dataTransfer.getData("nodedata")
         );
