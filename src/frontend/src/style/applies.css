@@ -1088,4 +1088,7 @@
   .chat-message-highlight {
     @apply rounded-md bg-indigo-100 px-0.5 dark:bg-indigo-900;
   }
+  .mindNode ol{
+    @apply list-decimal list-inside;
+  }
 }
